@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "mail-purge",
+  "version": "0.0.1",
+  "description": "chrome extension to purge emails",
+  "options_page": "src/pages/options/index.html",
+  "background": {
+    "service_worker": "src/pages/background/index.js",
+    "type": "module"
+  },
+  "permissions": [
+    "activeTab"
+  ],
+  "action": {
+    "default_popup": "src/pages/popup/index.html",
+    "default_icon": "icon-128.jpg"
+  },
+  "icons": {
+    "128": "icon-128.jpg"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mail.google.com/*"
+      ],
+      "js": [
+        "src/pages/content/index.js"
+      ],
+      "css": [
+        "assets/css/contentStyle16915169400.chunk.css"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/js/*.js",
+        "assets/css/*.css",
+        "icon-128.png",
+        "icon-34.png"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
+  ]
+}
