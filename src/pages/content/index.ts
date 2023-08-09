@@ -1,4 +1,25 @@
+import {
+  IHoverCardElements,
+  hideHoverCard,
+  initializeHoverCard,
+  showHoverCard,
+} from './unsubscribeHoverCard';
+
 console.log('🔥 content script loaded: start');
+
+export interface MailPurgeGlobalState {
+  email: string;
+  name: string;
+  isMouseOverMailPurgeBtn: boolean;
+  isMouseOverHoverCard: boolean;
+  hoverCardElements: IHoverCardElements;
+  mainBtnContainer: HTMLDivElement;
+}
+
+// content script global variables
+
+// hoverCard elements
+let hoverCardElements: IHoverCardElements | null = null;
 
 // types
 interface IEmail {
@@ -9,10 +30,11 @@ interface IEmail {
 
 // get all mails visible on page
 const getAllMails = () => {
-  let allEmails: IEmail[] = [];
   let allMailNodes: Element[] | [] = [];
   // get all mail nodes on current page in the table by email attribute
   allMailNodes = Array.from(document.querySelectorAll('tr>td>div:last-child>span>span[email]'));
+
+  console.log('🚀 ~ file: index.ts:16 ~ getAllMails ~ allMailNodes:', allMailNodes.length);
 
   if (allMailNodes.length > 0) {
     for (const email of allMailNodes) {
@@ -22,50 +44,44 @@ const getAllMails = () => {
       //************* append unsubscribe  button ********
       // container to add unsubscribe button
       const btnContainer = email.closest('div');
-      const unsubscribeBtn = document.createElement('button');
-      unsubscribeBtn.classList.add('unsubscribe-btn');
+      const mailPurgeBtn = document.createElement('button');
+      mailPurgeBtn.classList.add('unsubscribe-btn');
 
       // append the button to container
-      btnContainer.appendChild(unsubscribeBtn);
+      btnContainer.appendChild(mailPurgeBtn);
 
-      // add click event listener to unsubscribe button
-      unsubscribeBtn.addEventListener('click', (ev: MouseEvent) => {
+      // add onmouseover (on hover) event listener to unsubscribe button
+      mailPurgeBtn.addEventListener('click', (ev: MouseEvent) => {
         ev.stopPropagation();
-
-        console.log('🚀 ~ file: index.ts:35 ~ unsubscribeBtn.onClick listener ~ email:', emailAttr);
+        // plan something for this
+      });
+      // add onmouseover (on hover) event listener to unsubscribe button
+      mailPurgeBtn.addEventListener('mouseover', (ev: MouseEvent) => {
+        console.log('🚀 ~ file: index.ts:47 ~ mailPurgeBtn.addEventListener ~ mouse over:');
+        //
+        (window as any).mailPurge = { ...(window as any).mailPurge, isMouseOverMailPurgeBtn: true };
+        setTimeout(() => {
+          showHoverCard({ parentEl: btnContainer, email: emailAttr, name, hoverCardElements });
+        }, 250);
       });
 
-      console.log('🚀 ~ file: app.tsx:34 ~ getAllMails ~ email:', email);
+      mailPurgeBtn.addEventListener('mouseout', (ev: MouseEvent) => {
+        console.log('🚀 ~ file: index.ts:47 ~ mailPurgeBtn.addEventListener ~ mouse out:');
+        (window as any).mailPurge = { ...(window as any).mailPurge, isMouseOverMailPurgeBtn: false };
 
-      allEmails.push({
-        email: emailAttr,
-        name,
+        setTimeout(() => {
+          const isMouseOverHoverCard = (window as any).mailPurge.isMouseOverHoverCard || false;
+          //@ts-ignore
+          console.log('🔥 testing window variables', window.mailPurge);
+          if (!isMouseOverHoverCard) {
+            hideHoverCard({ parentEl: btnContainer, hoverCardElements });
+          }
+        }, 300);
       });
     }
   } else {
     console.log('❌ No emails found on page');
   }
-
-  return allEmails;
-
-  //   if (allMailNodes.length < 1) {
-  //     allMailNodes = Array.from(
-  //       document.querySelectorAll('tr>td>div:first-child>span>span[data-hovercard-id]:last-child')
-  //     );
-
-  //     if (allMailNodes.length > 0) {
-  //       for (const email of allMailNodes) {
-  //         const emailAttr = email.getAttribute('data-hovercard-id');
-  //         const name = email.innerHTML;
-
-  //         allEmails.push({
-  //           email: emailAttr,
-  //           name,
-  //         });
-  //       }
-  //     } else {
-  //     }
-  //   }
 };
 
 // check if emails were loaded
@@ -73,8 +89,7 @@ const getAllMails = () => {
 // if-yes: then show the unsubscribe button
 
 setTimeout(() => {
-  const allMails = getAllMails();
-
-  console.table(allMails);
+  getAllMails();
+  hoverCardElements = initializeHoverCard();
 }, 2500);
 console.log('🔥 content script loaded: end');

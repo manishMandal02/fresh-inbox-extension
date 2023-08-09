@@ -1,9 +1,36 @@
 .unsubscribe-btn {
   border-radius: 50%;
-  background-color: #d02727;
+  background-color: #208dd0;
   z-index: 100;
   height: 16px;
   width: 16px;
   cursor: pointer;
   margin-left: auto;
+}
+
+.hoverCard {
+  width: 20rem;
+  height: 5rem;
+  background-color: #f3f1f1;
+  border-radius: 10px;
+  box-shadow: #63637033 0px 7px 29px 0px;
+  position: absolute;
+  margin-top: calc(-5rem);
+  display: none;
+  visibility: hidden;
+  z-index: 200;
+  transition: visibility 1s, opacity 0.5s linear;
+  //
+  .hoverCard-label {
+    display: flex;
+  }
+  .hoverCard-unsubscribeBtn {
+    display: flex;
+  }
+  .hoverCard-deleteAllMailsBtn {
+    display: flex;
+  }
+  .hoverCard-unsubscribeAndDeleteAllMailsBtn {
+    display: flex;
+  }
 }
