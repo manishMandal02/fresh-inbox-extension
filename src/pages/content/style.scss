@@ -1,7 +1,6 @@
 .unsubscribe-btn {
   border-radius: 50%;
   background-color: #208dd0;
-  z-index: 100;
   height: 16px;
   width: 16px;
   cursor: pointer;
@@ -9,28 +8,82 @@
 }
 
 .hoverCard {
-  width: 20rem;
-  height: 5rem;
-  background-color: #f3f1f1;
-  border-radius: 10px;
-  box-shadow: #63637033 0px 7px 29px 0px;
+  width: 25rem;
+  height: 8rem;
+  z-index: 1000;
   position: absolute;
-  margin-top: calc(-5rem);
   display: none;
   visibility: hidden;
-  z-index: 200;
+  border-radius: 10px;
+  margin-left: -2.8rem;
+  margin-top: calc(-8rem - 25px);
+  background-color: #f3f1f1;
+  box-shadow: #63637033 0px 7px 29px 0px;
   transition: visibility 1s, opacity 0.5s linear;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 10px;
+  flex-direction: column;
+  cursor: auto;
   //
   .hoverCard-label {
-    display: flex;
+    color: #121313;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 2px 0;
+    margin-bottom: 25px;
+    position: relative;
   }
-  .hoverCard-unsubscribeBtn {
+  // .hoverCard-label::after {
+  // content: '';
+  // height: 2px;
+  // position: absolute;
+  // left: 5%;
+  // top: 20%;
+  // background-color: #8180803e;
+  // }
+
+  .hoverCard-btnContainer {
     display: flex;
-  }
-  .hoverCard-deleteAllMailsBtn {
-    display: flex;
-  }
-  .hoverCard-unsubscribeAndDeleteAllMailsBtn {
-    display: flex;
+    width: 100%;
+    max-width: 100%;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    position: relative;
+    &::before {
+      content: ' ';
+      height: 1.5px;
+      width: 24rem;
+      position: absolute;
+      left: 2.5%;
+      top: -12px;
+      border: 25%;
+      background-color: #4544444e;
+      opacity: 0.2;
+    }
+    > button {
+      border-radius: 8px;
+      padding: 6px 8px;
+      outline: none;
+      border: 2px solid #242222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+    .hoverCard-unsubscribeBtn {
+      display: flex;
+      width: 35%;
+    }
+    .hoverCard-deleteAllMailsBtn {
+      display: flex;
+      width: 35%;
+    }
+    .hoverCard-unsubscribeAndDeleteAllMailsBtn {
+      display: flex;
+      width: 60%;
+      margin-top: 5px;
+      // padding: 8px 0;
+    }
   }
 }

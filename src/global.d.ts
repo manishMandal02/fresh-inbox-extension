@@ -1,5 +1,5 @@
 import Chrome from 'chrome';
-import { MailPurgeGlobalState } from './pages/content';
+import { MailPurgeGlobalVariables } from './pages/content';
 
 declare namespace chrome {
   export default Chrome;
@@ -39,5 +39,5 @@ declare module '*.json' {
 
 // declare global variables
 declare global {
-  let mailPurge: MailPurgeGlobalState;
+  var mailPurgeGlobalVariables: MailPurgeGlobalVariables;
 }

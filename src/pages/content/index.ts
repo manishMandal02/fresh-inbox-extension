@@ -4,30 +4,35 @@ import {
   initializeHoverCard,
   showHoverCard,
 } from './unsubscribeHoverCard';
+import { randomId } from './utils/randomId';
 
-console.log('🔥 content script loaded: start');
-
-export interface MailPurgeGlobalState {
+// types
+// content script global variables
+export interface MailPurgeGlobalVariables {
   email: string;
   name: string;
   isMouseOverMailPurgeBtn: boolean;
   isMouseOverHoverCard: boolean;
-  hoverCardElements: IHoverCardElements;
-  mainBtnContainer: HTMLDivElement;
+  hoverCardElements: IHoverCardElements | null;
+  mainBtnContainerId: string;
 }
 
-// content script global variables
+// interface IEmail {
+//   email: string;
+//   name: string;
+//   isNewsLetter?: boolean;
+// }
 
-// hoverCard elements
-let hoverCardElements: IHoverCardElements | null = null;
+// get state from global
 
-// types
-interface IEmail {
-  email: string;
-  name: string;
-  isNewsLetter?: boolean;
-}
-
+window.mailPurgeGlobalVariables = {
+  email: '',
+  name: '',
+  mainBtnContainerId: '',
+  hoverCardElements: null,
+  isMouseOverHoverCard: false,
+  isMouseOverMailPurgeBtn: false,
+};
 // get all mails visible on page
 const getAllMails = () => {
   let allMailNodes: Element[] | [] = [];
@@ -41,14 +46,15 @@ const getAllMails = () => {
       const emailAttr = email.getAttribute('email');
       const name = email.getAttribute('name');
 
-      //************* append unsubscribe  button ********
+      //***** append unsubscribe  button
       // container to add unsubscribe button
-      const btnContainer = email.closest('div');
+      const mailPurgeBtnContainer = email.closest('div');
+
       const mailPurgeBtn = document.createElement('button');
       mailPurgeBtn.classList.add('unsubscribe-btn');
 
       // append the button to container
-      btnContainer.appendChild(mailPurgeBtn);
+      mailPurgeBtnContainer.appendChild(mailPurgeBtn);
 
       // add onmouseover (on hover) event listener to unsubscribe button
       mailPurgeBtn.addEventListener('click', (ev: MouseEvent) => {
@@ -56,27 +62,29 @@ const getAllMails = () => {
         // plan something for this
       });
       // add onmouseover (on hover) event listener to unsubscribe button
-      mailPurgeBtn.addEventListener('mouseover', (ev: MouseEvent) => {
-        console.log('🚀 ~ file: index.ts:47 ~ mailPurgeBtn.addEventListener ~ mouse over:');
+      mailPurgeBtn.addEventListener('mouseover', () => {
+        mailPurgeGlobalVariables.mainBtnContainerId = randomId();
+        mailPurgeBtnContainer.id = mailPurgeGlobalVariables.mainBtnContainerId;
         //
-        (window as any).mailPurge = { ...(window as any).mailPurge, isMouseOverMailPurgeBtn: true };
+        mailPurgeGlobalVariables.isMouseOverMailPurgeBtn = true;
         setTimeout(() => {
-          showHoverCard({ parentEl: btnContainer, email: emailAttr, name, hoverCardElements });
-        }, 250);
+          showHoverCard({
+            name,
+            parentElId: mailPurgeGlobalVariables.mainBtnContainerId,
+            email: emailAttr,
+            hoverCardElements: mailPurgeGlobalVariables.hoverCardElements,
+          });
+        }, 300);
       });
 
-      mailPurgeBtn.addEventListener('mouseout', (ev: MouseEvent) => {
-        console.log('🚀 ~ file: index.ts:47 ~ mailPurgeBtn.addEventListener ~ mouse out:');
-        (window as any).mailPurge = { ...(window as any).mailPurge, isMouseOverMailPurgeBtn: false };
-
+      mailPurgeBtn.addEventListener('mouseout', () => {
         setTimeout(() => {
-          const isMouseOverHoverCard = (window as any).mailPurge.isMouseOverHoverCard || false;
-          //@ts-ignore
-          console.log('🔥 testing window variables', window.mailPurge);
-          if (!isMouseOverHoverCard) {
-            hideHoverCard({ parentEl: btnContainer, hoverCardElements });
-          }
-        }, 300);
+          hideHoverCard({
+            parentElId: mailPurgeGlobalVariables.mainBtnContainerId,
+            hoverCardElements: mailPurgeGlobalVariables.hoverCardElements,
+          });
+        }, 500);
+        mailPurgeGlobalVariables.isMouseOverMailPurgeBtn = false;
       });
     }
   } else {
@@ -90,6 +98,5 @@ const getAllMails = () => {
 
 setTimeout(() => {
   getAllMails();
-  hoverCardElements = initializeHoverCard();
+  window.mailPurgeGlobalVariables.hoverCardElements = initializeHoverCard();
 }, 2500);
-console.log('🔥 content script loaded: end');
