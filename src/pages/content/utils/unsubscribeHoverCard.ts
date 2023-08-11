@@ -5,10 +5,29 @@ export interface IHoverCardElements {
   unsubscribeAndDeleteAllMailsBtn: HTMLButtonElement;
 }
 
-const handleUnsubscribe = (ev: MouseEvent) => {
+export enum IMessageEvent {
+  Unsubscribe = 'unsubscribe',
+  DeleteAllMails = 'deleteAllMails',
+  UnsubscribeAndDeleteAllMails = 'unsubscribeAndDeleteAllMails',
+}
+
+export interface IMessageBody {
+  event: IMessageEvent;
+  email: string;
+  name: string;
+}
+
+const handleUnsubscribe = async (ev: MouseEvent) => {
   ev.stopPropagation();
-  const { email } = mailPurgeGlobalVariables;
+  const { email, name } = mailPurgeGlobalVariables;
   console.log('clicked: unsubscribeButton', email);
+  const messageRes = await chrome.runtime.sendMessage<IMessageBody>({
+    event: IMessageEvent.Unsubscribe,
+    email,
+    name,
+  });
+
+  console.log('🚀 ~ file: unsubscribeHoverCard.ts:14 ~ handleUnsubscribe ~ messageRes:', messageRes);
 };
 
 // handle mouseover on hoverCard

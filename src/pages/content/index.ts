@@ -3,7 +3,7 @@ import {
   hideHoverCard,
   initializeHoverCard,
   showHoverCard,
-} from './unsubscribeHoverCard';
+} from './utils/unsubscribeHoverCard';
 import { randomId } from './utils/randomId';
 
 // types
@@ -83,7 +83,7 @@ const getAllMails = () => {
             parentElId: mailPurgeGlobalVariables.mainBtnContainerId,
             hoverCardElements: mailPurgeGlobalVariables.hoverCardElements,
           });
-        }, 500);
+        }, 800);
         mailPurgeGlobalVariables.isMouseOverMailPurgeBtn = false;
       });
     }
