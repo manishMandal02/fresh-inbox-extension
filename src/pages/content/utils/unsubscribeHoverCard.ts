@@ -19,7 +19,7 @@ export interface IMessageBody {
 
 const handleUnsubscribe = async (ev: MouseEvent) => {
   ev.stopPropagation();
-  const { email, name } = mailPurgeGlobalVariables;
+  const { email, name } = mailMagicGlobalVariables;
   console.log('clicked: unsubscribeButton', email);
   const messageRes = await chrome.runtime.sendMessage<IMessageBody>({
     event: IMessageEvent.Unsubscribe,
@@ -33,17 +33,17 @@ const handleUnsubscribe = async (ev: MouseEvent) => {
 // handle mouseover on hoverCard
 const handleMouseOverHoverCard = (ev: MouseEvent) => {
   ev.stopPropagation();
-  mailPurgeGlobalVariables.isMouseOverHoverCard = true;
+  mailMagicGlobalVariables.isMouseOverHoverCard = true;
 };
 // handle mouseout on hoverCard
 const handleMouseOutHoverCard = () => {
-  const { hoverCardElements, mainBtnContainerId } = mailPurgeGlobalVariables;
+  const { hoverCardElements, mainBtnContainerId } = mailMagicGlobalVariables;
 
   setTimeout(() => {
     hideHoverCard({ parentElId: mainBtnContainerId, hoverCardElements });
   }, 500);
 
-  mailPurgeGlobalVariables.isMouseOverHoverCard = false;
+  mailMagicGlobalVariables.isMouseOverHoverCard = false;
 };
 
 const initializeHoverCard = (): IHoverCardElements => {
@@ -70,7 +70,7 @@ const initializeHoverCard = (): IHoverCardElements => {
   unsubscribeAndDeleteAllMailsBtn.innerHTML = 'Unsubscribe + Delete All Mails';
 
   // add text to label
-  label.innerText = 'MailPurge: Email Actions for {name} & {email}';
+  label.innerText = 'MailMagic: Email Actions for {name} & {email}';
 
   // append buttons to the btnContainer
   btnContainer.append(unsubscribeBtn, deleteAllMailsBtn, unsubscribeAndDeleteAllMailsBtn);
@@ -97,8 +97,8 @@ const showHoverCard = ({ parentElId, hoverCardElements, email, name }: ShowHover
 
   parentEl.appendChild(hoverCard);
 
-  mailPurgeGlobalVariables.email = email;
-  mailPurgeGlobalVariables.name = name;
+  mailMagicGlobalVariables.email = email;
+  mailMagicGlobalVariables.name = name;
 
   // stop event propagation for card container
   hoverCard.addEventListener('click', ev => {
@@ -133,7 +133,7 @@ type HideHoverCardParams = {
 const hideHoverCard = ({ parentElId, hoverCardElements }: HideHoverCardParams) => {
   const { hoverCard, unsubscribeBtn, deleteAllMailsBtn, unsubscribeAndDeleteAllMailsBtn } = hoverCardElements;
 
-  if (mailPurgeGlobalVariables.isMouseOverHoverCard || mailPurgeGlobalVariables.isMouseOverMailPurgeBtn)
+  if (mailMagicGlobalVariables.isMouseOverHoverCard || mailMagicGlobalVariables.isMouseOverMailMagicBtn)
     return;
   const parentEl = document.getElementById(parentElId);
 

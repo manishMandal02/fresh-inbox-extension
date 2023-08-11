@@ -1,3 +1,9 @@
+/**
+ * @description
+ * Chrome extensions don't support modules in content scripts.
+ */
+import('./components');
+
 import {
   IHoverCardElements,
   hideHoverCard,
@@ -8,10 +14,10 @@ import { randomId } from './utils/randomId';
 
 // types
 // content script global variables
-export interface MailPurgeGlobalVariables {
+export interface MailMagicGlobalVariables {
   email: string;
   name: string;
-  isMouseOverMailPurgeBtn: boolean;
+  isMouseOverMailMagicBtn: boolean;
   isMouseOverHoverCard: boolean;
   hoverCardElements: IHoverCardElements | null;
   mainBtnContainerId: string;
@@ -25,13 +31,13 @@ export interface MailPurgeGlobalVariables {
 
 // get state from global
 
-window.mailPurgeGlobalVariables = {
+window.mailMagicGlobalVariables = {
   email: '',
   name: '',
   mainBtnContainerId: '',
   hoverCardElements: null,
   isMouseOverHoverCard: false,
-  isMouseOverMailPurgeBtn: false,
+  isMouseOverMailMagicBtn: false,
 };
 // get all mails visible on page
 const getAllMails = () => {
@@ -48,43 +54,43 @@ const getAllMails = () => {
 
       //***** append unsubscribe  button
       // container to add unsubscribe button
-      const mailPurgeBtnContainer = email.closest('div');
+      const mailMagicBtnContainer = email.closest('div');
 
-      const mailPurgeBtn = document.createElement('button');
-      mailPurgeBtn.classList.add('unsubscribe-btn');
+      const mailMagicBtn = document.createElement('button');
+      mailMagicBtn.classList.add('unsubscribe-btn');
 
       // append the button to container
-      mailPurgeBtnContainer.appendChild(mailPurgeBtn);
+      mailMagicBtnContainer.appendChild(mailMagicBtn);
 
       // add onmouseover (on hover) event listener to unsubscribe button
-      mailPurgeBtn.addEventListener('click', (ev: MouseEvent) => {
+      mailMagicBtn.addEventListener('click', (ev: MouseEvent) => {
         ev.stopPropagation();
         // plan something for this
       });
       // add onmouseover (on hover) event listener to unsubscribe button
-      mailPurgeBtn.addEventListener('mouseover', () => {
-        mailPurgeGlobalVariables.mainBtnContainerId = randomId();
-        mailPurgeBtnContainer.id = mailPurgeGlobalVariables.mainBtnContainerId;
+      mailMagicBtn.addEventListener('mouseover', () => {
+        mailMagicGlobalVariables.mainBtnContainerId = randomId();
+        mailMagicBtnContainer.id = mailMagicGlobalVariables.mainBtnContainerId;
         //
-        mailPurgeGlobalVariables.isMouseOverMailPurgeBtn = true;
+        mailMagicGlobalVariables.isMouseOverMailMagicBtn = true;
         setTimeout(() => {
           showHoverCard({
             name,
-            parentElId: mailPurgeGlobalVariables.mainBtnContainerId,
+            parentElId: mailMagicGlobalVariables.mainBtnContainerId,
             email: emailAttr,
-            hoverCardElements: mailPurgeGlobalVariables.hoverCardElements,
+            hoverCardElements: mailMagicGlobalVariables.hoverCardElements,
           });
         }, 300);
       });
 
-      mailPurgeBtn.addEventListener('mouseout', () => {
+      mailMagicBtn.addEventListener('mouseout', () => {
         setTimeout(() => {
           hideHoverCard({
-            parentElId: mailPurgeGlobalVariables.mainBtnContainerId,
-            hoverCardElements: mailPurgeGlobalVariables.hoverCardElements,
+            parentElId: mailMagicGlobalVariables.mainBtnContainerId,
+            hoverCardElements: mailMagicGlobalVariables.hoverCardElements,
           });
         }, 800);
-        mailPurgeGlobalVariables.isMouseOverMailPurgeBtn = false;
+        mailMagicGlobalVariables.isMouseOverMailMagicBtn = false;
       });
     }
   } else {
@@ -98,5 +104,5 @@ const getAllMails = () => {
 
 setTimeout(() => {
   getAllMails();
-  window.mailPurgeGlobalVariables.hoverCardElements = initializeHoverCard();
+  window.mailMagicGlobalVariables.hoverCardElements = initializeHoverCard();
 }, 2500);
