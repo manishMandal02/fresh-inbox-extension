@@ -1,3 +1,0 @@
-const useMailMagicButton = () => {};
-
-export { useMailMagicButton };

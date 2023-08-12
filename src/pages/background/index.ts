@@ -2,7 +2,6 @@ import reloadOnUpdate from 'virtual:reload-on-update-in-background-script';
 import wait from './utils/wait';
 import { IMessageBody, IMessageEvent } from './background.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
-console.log('🔥 background loaded');
 
 reloadOnUpdate('pages/background');
 
@@ -11,6 +10,18 @@ reloadOnUpdate('pages/background');
  * If you do not use the css of the content script, please delete it.
  */
 reloadOnUpdate('pages/content/style.scss');
+
+console.log('🔥 background loaded');
+
+//TODO: Get current user info
+
+// TODO: Check if we have user token
+
+// TODO: if not: then show a modal with a btn to launch auth flow
+
+// (async () => {
+// getAutToken();
+// })();
 
 // listen for messages from content script - email action events
 chrome.runtime.onMessage.addListener(

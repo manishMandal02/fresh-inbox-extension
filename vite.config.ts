@@ -5,6 +5,7 @@ import customDynamicImport from './utils/plugins/custom-dynamic-import';
 import addHmr from './utils/plugins/add-hmr';
 import watchRebuild from './utils/plugins/watch-rebuild';
 import manifest from './manifest';
+import viteReact from '@vitejs/plugin-react';
 
 const rootDir = resolve(__dirname);
 const srcDir = resolve(rootDir, 'src');
@@ -28,6 +29,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    viteReact(),
     makeManifest(manifest, {
       isDev,
       contentScriptCssKey: regenerateCacheInvalidationKey(),

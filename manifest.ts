@@ -13,7 +13,7 @@ const manifest: chrome.runtime.ManifestV3 = {
     service_worker: 'src/pages/background/index.js',
     type: 'module',
   },
-  permissions: ['activeTab', 'identity'],
+  permissions: ['activeTab', 'identity', 'identity.email'],
   action: {
     default_popup: 'src/pages/popup/index.html',
     default_icon: 'icon-128.jpg',
@@ -23,7 +23,7 @@ const manifest: chrome.runtime.ManifestV3 = {
   },
   content_scripts: [
     {
-      matches: ['https://mail.google.com/*'],
+      matches: ['https://mail.google.com/mail/*'],
       js: ['src/pages/content/index.js'],
       // KEY for cache invalidation
       css: ['assets/css/contentStyle<KEY>.chunk.css'],

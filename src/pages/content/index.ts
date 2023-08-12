@@ -2,7 +2,6 @@
  * @description
  * Chrome extensions don't support modules in content scripts.
  */
-import('./components');
 
 import {
   IHoverCardElements,
@@ -56,8 +55,8 @@ const getAllMails = () => {
       // container to add unsubscribe button
       const mailMagicBtnContainer = email.closest('div');
 
-      const mailMagicBtn = document.createElement('button');
-      mailMagicBtn.classList.add('unsubscribe-btn');
+      const mailMagicBtn = document.createElement('span');
+      mailMagicBtn.classList.add('mail-magic-button');
 
       // append the button to container
       mailMagicBtnContainer.appendChild(mailMagicBtn);
@@ -102,7 +101,7 @@ const getAllMails = () => {
 // if-not: then wait for 500ms then check again (keep repeating)
 // if-yes: then show the unsubscribe button
 
-setTimeout(() => {
+setTimeout(async () => {
   getAllMails();
   window.mailMagicGlobalVariables.hoverCardElements = initializeHoverCard();
 }, 2500);
