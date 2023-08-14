@@ -1,4 +1,4 @@
-.mail-magic-button {
+.mailMagic-main-btn {
   border-radius: 50%;
   background-color: #208dd0;
   height: 16px;
@@ -7,7 +7,7 @@
   margin-left: auto;
 }
 
-.hoverCard {
+.mailMagic-hoverCard {
   width: 25rem;
   height: 8rem;
   z-index: 1000;
@@ -25,7 +25,7 @@
   padding: 8px 10px;
   flex-direction: column;
   cursor: auto;
-  //
+  // children
   .hoverCard-label {
     color: #121313;
     font-size: 16px;
@@ -34,15 +34,6 @@
     margin-bottom: 25px;
     position: relative;
   }
-  // .hoverCard-label::after {
-  // content: '';
-  // height: 2px;
-  // position: absolute;
-  // left: 5%;
-  // top: 20%;
-  // background-color: #8180803e;
-  // }
-
   .hoverCard-btnContainer {
     display: flex;
     width: 100%;
@@ -84,6 +75,76 @@
       width: 60%;
       margin-top: 5px;
       // padding: 8px 0;
+    }
+  }
+}
+
+#mailMagic-authModal {
+  // children
+  #authModal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9000;
+    width: 100vw;
+    height: 100vw;
+    background-color: #242222;
+    opacity: 0.4;
+  }
+  #authModal-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    padding: 16px;
+    border-radius: 16px;
+    box-shadow: #64646f33 0px 7px 29px 0px;
+    background-color: #f3f1f1;
+    width: 40vw;
+    height: 50vh;
+    position: fixed;
+    top: 25%;
+    left: 30%;
+    z-index: 10000;
+    // children
+    #authModal-title {
+      color: #434242;
+      font-size: 1.4rem;
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    #authModal-errorMsg {
+      color: #f04b4b;
+      font-weight: 300;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      visibility: hidden;
+    }
+    #authModal-authBtn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      font-weight: 400;
+      background-color: #1d86d6;
+      color: #f3f1f1;
+      margin-top: 1rem;
+      border-radius: 6px;
+      outline: none;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    #authModal-disableBtn {
+      color: #777676;
+      font-weight: 300;
+      font-size: 10px;
+      text-align: center;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 0.5rem;
     }
   }
 }

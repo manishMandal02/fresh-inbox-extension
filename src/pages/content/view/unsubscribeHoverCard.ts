@@ -1,3 +1,5 @@
+import { IMessageBody, IMessageEvent } from '../content.types';
+
 export interface IHoverCardElements {
   hoverCard: HTMLDivElement;
   unsubscribeBtn: HTMLButtonElement;
@@ -5,29 +7,41 @@ export interface IHoverCardElements {
   unsubscribeAndDeleteAllMailsBtn: HTMLButtonElement;
 }
 
-export enum IMessageEvent {
-  Unsubscribe = 'unsubscribe',
-  DeleteAllMails = 'deleteAllMails',
-  UnsubscribeAndDeleteAllMails = 'unsubscribeAndDeleteAllMails',
-}
-
-export interface IMessageBody {
-  event: IMessageEvent;
-  email: string;
-  name: string;
-}
-
 const handleUnsubscribe = async (ev: MouseEvent) => {
   ev.stopPropagation();
-  const { email, name } = mailMagicGlobalVariables;
-  console.log('clicked: unsubscribeButton', email);
-  const messageRes = await chrome.runtime.sendMessage<IMessageBody>({
-    event: IMessageEvent.Unsubscribe,
-    email,
-    name,
-  });
+  try {
+    const { email, name } = mailMagicGlobalVariables;
+    console.log('clicked: unsubscribeButton', email);
+    const messageRes = await chrome.runtime.sendMessage<IMessageBody>({
+      event: IMessageEvent.Unsubscribe,
+      email,
+      name,
+    });
+  } catch (err) {
+    console.log('🚀 ~ file: unsubscribeHoverCard.ts:16 ~ handleUnsubscribe ~ err:', err);
+  }
+};
 
-  console.log('🚀 ~ file: unsubscribeHoverCard.ts:14 ~ handleUnsubscribe ~ messageRes:', messageRes);
+const handleDeleteAllMails = async (ev: MouseEvent) => {
+  ev.stopPropagation();
+  try {
+    const { email, name } = mailMagicGlobalVariables;
+
+    await chrome.runtime.sendMessage({ event: IMessageEvent.Delete_All_Mails, email, name });
+  } catch (err) {
+    console.log('🚀 ~ file: unsubscribeHoverCard.ts:29 ~ handleDeleteAllMails ~ err:', err);
+  }
+};
+
+const handleUnsubscribeAndDeleteAllMails = async (ev: MouseEvent) => {
+  ev.stopPropagation();
+  try {
+    const { email, name } = mailMagicGlobalVariables;
+
+    await chrome.runtime.sendMessage({ event: IMessageEvent.Unsubscribe_And_Delete_All_Mails, email, name });
+  } catch (err) {
+    console.log('🚀 ~ file: unsubscribeHoverCard.ts:29 ~ handleDeleteAllMails ~ err:', err);
+  }
 };
 
 // handle mouseover on hoverCard
@@ -57,7 +71,7 @@ const initializeHoverCard = (): IHoverCardElements => {
   const unsubscribeAndDeleteAllMailsBtn = document.createElement('button');
 
   /// add classnames
-  hoverCard.classList.add('hoverCard');
+  hoverCard.classList.add('mailMagic-hoverCard');
   label.classList.add('hoverCard-label');
   btnContainer.classList.add('hoverCard-btnContainer');
   unsubscribeBtn.classList.add('hoverCard-unsubscribeBtn');
@@ -112,14 +126,8 @@ const showHoverCard = ({ parentElId, hoverCardElements, email, name }: ShowHover
 
   // add onClick listener to buttons
   unsubscribeBtn.addEventListener('click', handleUnsubscribe);
-  deleteAllMailsBtn.addEventListener('click', (ev: MouseEvent) => {
-    ev.stopPropagation();
-    console.log('clicked: deleteAllMails', email, name);
-  });
-  unsubscribeAndDeleteAllMailsBtn.addEventListener('click', (ev: MouseEvent) => {
-    ev.stopPropagation();
-    console.log('clicked: unsubscribeAndDeleteAllMails', email, name);
-  });
+  deleteAllMailsBtn.addEventListener('click', handleDeleteAllMails);
+  unsubscribeAndDeleteAllMailsBtn.addEventListener('click', handleDeleteAllMails);
   hoverCard.style.display = 'flex';
   hoverCard.style.visibility = 'visible';
 };
@@ -142,10 +150,10 @@ const hideHoverCard = ({ parentElId, hoverCardElements }: HideHoverCardParams) =
     hoverCard.style.visibility = 'hidden';
     // get parent el from id
 
-    parentEl.removeChild(hoverCard);
     unsubscribeBtn.removeEventListener('click', handleUnsubscribe);
-    deleteAllMailsBtn.removeEventListener('click', handleUnsubscribe);
-    unsubscribeAndDeleteAllMailsBtn.removeEventListener('click', handleUnsubscribe);
+    deleteAllMailsBtn.removeEventListener('click', handleDeleteAllMails);
+    unsubscribeAndDeleteAllMailsBtn.removeEventListener('click', handleDeleteAllMails);
+    parentEl.removeChild(hoverCard);
   }
 };
 

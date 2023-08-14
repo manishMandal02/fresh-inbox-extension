@@ -1,7 +1,9 @@
 import reloadOnUpdate from 'virtual:reload-on-update-in-background-script';
 import wait from './utils/wait';
-import { IMessageBody, IMessageEvent } from './background.types';
+import { IMessageBody, IMessageEvent, IUserInfo } from './background.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
+import { USER_ACCESS_DENIED, getAuthToken, getUserInfo, launchGoogleAuthFlow } from './auth';
+import { deleteAllMails } from './api/gmailAPI';
 
 reloadOnUpdate('pages/background');
 
@@ -13,38 +15,84 @@ reloadOnUpdate('pages/content/style.scss');
 
 console.log('🔥 background loaded');
 
+// background service global variable
+let userInfo: IUserInfo = null;
+let token = '';
+
 //TODO: Get current user info
 
 // TODO: Check if we have user token
 
-// TODO: if not: then show a modal with a btn to launch auth flow
+// if (res.error === USER_ACCESS_DENIED) {
+//   //TODO: user didn't complete the auth flow or denied access
+// }
 
-// (async () => {
-// getAutToken();
-// })();
+const isAuthTokenValid = async () => {
+  try {
+    userInfo = await getUserInfo();
+    if (userInfo.userId) {
+      const res = await getAuthToken(userInfo.userId);
+
+      console.log('🚀 ~ file: index.ts:35 ~ isAuthTokenValid ~ res:', res);
+
+      if (res.token) {
+        token = res.token;
+        return true;
+      } else {
+        return false;
+      }
+    }
+  } catch (err) {
+    console.log('🚀 ~ file: index.ts:42 ~ failed to auth: err:', err);
+    return false;
+  }
+};
 
 // listen for messages from content script - email action events
 chrome.runtime.onMessage.addListener(
-  asyncMessageHandler<IMessageBody>(async (request, sender) => {
+  asyncMessageHandler<IMessageBody, string | boolean>(async (request, sender) => {
     switch (request.event) {
+      case IMessageEvent.Check_Auth_Token: {
+        return isAuthTokenValid();
+      }
+      case IMessageEvent.Launch_Auth_Flow: {
+        const res = await launchGoogleAuthFlow(userInfo.userId);
+        if (res.token) {
+          token = res.token;
+          // send start app event
+          await chrome.runtime.sendMessage({ event: IMessageEvent.Run_Mail_Magic });
+          return true;
+        } else {
+          return false;
+        }
+      }
       case IMessageEvent.Unsubscribe: {
         console.log('Received unsubscribe request for:', request.email);
         await wait(3000);
-        return 'Unsubscribe Message received';
+        return 'Unsubscribe Message received.';
       }
-      case IMessageEvent.DeleteAllMails: {
+      case IMessageEvent.Delete_All_Mails: {
         console.log('Received deleteAllMails request for:', request.email);
-        //   await wait(1000);
-        return 'DeleteAllMails Message received';
+        await deleteAllMails(request.email, token);
+        return 'DeleteAllMails Message received.';
       }
-      case IMessageEvent.UnsubscribeAndDeleteAllMails: {
+      case IMessageEvent.Unsubscribe_And_Delete_All_Mails: {
         console.log('Received unsubscribeAndDeleteAllMails request for:', request.email);
         //   await wait(1000);
-        return 'UnsubscribeAndDeleteAllMails Message received';
+        return 'UnsubscribeAndDeleteAllMails Message received.';
+      }
+      case IMessageEvent.Disable_MailMagic: {
+        //TODO: disable mail magic
+        try {
+          await chrome.identity.clearAllCachedAuthTokens();
+        } catch (err) {
+          console.log('❌ Failed to disable Mail Magic, err:', err);
+        }
+        return '';
       }
       default: {
         console.log('Received unknown message:', request);
-        return 'Unknown event';
+        return 'Unknown event.';
       }
     }
   })

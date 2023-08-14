@@ -14,7 +14,3 @@ export interface IMessageBody {
   email?: string;
   name?: string;
 }
-export interface IUserInfo {
-  email: string;
-  userId: string;
-}

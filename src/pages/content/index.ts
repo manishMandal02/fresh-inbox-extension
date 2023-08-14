@@ -8,8 +8,11 @@ import {
   hideHoverCard,
   initializeHoverCard,
   showHoverCard,
-} from './utils/unsubscribeHoverCard';
+} from './view/unsubscribeHoverCard';
 import { randomId } from './utils/randomId';
+import { renderAuthModal } from './view/authModal';
+import { IMessageBody, IMessageEvent } from './content.types';
+import { asyncMessageHandler } from './utils/asyncMessageHandler';
 
 // types
 // content script global variables
@@ -56,7 +59,7 @@ const getAllMails = () => {
       const mailMagicBtnContainer = email.closest('div');
 
       const mailMagicBtn = document.createElement('span');
-      mailMagicBtn.classList.add('mail-magic-button');
+      mailMagicBtn.classList.add('mailMagic-main-btn');
 
       // append the button to container
       mailMagicBtnContainer.appendChild(mailMagicBtn);
@@ -97,11 +100,47 @@ const getAllMails = () => {
   }
 };
 
-// check if emails were loaded
+// run app
+
+const startApp = async () => {
+  // check for auth token (user access)
+  const isTokenValid = await chrome.runtime.sendMessage({ event: IMessageEvent.Check_Auth_Token });
+
+  console.log('🚀 ~ file: index.ts:125 ~ setTimeout ~ isTokenValid:', isTokenValid);
+
+  if (!isTokenValid) {
+    // show auth modal to allow users to give access to gmail
+    renderAuthModal();
+  } else {
+    getAllMails();
+    window.mailMagicGlobalVariables.hoverCardElements = initializeHoverCard();
+  }
+};
+
+//TODO: check if emails were loaded
 // if-not: then wait for 500ms then check again (keep repeating)
 // if-yes: then show the unsubscribe button
 
+chrome.runtime.onMessage.addListener(
+  asyncMessageHandler<IMessageBody, string | boolean>(async (request, sender) => {
+    if (request.event === IMessageEvent.Run_Mail_Magic) {
+      console.log(
+        '🚀 ~ file: index.ts:128 ~ asyncMessageHandler<IMessageBody,string|boolean> ~ request.even:',
+        request.event
+      );
+
+      await startApp();
+      return '✅ Started Mail Magic';
+    }
+    return 'Unknown Event';
+  })
+);
+
+// execute this script after 2.5s
 setTimeout(async () => {
-  getAllMails();
-  window.mailMagicGlobalVariables.hoverCardElements = initializeHoverCard();
+  // check if mail magic is enabled or not
+  // const isEnabled = await chrome.storage.sync.get('isMailMagicEnabled');
+
+  // run the app
+  await startApp();
 }, 2500);
