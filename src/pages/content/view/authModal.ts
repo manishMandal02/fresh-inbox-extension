@@ -1,12 +1,19 @@
 import { IMessageEvent } from '../content.types';
 
-const handleAuthBtnClick = async (ev: MouseEvent) => {
+type HandleAuthBntClickParams = {
+  ev: MouseEvent;
+  embedMailMagicBtn: () => void;
+};
+
+const handleAuthBtnClick = async ({ ev, embedMailMagicBtn }: HandleAuthBntClickParams) => {
   ev.stopPropagation();
 
   const res = await chrome.runtime.sendMessage({ event: IMessageEvent.Launch_Auth_Flow });
   if (res) {
     // success: close the modal
     removeAuthModal();
+    // render main mail-magic btn for each mail
+    embedMailMagicBtn();
     // add Mail Magic main buttons
   } else {
     // failed auth: show error message
@@ -27,7 +34,11 @@ const handleDisableBtnClick = async (ev: MouseEvent) => {
   }
 };
 
-const renderAuthModal = () => {
+type RenderAuthModalParams = {
+  embedMailMagicBtn: () => void;
+};
+
+const renderAuthModal = ({ embedMailMagicBtn }: RenderAuthModalParams) => {
   // const create modal
   const modalContainer = document.createElement('div');
   const backdrop = document.createElement('div');
@@ -54,7 +65,7 @@ const renderAuthModal = () => {
 
   // add on click lister
   // auth btn
-  authBtn.addEventListener('click', handleAuthBtnClick);
+  authBtn.addEventListener('click', ev => handleAuthBtnClick({ ev, embedMailMagicBtn }));
   // disable btn
   disableMailMagic.addEventListener('click', handleDisableBtnClick);
 
@@ -72,9 +83,9 @@ const removeAuthModal = () => {
   const authBtn = document.getElementById('authModal-authBtn');
   const disableMailMagic = document.getElementById('authModal-disableBtn');
 
-  // remove lister
-  authBtn.removeEventListener('click', handleAuthBtnClick);
-  disableMailMagic.removeEventListener('click', handleDisableBtnClick);
+  // remove elements
+  if (authBtn) authBtn.remove();
+  if (disableMailMagic) disableMailMagic.remove();
 
   modalCard.remove();
 

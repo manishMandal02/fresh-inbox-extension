@@ -1,3 +1,5 @@
+import { IMessageEvent } from '../background.types';
+
 const API_MAX_RESULT = 500;
 
 type IGmailMessage = {
@@ -8,6 +10,12 @@ type APIResponseSuccess = {
   messages: IGmailMessage[];
   nextPageToken?: string;
   resultSizeEstimate: number;
+};
+
+type APIHandleParams = {
+  email: string;
+  token: string;
+  activeTabId?: number;
 };
 
 const batchDeleteEmails = async (token: string, ids: string[]) => {
@@ -31,7 +39,7 @@ const batchDeleteEmails = async (token: string, ids: string[]) => {
 
 const unsubscribe = async (email: string, token: string) => {};
 
-const deleteAllMails = async (email: string, token: string) => {
+const deleteAllMails = async ({ token, email, activeTabId }: APIHandleParams) => {
   const fetchOptions: Partial<RequestInit> = {
     method: 'GET',
     headers: {
@@ -80,6 +88,9 @@ const deleteAllMails = async (email: string, token: string) => {
     await batchDeleteEmails(token, msgIds);
   } while (nextPageToken !== null);
   //* end of do...while loop
+  // refresh the the table
+
+  await chrome.tabs.sendMessage(activeTabId, { event: IMessageEvent.REFRESH_TABLE });
 };
 
 const unsubscribeAndDeleteAllMails = async (email: string, token: string) => {};

@@ -6,7 +6,8 @@ export enum IMessageEvent {
   Render_Auth_Modal = 'renderAuthModal',
   Launch_Auth_Flow = 'launchAuthFLow',
   Disable_MailMagic = 'disableMailMagic',
-  Run_Mail_Magic = 'runMailMagic',
+  REFRESH_TABLE = 'refreshTable',
+  LOGOUT = 'logout',
 }
 
 export interface IMessageBody {

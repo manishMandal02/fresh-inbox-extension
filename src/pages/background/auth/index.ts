@@ -49,4 +49,20 @@ const getUserInfo = (): Promise<IUserInfo | null> => {
   });
 };
 
-export { launchGoogleAuthFlow, getUserInfo, getAuthToken };
+const clearToken = async (token: string) => {
+  // return new Promise<boolean>((resolve, reject) => {
+  try {
+    var url = 'https://accounts.google.com/o/oauth2/revoke?token=' + token;
+    await fetch(url);
+
+    // chrome.identity.removeCachedAuthToken({ token: token }, function () {
+    // });
+    await chrome.identity.clearAllCachedAuthTokens();
+    console.log('Removed cached auth token');
+  } catch (err) {
+    console.log('🚀 ~ file: index.ts:61 ~ clearToken: Failed to revoke token: ~ err:', err);
+  }
+  // });
+};
+
+export { launchGoogleAuthFlow, getUserInfo, getAuthToken, clearToken };

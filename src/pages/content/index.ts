@@ -13,6 +13,8 @@ import { randomId } from './utils/randomId';
 import { renderAuthModal } from './view/authModal';
 import { IMessageBody, IMessageEvent } from './content.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
+import { refreshEmailsTable } from './utils/refreshEmailsTable';
+import { mailMagicStatusBtn } from './view/mailMagicStatusBtn';
 
 // types
 // content script global variables
@@ -100,20 +102,25 @@ const getAllMails = () => {
   }
 };
 
-// run app
+const embedMailMagicBtn = () => {
+  getAllMails();
+  window.mailMagicGlobalVariables.hoverCardElements = initializeHoverCard();
+};
 
+// run app
 const startApp = async () => {
   // check for auth token (user access)
   const isTokenValid = await chrome.runtime.sendMessage({ event: IMessageEvent.Check_Auth_Token });
 
   console.log('🚀 ~ file: index.ts:125 ~ setTimeout ~ isTokenValid:', isTokenValid);
-
+  // render mail magic status button (top button)
+  mailMagicStatusBtn();
   if (!isTokenValid) {
     // show auth modal to allow users to give access to gmail
-    renderAuthModal();
+
+    renderAuthModal({ embedMailMagicBtn });
   } else {
-    getAllMails();
-    window.mailMagicGlobalVariables.hoverCardElements = initializeHoverCard();
+    embedMailMagicBtn();
   }
 };
 
@@ -123,16 +130,26 @@ const startApp = async () => {
 
 chrome.runtime.onMessage.addListener(
   asyncMessageHandler<IMessageBody, string | boolean>(async (request, sender) => {
-    if (request.event === IMessageEvent.Run_Mail_Magic) {
-      console.log(
-        '🚀 ~ file: index.ts:128 ~ asyncMessageHandler<IMessageBody,string|boolean> ~ request.even:',
-        request.event
-      );
+    console.log(
+      '🚀 ~ file: index.ts:130 ~ asyncMessageHandler<IMessageBody,string|boolean> ~ request:',
+      request
+    );
 
-      await startApp();
-      return '✅ Started Mail Magic';
+    switch (request.event) {
+      case IMessageEvent.REFRESH_TABLE: {
+        const isRefreshed = await refreshEmailsTable();
+
+        console.log(
+          '🚀 ~ file: index.ts:142 ~ asyncMessageHandler<IMessageBody,string|boolean> ~ isRefreshed:',
+          isRefreshed
+        );
+
+        return isRefreshed;
+      }
+      default: {
+        return 'Unknown Event';
+      }
     }
-    return 'Unknown Event';
   })
 );
 

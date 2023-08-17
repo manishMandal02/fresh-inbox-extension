@@ -2,8 +2,8 @@ import reloadOnUpdate from 'virtual:reload-on-update-in-background-script';
 import wait from './utils/wait';
 import { IMessageBody, IMessageEvent, IUserInfo } from './background.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
-import { USER_ACCESS_DENIED, getAuthToken, getUserInfo, launchGoogleAuthFlow } from './auth';
-import { deleteAllMails } from './api/gmailAPI';
+import { USER_ACCESS_DENIED, clearToken, getAuthToken, getUserInfo, launchGoogleAuthFlow } from './auth';
+import { deleteAllMails } from './api/gmail';
 
 reloadOnUpdate('pages/background');
 
@@ -18,6 +18,7 @@ console.log('🔥 background loaded');
 // background service global variable
 let userInfo: IUserInfo = null;
 let token = '';
+let activeTabId = 0;
 
 //TODO: Get current user info
 
@@ -31,6 +32,8 @@ const isAuthTokenValid = async () => {
   try {
     userInfo = await getUserInfo();
     if (userInfo.userId) {
+      console.log('🚀 ~ file: index.ts:35 ~ isAuthTokenValid ~ userInfo:', userInfo);
+
       const res = await getAuthToken(userInfo.userId);
 
       console.log('🚀 ~ file: index.ts:35 ~ isAuthTokenValid ~ res:', res);
@@ -39,6 +42,7 @@ const isAuthTokenValid = async () => {
         token = res.token;
         return true;
       } else {
+        token = '';
         return false;
       }
     }
@@ -47,6 +51,11 @@ const isAuthTokenValid = async () => {
     return false;
   }
 };
+
+(async () => {
+  const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+  activeTabId = tab.id;
+})();
 
 // listen for messages from content script - email action events
 chrome.runtime.onMessage.addListener(
@@ -59,12 +68,15 @@ chrome.runtime.onMessage.addListener(
         const res = await launchGoogleAuthFlow(userInfo.userId);
         if (res.token) {
           token = res.token;
-          // send start app event
-          await chrome.runtime.sendMessage({ event: IMessageEvent.Run_Mail_Magic });
           return true;
         } else {
           return false;
         }
+      }
+      case IMessageEvent.LOGOUT: {
+        await clearToken(token);
+
+        return 'Logged out...';
       }
       case IMessageEvent.Unsubscribe: {
         console.log('Received unsubscribe request for:', request.email);
@@ -73,8 +85,10 @@ chrome.runtime.onMessage.addListener(
       }
       case IMessageEvent.Delete_All_Mails: {
         console.log('Received deleteAllMails request for:', request.email);
-        await deleteAllMails(request.email, token);
-        return 'DeleteAllMails Message received.';
+
+        await deleteAllMails({ email: request.email, token, activeTabId });
+
+        return '✅ DeleteAllMails successful';
       }
       case IMessageEvent.Unsubscribe_And_Delete_All_Mails: {
         console.log('Received unsubscribeAndDeleteAllMails request for:', request.email);

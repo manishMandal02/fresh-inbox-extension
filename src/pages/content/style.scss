@@ -148,3 +148,22 @@
     }
   }
 }
+
+.mailMagicStatusBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 16px;
+  right: 200px;
+  z-index: 1000;
+  font-size: 14px;
+  font-weight: 400;
+  background-color: #efeff0;
+  color: #2180de;
+  border-radius: 6px;
+  outline: none;
+  border: none;
+  padding: 10px 12px;
+  cursor: pointer;
+}
