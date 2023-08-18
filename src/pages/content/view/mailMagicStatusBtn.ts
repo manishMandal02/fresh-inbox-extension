@@ -10,7 +10,7 @@ export const mailMagicStatusBtn = () => {
   btn.innerText = 'Mail Magic';
 
   btn.addEventListener('click', async () => {
-    await chrome.runtime.sendMessage({ event: IMessageEvent.LOGOUT });
+    await chrome.runtime.sendMessage({ event: IMessageEvent.Disable_MailMagic });
     await refreshEmailsTable();
   });
 

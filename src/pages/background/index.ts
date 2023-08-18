@@ -73,11 +73,7 @@ chrome.runtime.onMessage.addListener(
           return false;
         }
       }
-      case IMessageEvent.LOGOUT: {
-        await clearToken(token);
 
-        return 'Logged out...';
-      }
       case IMessageEvent.Unsubscribe: {
         console.log('Received unsubscribe request for:', request.email);
         await wait(3000);
@@ -86,9 +82,26 @@ chrome.runtime.onMessage.addListener(
       case IMessageEvent.Delete_All_Mails: {
         console.log('Received deleteAllMails request for:', request.email);
 
-        await deleteAllMails({ email: request.email, token, activeTabId });
+        console.log(
+          '🚀 ~ file: index.ts:87 ~ asyncMessageHandler<IMessageBody,string|boolean> ~ activeTabId:',
+          activeTabId
+        );
 
-        return '✅ DeleteAllMails successful';
+        try {
+          await deleteAllMails({ email: request.email, token });
+
+          const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+
+          await chrome.tabs.sendMessage(tab.id, { event: IMessageEvent.REFRESH_TABLE });
+
+          return '✅ DeleteAllMails successful';
+        } catch (err) {
+          console.log(
+            '🚀 ~ file: index.ts:100 ~ asyncMessageHandler<IMessageBody,string|boolean> ~ err:',
+            err
+          );
+          return '❌ DeleteAllMails failed';
+        }
       }
       case IMessageEvent.Unsubscribe_And_Delete_All_Mails: {
         console.log('Received unsubscribeAndDeleteAllMails request for:', request.email);
@@ -98,7 +111,9 @@ chrome.runtime.onMessage.addListener(
       case IMessageEvent.Disable_MailMagic: {
         //TODO: disable mail magic
         try {
-          await chrome.identity.clearAllCachedAuthTokens();
+          await clearToken(token);
+
+          return 'Logged out...';
         } catch (err) {
           console.log('❌ Failed to disable Mail Magic, err:', err);
         }

@@ -160,4 +160,5 @@ setTimeout(async () => {
 
   // run the app
   await startApp();
+  //TODO:temp: testing
 }, 2500);
