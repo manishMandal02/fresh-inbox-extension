@@ -1,4 +1,4 @@
-import { MAIL_MAGIC_FILTER_EMAIL } from '@src/constants/app.constants';
+import { MAIL_MAGIC_FILTER_EMAIL, storageKeys } from '@src/constants/app.constants';
 import { getEmailsFromFilterQuery } from '../utils/getEmailsFromFilterQuery';
 
 const API_MAX_RESULT = 500;
@@ -74,12 +74,13 @@ const getMailMagicFilter = async (token: string): Promise<FilterEmails | null> =
 
     for (const filter of parsedRes.filters) {
       if ((filter.action.addLabelIds.length = 1) && filter.action.addLabelIds[0] === TRASH_ACTION) {
+        // get emails from the filter criteria
         const queryEmails = getEmailsFromFilterQuery(filter.criteria.query);
         if (queryEmails.includes(MAIL_MAGIC_FILTER_EMAIL)) {
           filterId = filter.id;
           emails = queryEmails;
-
-          return;
+          // stop the loop
+          break;
         }
       }
     }
@@ -98,7 +99,7 @@ const getMailMagicFilter = async (token: string): Promise<FilterEmails | null> =
 };
 
 //TODO: create filter with mail-magic email get emails array
-const createFilter = async (token: string, emails: string[]) => {
+const createFilter = async (token: string, emails: string[]): Promise<string | null> => {
   // format the emails into a single query string for filter criteria
   const criteriaQuery = `{${emails.map(email => `from:${email} `)}}`;
 
@@ -119,15 +120,19 @@ const createFilter = async (token: string, emails: string[]) => {
   };
 
   try {
-    await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/settings/filters`, fetchOptions);
+    const res = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/settings/filters`, fetchOptions);
     console.log(`✅ Successfully created filter`);
+    const newFilter: GmailFilter = await res.json();
+    return newFilter.id;
   } catch (err) {
     console.log('🚀 ~ file: gmail.ts:126 ~ createFilter ❌ Failed to create filter ~ err:', err);
+    return null;
   }
 };
 
 //TODO: delete previous mail-magic filter with id
 const deleteFilter = async (token: string, id: string) => {
+  //
   const fetchOptions = {
     method: 'DELETE',
     headers: {
@@ -136,7 +141,7 @@ const deleteFilter = async (token: string, id: string) => {
   };
   try {
     await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/settings/filters${id}`, fetchOptions);
-    console.log(`✅ Successfully deleted filter id:${id}`);
+    console.log(`✅ Successfully deleted filter`);
   } catch (err) {
     console.log(`❌ ~ file: gmail.ts:110 ~ deleteFilter:Failed to delete filter id:${id} ~ err:`, err);
   }
@@ -144,15 +149,47 @@ const deleteFilter = async (token: string, id: string) => {
 
 //* unsubscribe/block email
 const unsubscribe = async ({ token, email }: APIHandleParams) => {
-  //TODO: check if mail-magic filter id exists in storage
-  //TODO: if-yes: get filter by id and return emails
-  //TODO: if-no: find mail-magic filter id and return emails
-  //
-  //TODO: create new mail-magic filter with emails from previous filter and add new email
-  //
-  //TODO: save the unsubscribed email to storage
-  //
-  //TODO: delete previous mail-magic filter
+  try {
+    // check if mail-magic filter id exists in storage
+    const storage = await chrome.storage.sync.get(storageKeys.mailMagicFilterId);
+    let filterId = '';
+    let prevFilterEmails = [''];
+    if (storage && storage.mailMagicFilterId) {
+      // mailMagicFilterId found in storage
+      // get filter by id and return emails
+      const filterEmails = await getFilterById(token, storage.mailMagicFilterId);
+      filterId = storage.mailMagicFilterId;
+      prevFilterEmails = filterEmails.emails;
+    } else {
+      // if mailMagicFilterId not found in storage
+      // find mail-magic filter from from users filter (gmail api)
+      const filterEmails = await getMailMagicFilter(token);
+      if (filterEmails) {
+        filterId = filterEmails.filterId;
+        prevFilterEmails = filterEmails.emails;
+        // set mailMagicFilterId to storage
+        await chrome.storage.sync.set({ [storageKeys.mailMagicFilterId]: filterId });
+      } else {
+        // mailMagicFilter not found - create a new mailMagicFilter
+        const newFilterId = await createFilter(token, [MAIL_MAGIC_FILTER_EMAIL]);
+        // set mailMagicFilterId to storage
+        await chrome.storage.sync.set({ [storageKeys.mailMagicFilterId]: filterId });
+      }
+    }
+
+    // add the new email to unsubscribe/block filter
+    prevFilterEmails.push(email);
+
+    // create new mail-magic filter with emails from previous filter and add new email
+    await createFilter(token, prevFilterEmails);
+
+    //TODO: save the unsubscribed email to storage
+
+    //
+    //TODO: delete previous mail-magic filter
+  } catch (err) {
+    console.log('🚀 ~ file: gmail.ts:152 ~ unsubscribe ❌ Failed to unsubscribe ~ err:', err);
+  }
 };
 
 // * delete all mails/messages
