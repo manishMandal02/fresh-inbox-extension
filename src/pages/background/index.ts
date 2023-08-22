@@ -3,7 +3,7 @@ import wait from './utils/wait';
 import { IMessageBody, IMessageEvent, IUserInfo } from './background.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
 import { USER_ACCESS_DENIED, clearToken, getAuthToken, getUserInfo, launchGoogleAuthFlow } from './auth';
-import { deleteAllMails } from './api/gmail';
+import { deleteAllMails, unsubscribe } from './api/gmail';
 
 reloadOnUpdate('pages/background');
 
@@ -52,20 +52,30 @@ const isAuthTokenValid = async () => {
   }
 };
 
-(async () => {
-  const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-  activeTabId = tab.id;
-})();
+// get current tab id
+const setActiveTabId = async () => {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    if (!tab.id) throw new Error('No active tab found');
+
+    activeTabId = tab.id;
+  } catch (err) {
+    console.log('❌ ~ file: index.ts:64 ~ setActiveTabId ~ err:', err);
+  }
+};
 
 // listen for messages from content script - email action events
 chrome.runtime.onMessage.addListener(
   asyncMessageHandler<IMessageBody, string | boolean>(async (request, sender) => {
     switch (request.event) {
       case IMessageEvent.Check_Auth_Token: {
+        await setActiveTabId();
         return isAuthTokenValid();
       }
       case IMessageEvent.Launch_Auth_Flow: {
         const res = await launchGoogleAuthFlow(userInfo.userId);
+        // TODO: create a custom trash filter for mail-magic to add unsubscribed emails
+
         if (res.token) {
           token = res.token;
           return true;
@@ -76,7 +86,7 @@ chrome.runtime.onMessage.addListener(
 
       case IMessageEvent.Unsubscribe: {
         console.log('Received unsubscribe request for:', request.email);
-        await wait(3000);
+        await unsubscribe({ token, email: request.email });
         return 'Unsubscribe Message received.';
       }
       case IMessageEvent.Delete_All_Mails: {
@@ -90,9 +100,8 @@ chrome.runtime.onMessage.addListener(
         try {
           await deleteAllMails({ email: request.email, token });
 
-          const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-
-          await chrome.tabs.sendMessage(tab.id, { event: IMessageEvent.REFRESH_TABLE });
+          // refresh the the table
+          await chrome.tabs.sendMessage(activeTabId, { event: IMessageEvent.REFRESH_TABLE });
 
           return '✅ DeleteAllMails successful';
         } catch (err) {

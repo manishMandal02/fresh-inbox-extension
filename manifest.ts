@@ -37,7 +37,7 @@ const manifest: chrome.runtime.ManifestV3 = {
   ],
   oauth2: {
     client_id: '145716100092-vf7pj3ekpsk3402nf0m3a89k9mv5rmmp.apps.googleusercontent.com',
-    scopes: ['https://mail.google.com/'],
+    scopes: ['https://mail.google.com/', 'https://www.googleapis.com/auth/gmail.settings.basic'],
   },
   key: `MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7+z3sOjS66zHoBbLlR1nFrm0l1sXmedfBZqzGtzqp6OIlJPCF6DB3y+914cf/3TLf3LIf3LpgtSXTsk1E+isXCoIDEx881qtTsbK/uxG39mVDBlBI2rLxNSBqnZCFvaO4X9m2L6gRAZEv6vUnn7rgPLLslXGLvlXh+6l17kS1iSbAuTWZwKVBpTW0Lm26AT1avUzb+a4I7T4JkAt/6dysMk+MsDbMwKwWgw/KERI9j707wyuYUP9lXdN7SWtuooaLn9ZqhD3dSWrMIOqnTvfmq3onRWudThlFnblOFPBvmjnI64NAl9Mo/nKspJJPmY1SxhkobW74g7jlnElse4HGwIDAQAB`,
 };

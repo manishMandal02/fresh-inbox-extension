@@ -51,6 +51,8 @@ const getAllMails = () => {
 
   console.log('🚀 ~ file: index.ts:16 ~ getAllMails ~ allMailNodes:', allMailNodes.length);
 
+  //TODO: get unsubscribed emails from storage don't icon based on that (to show delete icon or unsubscribe icon)
+
   if (allMailNodes.length > 0) {
     for (const email of allMailNodes) {
       const emailAttr = email.getAttribute('email');
@@ -153,6 +155,9 @@ chrome.runtime.onMessage.addListener(
   })
 );
 
+//TODO: start/restart app logic when on inbox url: https://mail.google.com/mail/u/0/#inbox (get id from url, ex:inbox)
+//TODO: and also when they see a email and come back to the email table
+
 // execute this script after 2.5s
 setTimeout(async () => {
   // check if mail magic is enabled or not
@@ -160,5 +165,4 @@ setTimeout(async () => {
 
   // run the app
   await startApp();
-  //TODO:temp: testing
 }, 2500);
