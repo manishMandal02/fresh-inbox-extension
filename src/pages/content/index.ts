@@ -79,8 +79,8 @@ const getAllMails = () => {
         mailMagicBtnContainer.id = mailMagicGlobalVariables.mainBtnContainerId;
         //
         mailMagicGlobalVariables.isMouseOverMailMagicBtn = true;
-        setTimeout(() => {
-          showHoverCard({
+        setTimeout(async () => {
+          await showHoverCard({
             name,
             parentElId: mailMagicGlobalVariables.mainBtnContainerId,
             email: emailAttr,

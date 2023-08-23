@@ -29,7 +29,7 @@ type FilterEmails = {
   emails: string[];
 };
 
-//TODO: get  filter by Id
+// get  filter by Id
 const getFilterById = async (token: string, id: string): Promise<FilterEmails | null> => {
   const fetchOptions = {
     method: 'GET',
@@ -55,7 +55,7 @@ const getFilterById = async (token: string, id: string): Promise<FilterEmails | 
   }
 };
 
-//TODO: get mail-magic filter id also return all emails optionally
+// get mail-magic filter id also return all emails optionally
 const getMailMagicFilter = async (token: string): Promise<FilterEmails | null> => {
   const fetchOptions = {
     method: 'GET',
@@ -98,7 +98,7 @@ const getMailMagicFilter = async (token: string): Promise<FilterEmails | null> =
   }
 };
 
-//TODO: create filter with mail-magic email get emails array
+// create filter with mail-magic email get emails array
 const createFilter = async (token: string, emails: string[]): Promise<string | null> => {
   // format the emails into a single query string for filter criteria
   const criteriaQuery = `{${emails.map(email => `from:${email} `)}}`;
@@ -130,7 +130,7 @@ const createFilter = async (token: string, emails: string[]): Promise<string | n
   }
 };
 
-//TODO: delete previous mail-magic filter with id
+// delete previous mail-magic filter with id
 const deleteFilter = async (token: string, id: string) => {
   //
   const fetchOptions = {
@@ -151,14 +151,14 @@ const deleteFilter = async (token: string, id: string) => {
 const unsubscribe = async ({ token, email }: APIHandleParams) => {
   try {
     // check if mail-magic filter id exists in storage
-    const storage = await chrome.storage.sync.get(storageKeys.mailMagicFilterId);
+    const syncStore = await chrome.storage.sync.get(storageKeys.mailMagicFilterId);
     let filterId = '';
     let prevFilterEmails = [''];
-    if (storage && storage.mailMagicFilterId) {
+    if (syncStore && syncStore.mailMagicFilterId) {
       // mailMagicFilterId found in storage
       // get filter by id and return emails
-      const filterEmails = await getFilterById(token, storage.mailMagicFilterId);
-      filterId = storage.mailMagicFilterId;
+      const filterEmails = await getFilterById(token, syncStore.mailMagicFilterId);
+      filterId = syncStore.mailMagicFilterId;
       prevFilterEmails = filterEmails.emails;
     } else {
       // if mailMagicFilterId not found in storage
@@ -170,10 +170,11 @@ const unsubscribe = async ({ token, email }: APIHandleParams) => {
         // set mailMagicFilterId to storage
         await chrome.storage.sync.set({ [storageKeys.mailMagicFilterId]: filterId });
       } else {
-        // mailMagicFilter not found - create a new mailMagicFilter
-        const newFilterId = await createFilter(token, [MAIL_MAGIC_FILTER_EMAIL]);
+        // mailMagicFilter not found - create a new mailMagicFilter with the email to unsubscribe/block
+        const newFilterId = await createFilter(token, [MAIL_MAGIC_FILTER_EMAIL, email]);
         // set mailMagicFilterId to storage
-        await chrome.storage.sync.set({ [storageKeys.mailMagicFilterId]: filterId });
+        await chrome.storage.sync.set({ [storageKeys.mailMagicFilterId]: newFilterId });
+        return;
       }
     }
 
@@ -183,17 +184,21 @@ const unsubscribe = async ({ token, email }: APIHandleParams) => {
     // create new mail-magic filter with emails from previous filter and add new email
     await createFilter(token, prevFilterEmails);
 
-    //TODO: save the unsubscribed email to storage
+    //* save the unsubscribed email to storage
+    // get all unsubscribed emails from storage
+    const syncStore2 = await chrome.storage.sync.get(storageKeys.unsubscribedEmails);
+    // save the new list of unsubscribed emails
+    const updatedUnsubscribedEmails = [...(syncStore2[storageKeys.unsubscribedEmails] || []), email];
+    await chrome.storage.sync.set({ [storageKeys.unsubscribedEmails]: updatedUnsubscribedEmails });
 
-    //
-    //TODO: delete previous mail-magic filter
+    //* delete previous mail-magic filter
+    await deleteFilter(token, filterId);
   } catch (err) {
     console.log('🚀 ~ file: gmail.ts:152 ~ unsubscribe ❌ Failed to unsubscribe ~ err:', err);
   }
 };
 
-// * delete all mails/messages
-
+// delete all mails/messages
 const batchDeleteEmails = async (token: string, ids: string[]) => {
   const fetchOptions = {
     method: 'POST',
@@ -274,6 +279,12 @@ const deleteAllMails = async ({ token, email }: APIHandleParams) => {
   //* end of do...while loop
 };
 
-const unsubscribeAndDeleteAllMails = async (email: string, token: string) => {};
+const unsubscribeAndDeleteAllMails = async (email: string, token: string) => {
+  // unsubscribe
+  await unsubscribe({ token, email });
 
-export { unsubscribe, deleteAllMails };
+  //delete all mails
+  await deleteAllMails({ token, email });
+};
+
+export { unsubscribe, deleteAllMails, unsubscribeAndDeleteAllMails };
