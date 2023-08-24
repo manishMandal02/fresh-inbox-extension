@@ -11,18 +11,26 @@ const handleCancelActionBtnClick = (ev: MouseEvent) => {
   hideConfirmModal();
 };
 
-const showConfirmModal = (title: string, onConfirmClick: () => Promise<void>) => {
+type ShowConfirmModalParams = {
+  msg: string;
+  email: string;
+  onConfirmClick: () => Promise<void>;
+};
+
+const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams) => {
   // modal elements
   const modalContainer = document.createElement('div');
   const backdrop = document.createElement('div');
   const modalCard = document.createElement('div');
   const modalTitle = document.createElement('p');
+  const modalMessage = document.createElement('p');
   const buttonContainer = document.createElement('div');
   const confirmAction = document.createElement('button');
   const cancelAction = document.createElement('button');
 
   // add content to the elements
-  modalTitle.innerText = title;
+  modalTitle.innerText = 'Confirm Action';
+  modalMessage.innerHTML = `${msg} <br /> <strong>${email}</strong>`;
   confirmAction.innerText = 'Delete';
   cancelAction.innerText = 'Cancel';
 
@@ -31,6 +39,7 @@ const showConfirmModal = (title: string, onConfirmClick: () => Promise<void>) =>
   backdrop.id = 'confirmModal-backdrop';
   modalCard.id = 'confirmModal-card';
   modalTitle.id = 'confirmModal-modalTitle';
+  modalMessage.id = 'confirmModal-modalMessage';
   buttonContainer.id = 'confirmModal-btnContainer';
   confirmAction.id = 'confirmModal-confirmActionBtn';
   cancelAction.id = 'confirmModal-cancelActionBtn';
@@ -38,6 +47,8 @@ const showConfirmModal = (title: string, onConfirmClick: () => Promise<void>) =>
   // add on click lister
   // backdrop click listener
   backdrop.addEventListener('click', handleCancelActionBtnClick);
+  //
+  // modalCard.addEventListener('click', handleCancelActionBtnClick);
   // auth btn
   confirmAction.addEventListener('click', async ev => {
     await handleConfirmActionBtnClick(ev, onConfirmClick);
@@ -45,9 +56,9 @@ const showConfirmModal = (title: string, onConfirmClick: () => Promise<void>) =>
   // disable btn
   cancelAction.addEventListener('click', handleCancelActionBtnClick);
 
-  buttonContainer.append(confirmAction, cancelAction);
+  buttonContainer.append(cancelAction, confirmAction);
 
-  modalCard.append(modalTitle, buttonContainer);
+  modalCard.append(modalTitle, modalMessage, buttonContainer);
 
   modalContainer.append(backdrop, modalCard);
 

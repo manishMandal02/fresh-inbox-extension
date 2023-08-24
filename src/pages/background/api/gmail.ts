@@ -1,4 +1,4 @@
-import { MAIL_MAGIC_FILTER_EMAIL, storageKeys } from '@src/constants/app.constants';
+import { MAIL_MAGIC_FILTER_EMAIL, storageKeys } from '@src/pages/background/constants/app.constants';
 import { getEmailsFromFilterQuery } from '../utils/getEmailsFromFilterQuery';
 
 const API_MAX_RESULT = 500;

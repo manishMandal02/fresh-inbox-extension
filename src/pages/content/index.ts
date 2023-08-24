@@ -14,7 +14,9 @@ import { renderAuthModal } from './view/authModal';
 import { IMessageBody, IMessageEvent } from './content.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
 import { refreshEmailsTable } from './utils/refreshEmailsTable';
-import { mailMagicStatusBtn } from './view/mailMagicStatusBtn';
+import { mailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
+import { showLoadingSnackbar } from './view/loadingSnackbar';
+import { showConfirmModal } from './view/confirmModal';
 
 // types
 // content script global variables
@@ -116,7 +118,7 @@ const startApp = async () => {
 
   console.log('🚀 ~ file: index.ts:125 ~ setTimeout ~ isTokenValid:', isTokenValid);
   // render mail magic status button (top button)
-  mailMagicStatusBtn();
+  mailMagicSettingsBtn();
   if (!isTokenValid) {
     // show auth modal to allow users to give access to gmail
 
@@ -165,4 +167,5 @@ setTimeout(async () => {
 
   // run the app
   await startApp();
+  //TODO: testing- delete this later
 }, 2500);

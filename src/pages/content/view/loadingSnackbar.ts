@@ -1,11 +1,16 @@
-const showLoadingSnackbar = (title: string) => {
+type ShowLoadingSnackbarParams = {
+  title: string;
+  email: string;
+};
+
+const showLoadingSnackbar = ({ title, email }: ShowLoadingSnackbarParams) => {
   // container
   const container = document.createElement('div');
   const label = document.createElement('p');
   const loader = document.createElement('div');
 
   // add label text
-  label.innerHTML = title;
+  label.innerHTML = `${title} <br/> <strong>${email}</strong>`;
 
   // add classes
   container.id = 'mailMagic-loadingSnackbar';

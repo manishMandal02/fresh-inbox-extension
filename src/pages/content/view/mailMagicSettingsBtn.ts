@@ -1,11 +1,11 @@
 import { IMessageEvent } from '../content.types';
 import { refreshEmailsTable } from '../utils/refreshEmailsTable';
 
-export const mailMagicStatusBtn = () => {
+export const mailMagicSettingsBtn = () => {
   //main button
   const btn = document.createElement('button');
 
-  btn.classList.add('mailMagicStatusBtn');
+  btn.classList.add('mailMagicSettingsBtn');
 
   btn.innerText = 'Mail Magic';
 
