@@ -1,5 +1,5 @@
-
 export const storageKeys = {
-  unsubscribedEmails: 'unsubscribedEmails',
-  isAppEnabled: 'isAppEnabled',
+  UNSUBSCRIBED_EMAILS: 'UNSUBSCRIBED_EMAILS',
+  WHITELISTED_EMAILS: 'WHITELISTED_EMAILS',
+  IS_APP_ENABLED: 'IS_APP_ENABLED',
 };

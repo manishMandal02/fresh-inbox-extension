@@ -151,14 +151,14 @@ const deleteFilter = async (token: string, id: string) => {
 const unsubscribe = async ({ token, email }: APIHandleParams) => {
   try {
     // check if mail-magic filter id exists in storage
-    const syncStore = await chrome.storage.sync.get(storageKeys.mailMagicFilterId);
+    const syncStore = await chrome.storage.sync.get(storageKeys.MAIL_MAGIC_FILTER_ID);
     let filterId = '';
     let prevFilterEmails = [''];
-    if (syncStore && syncStore.mailMagicFilterId) {
+    if (syncStore && syncStore.MAIL_MAGIC_FILTER_ID) {
       // mailMagicFilterId found in storage
       // get filter by id and return emails
-      const filterEmails = await getFilterById(token, syncStore.mailMagicFilterId);
-      filterId = syncStore.mailMagicFilterId;
+      const filterEmails = await getFilterById(token, syncStore.MAIL_MAGIC_FILTER_ID);
+      filterId = syncStore.MAIL_MAGIC_FILTER_ID;
       prevFilterEmails = filterEmails.emails;
     } else {
       // if mailMagicFilterId not found in storage
@@ -168,12 +168,12 @@ const unsubscribe = async ({ token, email }: APIHandleParams) => {
         filterId = filterEmails.filterId;
         prevFilterEmails = filterEmails.emails;
         // set mailMagicFilterId to storage
-        await chrome.storage.sync.set({ [storageKeys.mailMagicFilterId]: filterId });
+        await chrome.storage.sync.set({ [storageKeys.MAIL_MAGIC_FILTER_ID]: filterId });
       } else {
         // mailMagicFilter not found - create a new mailMagicFilter with the email to unsubscribe/block
         const newFilterId = await createFilter(token, [MAIL_MAGIC_FILTER_EMAIL, email]);
         // set mailMagicFilterId to storage
-        await chrome.storage.sync.set({ [storageKeys.mailMagicFilterId]: newFilterId });
+        await chrome.storage.sync.set({ [storageKeys.MAIL_MAGIC_FILTER_ID]: newFilterId });
         return;
       }
     }
@@ -186,10 +186,10 @@ const unsubscribe = async ({ token, email }: APIHandleParams) => {
 
     //* save the unsubscribed email to storage
     // get all unsubscribed emails from storage
-    const syncStore2 = await chrome.storage.sync.get(storageKeys.unsubscribedEmails);
+    const syncStore2 = await chrome.storage.sync.get(storageKeys.UNSUBSCRIBED_EMAILS);
     // save the new list of unsubscribed emails
-    const updatedUnsubscribedEmails = [...(syncStore2[storageKeys.unsubscribedEmails] || []), email];
-    await chrome.storage.sync.set({ [storageKeys.unsubscribedEmails]: updatedUnsubscribedEmails });
+    const updatedUnsubscribedEmails = [...(syncStore2[storageKeys.UNSUBSCRIBED_EMAILS] || []), email];
+    await chrome.storage.sync.set({ [storageKeys.UNSUBSCRIBED_EMAILS]: updatedUnsubscribedEmails });
 
     //* delete previous mail-magic filter
     await deleteFilter(token, filterId);

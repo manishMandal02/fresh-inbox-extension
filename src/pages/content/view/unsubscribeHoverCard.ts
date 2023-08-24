@@ -5,10 +5,37 @@ import { storageKeys } from '../constants/app.constants';
 
 export interface IHoverCardElements {
   hoverCard: HTMLDivElement;
+  label: HTMLParagraphElement;
+  whiteListEmailBtn: HTMLButtonElement;
   unsubscribeBtn: HTMLButtonElement;
   deleteAllMailsBtn: HTMLButtonElement;
   unsubscribeAndDeleteAllMailsBtn: HTMLButtonElement;
 }
+
+//* handle white list email
+const handleWhiteListEmail = async (ev: MouseEvent) => {
+  ev.stopPropagation();
+
+  // get email and name from global variables
+  const { email } = mailMagicGlobalVariables;
+
+  try {
+    // get all white listed emails from extension storage
+    const syncStorageData = await chrome.storage.sync.get(storageKeys.WHITELISTED_EMAILS);
+    // add email to while list
+    const updatedWhileListedEmails = [...syncStorageData[storageKeys.WHITELISTED_EMAILS], email];
+
+    // save the updated list to extension storage
+    await chrome.storage.sync.set({ [storageKeys.WHITELISTED_EMAILS]: updatedWhileListedEmails });
+
+    // remove mail magic assistant button
+  } catch (err) {
+    console.log(
+      `🚀 ~ file: unsubscribeHoverCard.ts:24 ~ handleWhiteListEmail ❌ Failed to add email to white list email: ${email} ~ err:`,
+      err
+    );
+  }
+};
 
 //* handle unsubscribe
 const handleUnsubscribe = async (ev: MouseEvent) => {
@@ -101,6 +128,7 @@ const initializeHoverCard = (): IHoverCardElements => {
   const hoverCard = document.createElement('div');
   const label = document.createElement('p');
   const btnContainer = document.createElement('div');
+  const whiteListEmailBtn = document.createElement('button'); // white list email button
   const unsubscribeBtn = document.createElement('button');
   const deleteAllMailsBtn = document.createElement('button');
   const unsubscribeAndDeleteAllMailsBtn = document.createElement('button');
@@ -109,25 +137,31 @@ const initializeHoverCard = (): IHoverCardElements => {
   hoverCard.classList.add('mailMagic-hoverCard');
   label.classList.add('hoverCard-label');
   btnContainer.classList.add('hoverCard-btnContainer');
+  whiteListEmailBtn.classList.add('hoverCard-whiteListBtn');
   unsubscribeBtn.classList.add('hoverCard-unsubscribeBtn');
   deleteAllMailsBtn.classList.add('hoverCard-deleteAllMailsBtn');
   unsubscribeAndDeleteAllMailsBtn.classList.add('hoverCard-unsubscribeAndDeleteAllMailsBtn');
 
   // add text to buttons
+  whiteListEmailBtn.innerHTML = 'Keep';
   unsubscribeBtn.innerHTML = 'Unsubscribe';
   deleteAllMailsBtn.innerHTML = 'Delete All Mails';
   unsubscribeAndDeleteAllMailsBtn.innerHTML = 'Unsubscribe + Delete All Mails';
 
-  // add text to label
-  label.innerText = 'MailMagic: Email Actions for {name} & {email}';
-
   // append buttons to the btnContainer
-  btnContainer.append(unsubscribeBtn, deleteAllMailsBtn, unsubscribeAndDeleteAllMailsBtn);
+  btnContainer.append(whiteListEmailBtn, unsubscribeBtn, deleteAllMailsBtn, unsubscribeAndDeleteAllMailsBtn);
 
   // append  elements to parent el (Card)
   hoverCard.append(label, btnContainer);
 
-  return { hoverCard, unsubscribeBtn, deleteAllMailsBtn, unsubscribeAndDeleteAllMailsBtn };
+  return {
+    hoverCard,
+    label,
+    whiteListEmailBtn,
+    unsubscribeBtn,
+    deleteAllMailsBtn,
+    unsubscribeAndDeleteAllMailsBtn,
+  };
 };
 
 // hide hoverCard
@@ -140,7 +174,14 @@ type ShowHoverCardParams = {
 
 //* show hover-card
 const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: ShowHoverCardParams) => {
-  const { hoverCard, unsubscribeBtn, deleteAllMailsBtn, unsubscribeAndDeleteAllMailsBtn } = hoverCardElements;
+  const {
+    hoverCard,
+    label,
+    whiteListEmailBtn,
+    unsubscribeBtn,
+    deleteAllMailsBtn,
+    unsubscribeAndDeleteAllMailsBtn,
+  } = hoverCardElements;
 
   // get parent el from id
   const parentEl = document.getElementById(parentElId);
@@ -149,6 +190,9 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
 
   mailMagicGlobalVariables.email = email;
   mailMagicGlobalVariables.name = name;
+
+  // add text to label
+  label.innerText = `MailMagic: Email Actions for ${name}  (${email})`;
 
   // stop event propagation for card container
   hoverCard.addEventListener('click', ev => {
@@ -160,15 +204,18 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
   // add mouseout (on hover) event to card container
   hoverCard.addEventListener('mouseout', handleMouseOutHoverCard);
 
-  // check id the email (currently hovered over) is already unsubscribed or not
-  const syncStorageData = await chrome.storage.sync.get(storageKeys.unsubscribedEmails);
-  if (syncStorageData[storageKeys.unsubscribedEmails]?.includes(email)) {
+  // check if the email (currently hovered over) is already unsubscribed or not
+  const syncStorageData = await chrome.storage.sync.get(storageKeys.UNSUBSCRIBED_EMAILS);
+  if (syncStorageData[storageKeys.UNSUBSCRIBED_EMAILS]?.includes(email)) {
     // if already unsubscribed, show only deleteAllMails button
     unsubscribeBtn.remove();
     unsubscribeAndDeleteAllMailsBtn.remove();
   } else {
     // if not, show all three buttons
+    // add onClick listener to unsubscribe button
     unsubscribeBtn.addEventListener('click', handleUnsubscribe);
+
+    // add onClick listener to unsubscribe and delete all mails button
     unsubscribeAndDeleteAllMailsBtn.addEventListener('click', ev => {
       ev.stopPropagation();
       showConfirmModal({
@@ -179,7 +226,10 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
     });
   }
 
-  // add onClick listener to buttons
+  // add onClick listener to white list email button
+  whiteListEmailBtn.addEventListener('click', handleWhiteListEmail);
+
+  // add onClick listener to delete all mails button
   deleteAllMailsBtn.addEventListener('click', ev => {
     ev.stopPropagation();
     showConfirmModal({
@@ -202,7 +252,10 @@ type HideHoverCardParams = {
 const hideHoverCard = ({ parentElId, hoverCardElements }: HideHoverCardParams) => {
   const { hoverCard, unsubscribeBtn, deleteAllMailsBtn, unsubscribeAndDeleteAllMailsBtn } = hoverCardElements;
 
-  if (mailMagicGlobalVariables.isMouseOverHoverCard || mailMagicGlobalVariables.isMouseOverMailMagicBtn)
+  if (
+    mailMagicGlobalVariables.isMouseOverHoverCard ||
+    mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn
+  )
     return;
   const parentEl = document.getElementById(parentElId);
 

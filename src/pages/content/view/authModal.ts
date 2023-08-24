@@ -2,7 +2,7 @@ import { IMessageEvent } from '../content.types';
 
 type HandleAuthBntClickParams = {
   ev: MouseEvent;
-  embedMailMagicBtn: () => void;
+  embedMailMagicBtn: () => Promise<void>;
 };
 
 const handleAuthBtnClick = async ({ ev, embedMailMagicBtn }: HandleAuthBntClickParams) => {
@@ -13,7 +13,7 @@ const handleAuthBtnClick = async ({ ev, embedMailMagicBtn }: HandleAuthBntClickP
     // success: close the modal
     removeAuthModal();
     // render main mail-magic btn for each mail
-    embedMailMagicBtn();
+    await embedMailMagicBtn();
     // add Mail Magic main buttons
   } else {
     // failed auth: show error message
@@ -35,7 +35,7 @@ const handleDisableBtnClick = async (ev: MouseEvent) => {
 };
 
 type RenderAuthModalParams = {
-  embedMailMagicBtn: () => void;
+  embedMailMagicBtn: () => Promise<void>;
 };
 
 const renderAuthModal = ({ embedMailMagicBtn }: RenderAuthModalParams) => {
