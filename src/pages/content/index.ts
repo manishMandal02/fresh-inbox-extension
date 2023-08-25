@@ -16,6 +16,7 @@ import { asyncMessageHandler } from './utils/asyncMessageHandler';
 import { refreshEmailsTable } from './utils/refreshEmailsTable';
 import { mailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
 import { storageKeys } from './constants/app.constants';
+import { showSettingsModal } from './view/settingsModal';
 
 // types
 // content script global variables
@@ -171,6 +172,7 @@ setTimeout(async () => {
   // const isEnabled = await chrome.storage.sync.get('isMailMagicEnabled');
 
   // run the app
-  await startApp();
+  // await startApp();
   //TODO: testing- delete this later
-}, 2500);
+  showSettingsModal();
+}, 1000);

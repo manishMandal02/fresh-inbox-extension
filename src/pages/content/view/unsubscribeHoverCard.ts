@@ -113,10 +113,10 @@ const handleMouseOverHoverCard = (ev: MouseEvent) => {
 };
 // handle mouseout on hoverCard
 const handleMouseOutHoverCard = () => {
-  const { hoverCardElements, mainBtnContainerId } = mailMagicGlobalVariables;
+  const { hoverCardElements, assistantBtnContainerId } = mailMagicGlobalVariables;
 
   setTimeout(() => {
-    hideHoverCard({ parentElId: mainBtnContainerId, hoverCardElements });
+    hideHoverCard({ parentElId: assistantBtnContainerId, hoverCardElements });
   }, 500);
 
   mailMagicGlobalVariables.isMouseOverHoverCard = false;

@@ -210,6 +210,15 @@
     left: 8px;
     bottom: auto;
   }
+  // loader spin animation
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 }
 
 //* confirm modal
@@ -298,12 +307,109 @@
   }
 }
 
-// loader spin animation
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
+//* settings modal
+#mailMagic-settingsModal {
+  // children
+
+  #settingsModal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9000;
+    width: 100vw;
+    height: 100vw;
+    background-color: #242222;
+    opacity: 0.45;
   }
-  100% {
-    transform: rotate(360deg);
+  #settingsModal-card {
+    display: flex;
+    flex-direction: column;
+
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: #64646f33 0px 7px 29px 0px;
+    background-color: #f3f1f1;
+    width: 50vw;
+    height: 45vh;
+    position: fixed;
+    top: 25%;
+    left: 25%;
+    z-index: 10000;
+    // children
+    #settingsModal-topContainer {
+      display: flex;
+      flex-direction: column;
+      > div:first-child {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.35rem 0;
+        > p {
+          margin: 0;
+          margin-left: 1.2rem;
+          font-size: 1.5rem;
+          color: #333434;
+          font-weight: 400;
+        }
+        > button {
+          margin-right: 1rem;
+          cursor: pointer;
+          outline: none;
+          border: none;
+          transform: scale(1.6);
+          font-weight: 500;
+        }
+      }
+      .tabs {
+        display: flex;
+        width: 100%;
+        justify-content: space-evenly;
+        margin-top: 0.5rem;
+        padding: 0 0.5rem;
+        margin-left: -8px;
+        > li {
+          list-style-type: none;
+          border: 1.25px solid #3e3e3e;
+          border-collapse: collapse;
+          width: 33.3%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 16px;
+          padding: 4px 0;
+          cursor: pointer;
+          // single child selector
+          &:nth-child(1) {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+          }
+          &:nth-child(2) {
+            border-right: none;
+            border-left: none;
+          }
+          &:nth-child(3) {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+          }
+        }
+        // active tab style
+        .settingsModal-activeTab {
+          background-color: #1c96e2;
+          color: #edeeef;
+        }
+      }
+    }
+    #settingsModal-tabBodyContainer {
+      width: 100%;
+    }
+
+    // tabs
+    #settingsModal-tabs {
+      display: flex;
+      // children
+      #settingsModal-authTab {
+      }
+    }
   }
 }
