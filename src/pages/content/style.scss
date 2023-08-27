@@ -334,6 +334,7 @@
     position: fixed;
     top: 22%;
     left: 25%;
+    overflow: hidden;
     z-index: 10000;
     // children
     #settingsModal-topContainer {
@@ -400,15 +401,18 @@
     #settingsModal-tabBodyContainer {
       display: flex;
       width: 96%;
-      margin-top: 0;
+      max-height: calc(100% - 20%);
+      margin-top: 4px;
       margin-left: 16px;
       border-radius: 4px;
       padding: 3px 3px;
+      background-color: #dde3ea95;
+      overflow: hidden;
+
       // children (tabs)
       #settingsModal-authTab {
       }
       #settingsModal-aboutTab {
-        background-color: #dde3ea95;
         padding: 10px;
         display: flex;
         flex-direction: column;
@@ -452,6 +456,66 @@
           color: #404040;
           align-self: center;
           cursor: pointer;
+        }
+      }
+      #settingsModal-newsletterTab {
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        max-height: 100%;
+        > p {
+          font-size: 14px;
+          color: #181717;
+          opacity: 0.9;
+          text-align: center;
+          margin: 6px auto 0 auto;
+          > u {
+            font-size: 14px;
+            font-weight: 500;
+          }
+        }
+        > hr {
+          width: calc(100% + 3px);
+          height: 0.6px;
+          margin: 6px 0 0px -3px;
+          background-color: #000000;
+          opacity: 0.1;
+        }
+        > div {
+          width: calc(100% + 6px);
+          margin-left: -3px;
+          height: 35vh;
+          overflow-y: auto;
+          > table {
+            width: 100%;
+            > tbody {
+              > tr {
+                padding: 3px 12px;
+                > td {
+                  padding: 10px 32px;
+                  font-size: 15px;
+                  color: #2c2c2c;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  > p {
+                    margin: 0;
+                  }
+                  > div {
+                    > button {
+                      margin-right: 5px;
+                      cursor: pointer;
+                      opacity: 0.8;
+                    }
+                  }
+                }
+              }
+              > tr:nth-child(even) {
+                background-color: #0959d00a;
+              }
+            }
+          }
         }
       }
     }

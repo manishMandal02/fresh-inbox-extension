@@ -1,4 +1,5 @@
-import { removeAboutTab, renderAboutTab } from './tabs/aboutTab';
+import { removeAboutTab, renderAboutTab } from './tabs/about';
+import { removeNewsletterTab, renderNewsletterTab } from './tabs/newsletter';
 
 const handleCloseSettingsModal = (ev: MouseEvent) => {
   ev.stopPropagation();
@@ -78,7 +79,8 @@ const showSettingsModal = () => {
     unsubscribedList.classList.remove('settingsModal-activeTab');
 
     // remove tab body of other tabs
-    //TODO: remove newsletter tab
+    //remove newsletter tab
+    removeNewsletterTab();
     //TODO: remove unsubscribedList tab
 
     // add active class name
@@ -88,7 +90,7 @@ const showSettingsModal = () => {
   });
 
   //* newsletter tab event listener
-  newsletterTab.addEventListener('click', ev => {
+  newsletterTab.addEventListener('click', async ev => {
     ev.stopPropagation();
 
     // if this is active tab already, do nothing
@@ -102,10 +104,12 @@ const showSettingsModal = () => {
 
     // remove tab body of other tabs
     removeAboutTab();
-    //TODO: remove unsubscribedList tab
+    // remove unsubscribedList tab
+    removeNewsletterTab();
 
     newsletterTab.classList.add('settingsModal-activeTab');
-    //TODO: render newsletter
+    //render newsletter
+    await renderNewsletterTab(tabBodyContainer);
   });
 
   //* unsubscribedList tab event listener
