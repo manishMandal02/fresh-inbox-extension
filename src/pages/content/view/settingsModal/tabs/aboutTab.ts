@@ -6,25 +6,24 @@ const renderAboutTab = (parentContainer: HTMLElement) => {
 
   // html structure
   aboutTabContainer.innerHTML = `
-    <h4>Mail Magic's app status is <strong>active</strong></h4>
+    <h4>Mail Magic is <strong>active</strong></h4>
 
     <p>
-        Mail Magic helps you keep your inbox clean, <br />
-        it can unsubscribe to unwanted emails like newsletter and <br />
-        bulk delete 🧹 100s of emails in a single click.
+        Mail Magic helps you keep your inbox clean, it can <u> unsubscribe to unwanted emails </u> like newsletter and 
+        bulk <u> delete 🧹 100s of emails in a single click</u>.
     </p>
 
     <p>
-        The best part is that no data ever leaves your browser, <br /> 
+        <u>The best part is that no data ever leaves your browser</u>, 
         all the actions are executed on your system.
 
-        We've open-sourced our code on <a href="https://www.youtube.com/watch?v=testvideo" target='_blank' rel='noreferrer'>Github</a>
-        for anyone to see how Mail Magic works.
+        We've open-sourced our code on 🔗 <a href="https://github.com/manishMandal02/mail-magic" target='_blank' rel='noreferrer'>Github</a>
+        for you to see how Mail Magic works.
     </p>
 
     <p>
-        A quick walkthrough of Mail Magic can help you get started <br />
-        if you're having trouble understanding it's features <a href="https://www.youtube.com/watch?v=testvideo" target='_blank' rel='noreferrer'>Walkthrough</a>
+        A quick walkthrough of Mail Magic can help you get started,
+        if you're having trouble understanding it's features 🔗 <a href="https://www.youtube.com/watch?v=testvideo" target='_blank' rel='noreferrer'>Walkthrough</a>
     </p>
 
     <button id='aboutTab-disableBtn'>Disable Mail Magic</button>

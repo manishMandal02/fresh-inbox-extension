@@ -57,13 +57,20 @@ const showSettingsModal = () => {
   // tab body container
   const tabBodyContainer = document.getElementById('settingsModal-tabBodyContainer');
 
+  // render about tab by default
+  renderAboutTab(tabBodyContainer);
+
   // tab menu on click listener
   const aboutTab = document.getElementById('settingsTabs-about');
   const newsletterTab = document.getElementById('settingsTabs-newsletter');
   const unsubscribedList = document.getElementById('settingsTabs-unsubscribed');
 
+  //* about tab event listener
   aboutTab.addEventListener('click', ev => {
     ev.stopPropagation();
+    // if this is active tab already, do nothing
+    if (activeTab === 'about') return;
+
     activeTab = 'about';
 
     // remove active class from other tabs
@@ -79,8 +86,14 @@ const showSettingsModal = () => {
     // render about tab container
     renderAboutTab(tabBodyContainer);
   });
+
+  //* newsletter tab event listener
   newsletterTab.addEventListener('click', ev => {
     ev.stopPropagation();
+
+    // if this is active tab already, do nothing
+    if (activeTab === 'newsletter') return;
+
     activeTab = 'newsletter';
 
     // remove active class from other tabs
@@ -94,9 +107,16 @@ const showSettingsModal = () => {
     newsletterTab.classList.add('settingsModal-activeTab');
     //TODO: render newsletter
   });
+
+  //* unsubscribedList tab event listener
   unsubscribedList.addEventListener('click', ev => {
     ev.stopPropagation();
+
+    // if this is active tab already, do nothing
+    if (activeTab === 'unsubscribedList') return;
+
     activeTab = 'unsubscribedList';
+
     // remove active class from other tabs
     aboutTab.classList.remove('settingsModal-activeTab');
     newsletterTab.classList.remove('settingsModal-activeTab');
