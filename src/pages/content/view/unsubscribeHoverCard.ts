@@ -2,6 +2,11 @@ import { IMessageBody, IMessageEvent } from '../content.types';
 import { hideLoadingSnackbar, showLoadingSnackbar } from './loadingSnackbar';
 import { showConfirmModal } from './confirmModal';
 import { storageKeys } from '../constants/app.constants';
+import {
+  handleDeleteAllMails,
+  handleUnsubscribe,
+  handleUnsubscribeAndDeleteAllMails,
+} from '../utils/emailActions';
 
 export interface IHoverCardElements {
   hoverCard: HTMLDivElement;
@@ -34,75 +39,6 @@ const handleWhiteListEmail = async (ev: MouseEvent) => {
       `🚀 ~ file: unsubscribeHoverCard.ts:24 ~ handleWhiteListEmail ❌ Failed to add email to white list email: ${email} ~ err:`,
       err
     );
-  }
-};
-
-//* handle unsubscribe
-const handleUnsubscribe = async (ev: MouseEvent) => {
-  ev.stopPropagation();
-  try {
-    // get email and name from global variables
-    const { email, name } = mailMagicGlobalVariables;
-    // show loading snackbar
-    showLoadingSnackbar({
-      title: `Unsubscribing from`,
-      email,
-    });
-    // send message/event to background script
-    await chrome.runtime.sendMessage<IMessageBody>({
-      event: IMessageEvent.Unsubscribe,
-      email,
-      name,
-    });
-    // hide snackbar
-    hideLoadingSnackbar();
-  } catch (err) {
-    hideLoadingSnackbar();
-    console.log('🚀 ~ file: unsubscribeHoverCard.ts:16 ~ handleUnsubscribe ~ err:', err);
-  }
-};
-
-//* handle delete all mails
-const handleDeleteAllMails = async () => {
-  try {
-    // get email and name from global variables
-    const { email, name } = mailMagicGlobalVariables;
-    // show loading snackbar
-
-    showLoadingSnackbar({
-      title: `Deleting all mails from`,
-      email,
-    });
-    // send message/event to background script
-    await chrome.runtime.sendMessage({ event: IMessageEvent.Delete_All_Mails, email, name });
-    // hide snackbar
-    hideLoadingSnackbar();
-  } catch (err) {
-    hideLoadingSnackbar();
-    console.log('🚀 ~ file: unsubscribeHoverCard.ts:29 ~ handleDeleteAllMails ~ err:', err);
-  }
-};
-
-//* handle unsubscribe and delete all mails
-const handleUnsubscribeAndDeleteAllMails = async () => {
-  try {
-    // get email and name from global variables
-    const { email, name } = mailMagicGlobalVariables;
-
-    // show loading snackbar
-    showLoadingSnackbar({
-      title: `Unsubscribing and deleting all mails from`,
-      email,
-    });
-
-    // send message/event to background script
-    await chrome.runtime.sendMessage({ event: IMessageEvent.Unsubscribe_And_Delete_All_Mails, email, name });
-
-    // hide snackbar
-    hideLoadingSnackbar();
-  } catch (err) {
-    hideLoadingSnackbar();
-    console.log('🚀 ~ file: unsubscribeHoverCard.ts:29 ~ handleDeleteAllMails ~ err:', err);
   }
 };
 
@@ -219,7 +155,7 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
     unsubscribeAndDeleteAllMailsBtn.addEventListener('click', ev => {
       ev.stopPropagation();
       showConfirmModal({
-        msg: 'Are you sure you want to delete all mails from',
+        msg: 'Are you sure you want to delete all mails and unsubscribe from',
         email,
         onConfirmClick: handleUnsubscribeAndDeleteAllMails,
       });
@@ -233,7 +169,7 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
   deleteAllMailsBtn.addEventListener('click', ev => {
     ev.stopPropagation();
     showConfirmModal({
-      msg: 'Are you sure you want to delete all mails and unsubscribe from',
+      msg: 'Are you sure you want to delete all mails  from',
       email,
       onConfirmClick: handleDeleteAllMails,
     });

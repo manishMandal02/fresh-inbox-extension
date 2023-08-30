@@ -7,6 +7,19 @@
   margin-left: auto;
 }
 
+#mailMagic-tooltip {
+  position: absolute;
+  width: max-content;
+  background-color: black;
+  color: #e0e0e0;
+  text-align: center;
+  padding: 5px 10px;
+  border-radius: 6px;
+  left: 50%;
+  transform: translate(-50%, -125%);
+  font-size: 10px;
+}
+
 .mailMagic-hoverCard {
   width: 25rem;
   height: 8rem;
@@ -499,7 +512,7 @@
                   display: flex;
                   justify-content: space-between;
                   align-items: center;
-                  > p {
+                  > span {
                     margin: 0;
                   }
                   > div {
