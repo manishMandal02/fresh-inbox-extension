@@ -1,5 +1,6 @@
 import { storageKeys } from '@src/pages/content/constants/app.constants';
 import { handleReSubscribe } from '@src/pages/content/utils/emailActions';
+import { getLoadingSpinner } from '../../elements/loadingSpinner';
 
 // get email from table row
 const getEmailFromTableRow = (button: HTMLButtonElement) => {
@@ -44,7 +45,10 @@ const renderTable = async () => {
     })
     .join('');
 
-  tableEl.innerHTML = tableData;
+  // show loading spinner fetching data
+  const spinner = getLoadingSpinner();
+  tableEl.appendChild(spinner);
+  //   tableEl.innerHTML = tableData;
 };
 
 // render unsubscribed list tab
@@ -57,21 +61,22 @@ const renderUnsubscribedListTab = async (parentContainer: HTMLElement) => {
   // html structure
   unsubscribedListTabContainer.innerHTML = `
     <p>Mail Magic has unsubscribed <u id='unsubscribedListTab-numUnsubscribedEmails'>0</u> emails to keep your 📨 inbox clean.</p>
-   
-    <hr />
 
-    <div >
-    <table>
-    <tbody  id='unsubscribedListTab-table'>
-    
-    </tbody>
-    </table>
-    
+    <hr /> 
+
+    <div>
+        <table>
+            <tbody  id='unsubscribedListTab-table'>
+            </tbody>
+        </table>
+
     </div>
 
     `;
 
   parentContainer.appendChild(unsubscribedListTabContainer);
+
+  //TODO: get data
 
   //* get newsletters data
   // send message to background to get data

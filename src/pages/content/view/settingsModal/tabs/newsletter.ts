@@ -5,8 +5,8 @@ import {
 } from '@src/pages/content/utils/emailActions';
 import { storageKeys } from '@src/pages/content/constants/app.constants';
 
-import { showConfirmModal } from '../../confirmModal';
-import { addTooltip, removeTooltip } from '../../tooltip';
+import { showConfirmModal } from '../../elements/confirmModal';
+import { addTooltip, removeTooltip } from '../../elements/tooltip';
 import { randomId } from '@src/pages/content/utils/randomId';
 
 type NewsletterData = {

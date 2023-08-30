@@ -1,3 +1,5 @@
+import { getLoadingSpinner } from './loadingSpinner';
+
 type ShowLoadingSnackbarParams = {
   title: string;
   email: string;
@@ -6,19 +8,18 @@ type ShowLoadingSnackbarParams = {
 const showLoadingSnackbar = ({ title, email }: ShowLoadingSnackbarParams) => {
   // container
   const container = document.createElement('div');
-  const label = document.createElement('p');
-  const loader = document.createElement('div');
+  const label = document.createElement('span');
 
   // add label text
   label.innerHTML = `${title} <br/> <strong>${email}</strong>`;
 
   // add classes
   container.id = 'mailMagic-loadingSnackbar';
-  label.id = 'loadingSnackbar-label';
-  loader.id = 'loadingSnackbar-loader';
+
+  const spinner = getLoadingSpinner();
 
   // append elements
-  container.append(label, loader);
+  container.append(label, spinner);
 
   document.body.appendChild(container);
 };

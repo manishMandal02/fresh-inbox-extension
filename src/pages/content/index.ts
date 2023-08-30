@@ -17,6 +17,7 @@ import { refreshEmailsTable } from './utils/refreshEmailsTable';
 import { mailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
 import { storageKeys } from './constants/app.constants';
 import { showSettingsModal } from './view/settingsModal';
+import { showLoadingSnackbar } from './view/elements/loadingSnackbar';
 
 // types
 // content script global variables
@@ -174,5 +175,6 @@ setTimeout(async () => {
   // run the app
   // await startApp();
   //TODO: testing- delete this later
-  showSettingsModal();
+  // showSettingsModal();
+  showLoadingSnackbar({ title: 'Deleting all Mails from', email: 'mmjdd67@gmal.com' });
 }, 1000);

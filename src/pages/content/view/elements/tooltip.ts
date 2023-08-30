@@ -11,8 +11,6 @@ const addTooltip = (parentEl: HTMLElement, title: string) => {
     // parentEl.style.display = 'inline-block';
   }
 
-  parentEl.appendChild(tooltipMsg);
-
   parentEl.addEventListener('mouseenter', ev => {
     ev.stopPropagation();
     parentEl.appendChild(tooltipMsg);

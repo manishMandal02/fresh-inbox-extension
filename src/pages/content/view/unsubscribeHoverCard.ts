@@ -1,6 +1,6 @@
 import { IMessageBody, IMessageEvent } from '../content.types';
-import { hideLoadingSnackbar, showLoadingSnackbar } from './loadingSnackbar';
-import { showConfirmModal } from './confirmModal';
+import { hideLoadingSnackbar, showLoadingSnackbar } from './elements/loadingSnackbar';
+import { showConfirmModal } from './elements/confirmModal';
 import { storageKeys } from '../constants/app.constants';
 import {
   handleDeleteAllMails,
