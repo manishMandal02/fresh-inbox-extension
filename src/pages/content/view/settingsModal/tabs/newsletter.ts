@@ -8,6 +8,11 @@ import { storageKeys } from '@src/pages/content/constants/app.constants';
 import { showConfirmModal } from '../../elements/confirmModal';
 import { addTooltip, removeTooltip } from '../../elements/tooltip';
 import { randomId } from '@src/pages/content/utils/randomId';
+import { getLoadingSpinner } from '../../elements/loadingSpinner';
+import { hideLoadingSnackbar, showLoadingSnackbar } from '../../elements/snackbar';
+import wait from '@src/pages/content/utils/wait';
+import { IMessageEvent } from '@src/pages/content/content.types';
+import { renderTextMsg } from '../../elements/text';
 
 type NewsletterData = {
   email: string;
@@ -37,11 +42,8 @@ const renderTable = async (data: NewsletterData[]) => {
     });
   }
 
-  console.log('🚀 ~ file: newsletter.ts:28 ~ renderTable ~ newsletterEmails:', newsletterEmails);
   // loop over emails data to render table rows
-  for (const item of newsletterEmails) {
-    const email = item.email;
-
+  newsletterEmails.forEach(({ email }, idx) => {
     console.log('🚀 ~ file: newsletter.ts:44 ~ renderTable ~ email:', email);
 
     // table row
@@ -52,11 +54,12 @@ const renderTable = async (data: NewsletterData[]) => {
     // map over data
     let tableRowData = `
                 <td>
-                    <span>${email}</span>
-                    <div>
-                    <button id='newsletterTab-actionBtn-unsubscribe-${rowId}'>❌</button>
-                    <button id='newsletterTab-actionBtn-deleteAllMails-${rowId}'>🗑️</button>
-                    <button id='newsletterTab-actionBtn-unsubscribeAndDeleteAllMails-${rowId}'>❌ + 🗑️</button>
+                    
+                    <span><strong>${idx + 1}.</strong> ${email}</span>
+                    <div id='newsletterTab-actionBtn'>
+                      <button id='newsletterTab-actionBtn-unsubscribe-${rowId}'>❌</button>
+                      <button id='newsletterTab-actionBtn-deleteAllMails-${rowId}'>🗑️</button>
+                      <button id='newsletterTab-actionBtn-unsubscribeAndDeleteAllMails-${rowId}'>❌ + 🗑️</button>
                     </div>
                 </td>
         `;
@@ -82,7 +85,37 @@ const renderTable = async (data: NewsletterData[]) => {
       mailMagicGlobalVariables.email = email;
       //TODO: get name
       mailMagicGlobalVariables.name = '';
-      handleUnsubscribe();
+      //TODO: show a loading spinner instead of action buttons for that row
+      // get all the action buttons for that row
+      const actionBtnContainer = tableRow.getElementsByTagName('div')?.[0];
+      // storing the buttons because we will re-add them, if action fails
+
+      // hide the buttons
+      for (const btn of actionBtnContainer.getElementsByTagName('button')) {
+        btn.style.display = 'none';
+      }
+
+      // create a spinner
+      const spinner = getLoadingSpinner();
+
+      // add spinner and remove buttons
+      actionBtnContainer.appendChild(spinner);
+
+      //TODO: show a loading snackbar
+      showLoadingSnackbar({ title: 'Unsubscribing from', email });
+
+      await wait(3000);
+
+      // remove/hide spinner
+      spinner.remove();
+      hideLoadingSnackbar();
+
+      // show the buttons
+      for (const btn of actionBtnContainer.getElementsByTagName('button')) {
+        btn.style.display = 'inline-block';
+      }
+
+      // await handleUnsubscribe();
     });
 
     deleteAllMails.addEventListener('click', async ev => {
@@ -121,8 +154,11 @@ const renderTable = async (data: NewsletterData[]) => {
     //TODO: Globally add a success snack bar to show after successful action (think about it 🤔)
 
     //TODO: re-render the table after successfully performing the action
-  }
+  });
 };
+
+// TODO: Try to save the newsletter data on the content script if the query operation is expensive ~
+// TODO: ~ we can have a global variable to store these emails and only fetch once per session
 
 const renderNewsletterTab = async (parentContainer: HTMLElement) => {
   // about tab container
@@ -137,11 +173,10 @@ const renderNewsletterTab = async (parentContainer: HTMLElement) => {
     <hr />
 
     <div >
-    <table>
-    <tbody  id='newsletterTab-table'>
-    
-    </tbody>
-    </table>
+      <table>
+        <tbody  id='newsletterTab-table'>
+        </tbody>
+      </table>
     
     </div>
 
@@ -149,39 +184,61 @@ const renderNewsletterTab = async (parentContainer: HTMLElement) => {
 
   parentContainer.appendChild(newsletterTabContainer);
 
-  //* get newsletters data
-  // send message to background to get data
-  await renderTable([
-    { email: 'newsletter.test@flipkart.com' },
-    { email: 'newsletter.test@flipkart.com' },
-    { email: 'newsletter.test@flipkart.com' },
-    { email: 'newsletter.test@flipkart.com' },
-    { email: 'newsletter.test-three@example.com' },
-    { email: 'newsletter.test-three@example.com' },
-    { email: 'mailing-list-world@google.co.com' },
-    { email: 'mailing-list-world@google.co.com' },
-    { email: 'mailing-list-world@google.co.com' },
-    { email: 'manish@one.com' },
-    { email: 'manish@one.com' },
-    { email: 'asdasdasewq343as@asdasfasfdas.com' },
-    { email: 'manishMandal02032@one.com' },
-    { email: 'manishMandal02032@one.com' },
-    { email: 'manish@one.com' },
-    { email: 'asdasdasewq343wasdas@asdasfasfdas.com' },
-  ]);
+  // TODO: testing... table view
+  // await renderTable([
+  //   { email: 'newsletter.test@flipkart.com' },
+  //   { email: 'newsletter.test@flipkart.com' },
+  //   { email: 'newsletter.test@flipkart.com' },
+  //   { email: 'newsletter.test@flipkart.com' },
+  //   { email: 'newsletter.test-three@example.com' },
+  //   { email: 'newsletter.test-three@example.com' },
+  //   { email: 'mailing-list-world@google.co.com' },
+  //   { email: 'mailing-list-world@google.co.com' },
+  //   { email: 'mailing-list-world@google.co.com' },
+  //   { email: 'manish@one.com' },
+  //   { email: 'manish@one.com' },
+  //   { email: 'asdasdasewq343as@asdasfasfdas.com' },
+  //   { email: 'manishMandal02032@one.com' },
+  //   { email: 'manishMandal02032@one.com' },
+  //   { email: 'manish@one.com' },
+  //   { email: 'asdasdasewq343wasdas@asdasfasfdas.com' },
+  // ]);
 
-  //   try {
-  //     const response = await chrome.runtime.sendMessage({ event: IMessageEvent.GET_NEWSLETTER_EMAILS });
-  //     if (response.newsletterEmails) {
-  //       // render table from the data
-  //      await renderTable(response.newsletterEmails);
-  //     } else {
-  //       //TODO: render a message saving no newsletter emails found
-  //       throw new Error('No newsletter emails found');
-  //     }
-  //   } catch (err) {
-  //     console.log('🚀 ~ file: newsletter.ts:51 ~ renderNewsletterTab ~ err):', err);
-  //   }
+  //* get newsletters data
+  // loading spinner to show while fetching emails
+  const spinner = getLoadingSpinner();
+  try {
+    // get table container
+    const newsletterEmailsTable = document.getElementById('newsletterTab-table');
+    // append spinner
+    newsletterEmailsTable.appendChild(spinner);
+
+    // send message to background to get data
+    const response = await chrome.runtime.sendMessage({ event: IMessageEvent.GET_NEWSLETTER_EMAILS });
+    // remove loading spinner
+    spinner.remove();
+    if (response.newsletterEmails) {
+      // render table from the data
+      await renderTable(response.newsletterEmails);
+    } else {
+      // show message saying no newsletter emails found
+      const msg = renderTextMsg(
+        `📭 No Newsletter or mailing list emails found in your Inbox. <br/> ℹ️ Emails already unsubscribed by Mail Magic won't be visible here.`
+      );
+      // append msg to table
+      const tableContainer = document.getElementById('newsletterTab-table');
+      tableContainer.appendChild(msg);
+    }
+  } catch (err) {
+    // remove loading spinner
+    spinner.remove();
+    console.log('🚀 ~ file: newsletter.ts:51 ~ renderNewsletterTab ~ err):', err);
+    // show a error message: saying something went wrong
+    const msg = renderTextMsg('❌ Something went wrong, Failed to get newsletter');
+    // append msg to table
+    const tableContainer = document.getElementById('newsletterTab-table');
+    tableContainer.appendChild(msg);
+  }
 };
 
 // remove the newsletter tab from DOM

@@ -17,7 +17,7 @@ import { refreshEmailsTable } from './utils/refreshEmailsTable';
 import { mailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
 import { storageKeys } from './constants/app.constants';
 import { showSettingsModal } from './view/settingsModal';
-import { showLoadingSnackbar } from './view/elements/loadingSnackbar';
+import { showLoadingSnackbar, showSnackbar } from './view/elements/snackbar';
 
 // types
 // content script global variables
@@ -52,7 +52,10 @@ const getAllMails = async () => {
   let whiteListedEmails: null | string[] = null;
   // get white listed emails from extension storage
   const syncStorageData = await chrome.storage.sync.get(storageKeys.WHITELISTED_EMAILS);
-  if (syncStorageData[storageKeys.WHITELISTED_EMAILS].length > 0) {
+  if (
+    syncStorageData[storageKeys.WHITELISTED_EMAILS] &&
+    syncStorageData[storageKeys.WHITELISTED_EMAILS].length > 0
+  ) {
     whiteListedEmails = syncStorageData[storageKeys.WHITELISTED_EMAILS];
   }
 
@@ -171,10 +174,9 @@ chrome.runtime.onMessage.addListener(
 setTimeout(async () => {
   // check if mail magic is enabled or not
   // const isEnabled = await chrome.storage.sync.get('isMailMagicEnabled');
-
   // run the app
-  // await startApp();
+  await startApp();
   //TODO: testing- delete this later
   // showSettingsModal();
-  showLoadingSnackbar({ title: 'Deleting all Mails from', email: 'mmjdd67@gmal.com' });
-}, 1000);
+  await chrome.runtime.sendMessage({ event: IMessageEvent.GET_NEWSLETTER_EMAILS });
+}, 1500);

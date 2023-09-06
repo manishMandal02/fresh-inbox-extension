@@ -287,4 +287,110 @@ const unsubscribeAndDeleteAllMails = async (email: string, token: string) => {
   await deleteAllMails({ token, email });
 };
 
-export { unsubscribe, deleteAllMails, unsubscribeAndDeleteAllMails };
+type GetSendEmailFromIdsParams = {
+  messageIds: string[];
+  token: string;
+};
+const getSenderEmailsFromIds = async ({ messageIds, token }: GetSendEmailFromIdsParams) => {
+  // Construct the batch request body
+  const batchRequestBody = messageIds.map(id => {
+    return {
+      method: 'GET',
+      path: `/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=[From]`,
+      headers: {
+        'Content-Type': 'application/http',
+        'Content-ID': `message-${id}`,
+      },
+    };
+  });
+
+  const boundary = 'newsletter-boundary'; // Use a unique boundary
+
+  const batchRequest = batchRequestBody.map(request => {
+    return `--${boundary}
+Content-Type: application/http
+Content-ID: ${request.headers['Content-ID']}
+
+${request.method} ${request.path}
+`;
+  });
+
+  const requestBody = `${batchRequest.join('')}\n--${boundary}--`;
+
+  console.log('🚀 ~ file: gmail.ts:321 ~ getSenderEmailsFromIds ~ requestBody:', requestBody);
+
+  const fetchOptions = {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': `multipart/mixed; boundary=${boundary}`,
+    },
+    body: requestBody,
+  };
+
+  console.log('🚀 ~ getSenderEmailsFromIds ~ fetchOptions:', fetchOptions);
+
+  try {
+    const res = await fetch(`https://gmail.googleapis.com/batch/gmail/v1`, fetchOptions);
+
+    if (res.ok) {
+      // Read the response text as multipart/mixed
+      const responseText = await res.text();
+
+      // Split the response into individual parts
+      const parts = responseText.split(`--${boundary}`);
+
+      // Process each part (ignore empty parts)
+      for (const part of parts) {
+        if (part.trim()) {
+          // Parse the part as needed (e.g., extracting the response status and body)
+          // You may need to use regex or other methods to extract the response data
+          console.log('Part:', part);
+        }
+      }
+    } else {
+      console.error('Batch request failed:', await res.text());
+    }
+  } catch (error) {
+    console.error('Error making batch request:', error);
+  }
+};
+
+//* get newsletters/mailing list emails form Gmail ap
+const getNewsletterEmails = async (token: string) => {
+  const fetchOptions = {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  };
+
+  const apiQuery = `{"Newsletter", "Unsubscribe"} in:anywhere`;
+
+  try {
+    const res = await fetch(
+      `https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=${API_MAX_RESULT}&q=${apiQuery}&fields=messages(id,threadId,payload)`,
+      fetchOptions
+    );
+
+    const emails = await res.json();
+
+    // TODO: temp:: taking only 50 emails for testing
+
+    emails.messages = emails.messages.slice(0, 50);
+
+    console.table('🚀 ~ file: gmail.ts:308 ~ getNewsletterEmails ~ emails:', emails);
+
+    // get sender emails of the above newsletter emails
+    await getSenderEmailsFromIds({ messageIds: emails.messages.map(msg => msg.id), token });
+    //
+  } catch (err) {
+    console.log(
+      '🚀 ~ file: gmail.ts:307 ~ getNewsletterEmails ❌ Failed to get newsletter emails ~ err:',
+      err
+    );
+  }
+};
+
+export { unsubscribe, deleteAllMails, unsubscribeAndDeleteAllMails, getNewsletterEmails };

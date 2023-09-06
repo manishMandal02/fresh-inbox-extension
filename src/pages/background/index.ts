@@ -3,7 +3,7 @@ import wait from './utils/wait';
 import { IMessageBody, IMessageEvent, IUserInfo } from './background.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
 import { USER_ACCESS_DENIED, clearToken, getAuthToken, getUserInfo, launchGoogleAuthFlow } from './auth';
-import { deleteAllMails, unsubscribe } from './api/gmail';
+import { deleteAllMails, getNewsletterEmails, unsubscribe } from './api/gmail';
 
 reloadOnUpdate('pages/background');
 
@@ -66,12 +66,13 @@ const setActiveTabId = async () => {
 
 // listen for messages from content script - email action events
 chrome.runtime.onMessage.addListener(
-  asyncMessageHandler<IMessageBody, string | boolean>(async (request, sender) => {
+  asyncMessageHandler<IMessageBody, string | boolean | string[]>(async (request, sender) => {
     switch (request.event) {
       case IMessageEvent.Check_Auth_Token: {
         await setActiveTabId();
         return isAuthTokenValid();
       }
+
       case IMessageEvent.Launch_Auth_Flow: {
         const res = await launchGoogleAuthFlow(userInfo.userId);
         // TODO: create a custom trash filter for mail-magic to add unsubscribed emails
@@ -89,6 +90,7 @@ chrome.runtime.onMessage.addListener(
         await unsubscribe({ token, email: request.email });
         return 'Unsubscribe Message received.';
       }
+
       case IMessageEvent.Delete_All_Mails: {
         console.log('Received deleteAllMails request for:', request.email);
 
@@ -112,11 +114,25 @@ chrome.runtime.onMessage.addListener(
           return '❌ DeleteAllMails failed';
         }
       }
+
       case IMessageEvent.Unsubscribe_And_Delete_All_Mails: {
         console.log('Received unsubscribeAndDeleteAllMails request for:', request.email);
         //   await wait(1000);
         return 'UnsubscribeAndDeleteAllMails Message received.';
       }
+
+      case IMessageEvent.GET_NEWSLETTER_EMAILS: {
+        console.log('Received getNewsletterEmails request');
+
+        try {
+          const newsletterEmails = await getNewsletterEmails(token);
+          return '';
+        } catch (err) {
+          console.log('Error getting newsletter emails', err);
+          return [];
+        }
+      }
+
       case IMessageEvent.Disable_MailMagic: {
         //TODO: disable mail magic
         try {
@@ -128,6 +144,7 @@ chrome.runtime.onMessage.addListener(
         }
         return '';
       }
+
       default: {
         console.log('Received unknown message:', request);
         return 'Unknown event.';

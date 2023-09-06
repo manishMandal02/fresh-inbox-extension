@@ -1,5 +1,5 @@
 import { IMessageBody, IMessageEvent } from '../content.types';
-import { hideLoadingSnackbar, showLoadingSnackbar } from '../view/elements/loadingSnackbar';
+import { hideLoadingSnackbar, showLoadingSnackbar } from '../view/elements/snackbar';
 
 //* handle unsubscribe
 const handleUnsubscribe = async () => {

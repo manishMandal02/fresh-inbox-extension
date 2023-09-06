@@ -7,8 +7,9 @@ export enum IMessageEvent {
   Launch_Auth_Flow = 'launchAuthFLow',
   Disable_MailMagic = 'disableMailMagic',
   REFRESH_TABLE = 'refreshTable',
+  GET_NEWSLETTER_EMAILS = 'getNewsletterEmails',
+  RE_SUBSCRIBE = 'reSubscribe',
 }
-
 export interface IMessageBody {
   event: IMessageEvent;
   email?: string;

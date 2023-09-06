@@ -1,5 +1,5 @@
 import { IMessageBody, IMessageEvent } from '../content.types';
-import { hideLoadingSnackbar, showLoadingSnackbar } from './elements/loadingSnackbar';
+import { hideLoadingSnackbar, showLoadingSnackbar } from './elements/snackbar';
 import { showConfirmModal } from './elements/confirmModal';
 import { storageKeys } from '../constants/app.constants';
 import {
