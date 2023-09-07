@@ -239,7 +239,9 @@ const deleteAllMails = async ({ token, email }: APIHandleParams) => {
 
   let nextPageToken: string | null = null;
 
-  const queryParams = `from:${email}&maxResults=${API_MAX_RESULT}`;
+  const queryParams = `from:${email}&maxResults=${API_MAX_RESULT}&${
+    nextPageToken ? `pageToken=${nextPageToken}` : ''
+  }`;
 
   let parsedRes: APIResponseSuccess | null = null;
 
@@ -268,6 +270,8 @@ const deleteAllMails = async ({ token, email }: APIHandleParams) => {
     // save next page token if present to fetch next batch of messages
     if (parsedRes.nextPageToken) {
       nextPageToken = parsedRes.nextPageToken;
+    } else {
+      nextPageToken = null;
     }
 
     // get message ids from success response
@@ -296,7 +300,7 @@ const getSenderEmailsFromIds = async ({ messageIds, token }: GetSendEmailFromIds
   const batchRequestBody = messageIds.map(id => {
     return {
       method: 'GET',
-      path: `/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=[From]`,
+      path: `/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=From`,
       headers: {
         'Content-Type': 'application/http',
         'Content-ID': `message-${id}`,
@@ -337,19 +341,25 @@ ${request.method} ${request.path}
       // Read the response text as multipart/mixed
       const responseText = await res.text();
 
-      // Split the response into individual parts
-      const parts = responseText.split(`--${boundary}`);
+      console.log('🚀 ~ file: gmail.ts:344 ~ getSenderEmailsFromIds ~ responseText:', responseText);
 
-      // Process each part (ignore empty parts)
-      for (const part of parts) {
-        if (part.trim()) {
-          // Parse the part as needed (e.g., extracting the response status and body)
-          // You may need to use regex or other methods to extract the response data
-          console.log('Part:', part);
-        }
+      // regular expression pattern to match email addresses
+      const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+
+      // Use the match method to find all email addresses in the response string
+      const emailAddresses = responseText.replaceAll('u003c', '').match(emailPattern);
+
+      if (emailAddresses) {
+        // remove duplicates emails
+        const uniqueEmails = [...new Set(emailAddresses)];
+
+        console.log('🚀 ~ file: gmail.ts:352 ~ getSenderEmailsFromIds ~ uniqueEmails:', uniqueEmails);
+        return uniqueEmails;
+      } else {
+        throw new Error('No email addresses found in the response.');
       }
     } else {
-      console.error('Batch request failed:', await res.text());
+      throw new Error(`Batch request failed: err: ${await res.text()}`);
     }
   } catch (error) {
     console.error('Error making batch request:', error);
@@ -366,24 +376,69 @@ const getNewsletterEmails = async (token: string) => {
     },
   };
 
-  const apiQuery = `{"Newsletter", "Unsubscribe"} in:anywhere`;
+  let nextPageToken: string | null = null;
+
+  const queryParams = `maxResults=${API_MAX_RESULT}&q={"Newsletter", "Unsubscribe"} in:anywhere&${
+    nextPageToken ? `pageToken=${nextPageToken}` : ''
+  }`;
+
+  //
+  let batches: string[][] = [];
 
   try {
-    const res = await fetch(
-      `https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=${API_MAX_RESULT}&q=${apiQuery}&fields=messages(id,threadId,payload)`,
-      fetchOptions
-    );
+    // do while loop to handle pagination (gmail api has a response limit of 500)
+    do {
+      const res = await fetch(
+        `https://gmail.googleapis.com/gmail/v1/users/me/messages?${queryParams}`,
+        fetchOptions
+      );
 
-    const emails = await res.json();
+      const parsedRes = await res.json();
 
-    // TODO: temp:: taking only 50 emails for testing
+      if (parsedRes.messages && parsedRes.messages.length < 1) throw new Error('No emails found');
 
-    emails.messages = emails.messages.slice(0, 50);
+      // save next page token if present to fetch next batch of messages
+      if (parsedRes.nextPageToken) {
+        nextPageToken = parsedRes.nextPageToken;
+      }
 
-    console.table('🚀 ~ file: gmail.ts:308 ~ getNewsletterEmails ~ emails:', emails);
+      console.log('🚀 ~ file: gmail.ts:385 ~ getNewsletterEmails ~ parsedRes:', parsedRes);
 
-    // get sender emails of the above newsletter emails
-    await getSenderEmailsFromIds({ messageIds: emails.messages.map(msg => msg.id), token });
+      // dividing the messageIds into batches ~
+      // so we can use the gmail batch api to group multiple requests into on
+      const BATCH_SIZE = 45;
+
+      // create batches of emails
+      for (let i = 0; i < parsedRes.messages.length; i += BATCH_SIZE) {
+        // if last batch is not more than half of batch size then add to previous batch
+        batches.push(parsedRes.messages.slice(i, i + BATCH_SIZE).map(msg => msg.id));
+      }
+      //  end of do while loop...
+    } while (nextPageToken !== null);
+
+    console.log('🚀 ~ file: gmail.ts:396 ~ getNewsletterEmails ~ batches:', batches);
+
+    // newsletter emails (processed & filtered)
+    const newsletterEmails = [''];
+
+    // process batches to get newsletter emails
+    for (const batch of batches) {
+      console.log('🚀 ~ file: gmail.ts:406 ~ getNewsletterEmails ~ batch:', batch);
+
+      // get sender emails from the message ids queried
+      const senderEmails = await getSenderEmailsFromIds({
+        messageIds: batch,
+        token,
+      });
+      if (senderEmails) {
+        // store the emails
+        newsletterEmails.push(...senderEmails);
+      }
+    }
+
+    console.log('🚀 ~ file: gmail.ts:404 ~ getNewsletterEmails ~ newsletterEmails:', newsletterEmails);
+    return newsletterEmails;
+
     //
   } catch (err) {
     console.log(

@@ -126,7 +126,11 @@ chrome.runtime.onMessage.addListener(
 
         try {
           const newsletterEmails = await getNewsletterEmails(token);
-          return '';
+          if (newsletterEmails.length > 0) {
+            return newsletterEmails;
+          } else {
+            throw new Error('No newsletter emails found');
+          }
         } catch (err) {
           console.log('Error getting newsletter emails', err);
           return [];
