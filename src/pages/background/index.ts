@@ -3,7 +3,7 @@ import wait from './utils/wait';
 import { IMessageBody, IMessageEvent, IUserInfo } from './background.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
 import { USER_ACCESS_DENIED, clearToken, getAuthToken, getUserInfo, launchGoogleAuthFlow } from './auth';
-import { deleteAllMails, getNewsletterEmails, unsubscribe } from './api/gmail';
+import { NewsletterEmails, deleteAllMails, getNewsletterEmails, unsubscribe } from './api/gmail';
 
 reloadOnUpdate('pages/background');
 
@@ -66,7 +66,7 @@ const setActiveTabId = async () => {
 
 // listen for messages from content script - email action events
 chrome.runtime.onMessage.addListener(
-  asyncMessageHandler<IMessageBody, string | boolean | string[]>(async (request, sender) => {
+  asyncMessageHandler<IMessageBody, string | boolean | NewsletterEmails[]>(async (request, sender) => {
     switch (request.event) {
       case IMessageEvent.Check_Auth_Token: {
         await setActiveTabId();
@@ -126,6 +126,12 @@ chrome.runtime.onMessage.addListener(
 
         try {
           const newsletterEmails = await getNewsletterEmails(token);
+
+          console.log(
+            '🚀 ~ file: index.ts:130 ~ asyncMessageHandler<IMessageBody,string|boolean|string[]> ~ newsletterEmails:',
+            newsletterEmails
+          );
+
           if (newsletterEmails.length > 0) {
             return newsletterEmails;
           } else {

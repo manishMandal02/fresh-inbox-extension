@@ -16,6 +16,7 @@ import { renderTextMsg } from '../../elements/text';
 
 type NewsletterData = {
   email: string;
+  name: string;
 };
 
 // render table
@@ -38,12 +39,12 @@ const renderTable = async (data: NewsletterData[]) => {
   if (unsubscribedEmails.length > 0) {
     // filter emails that are already unsubscribed
     newsletterEmails = newsletterEmails.filter(email => {
-      return !unsubscribedEmails.includes(email.email);
+      return !unsubscribedEmails.includes(email);
     });
   }
 
   // loop over emails data to render table rows
-  newsletterEmails.forEach(({ email }, idx) => {
+  newsletterEmails.forEach(({ email, name }, idx) => {
     console.log('🚀 ~ file: newsletter.ts:44 ~ renderTable ~ email:', email);
 
     // table row
@@ -149,10 +150,6 @@ const renderTable = async (data: NewsletterData[]) => {
     addTooltip(deleteAllMails, 'Delete All Mails');
     addTooltip(unsubscribeAndDeleteAllMailsBtn, 'Unsubscribe & \n Delete All Mails');
 
-    //TODO: show the loading spinner snackbar + a loading icon instead the action button (can show the other action which is left)
-
-    //TODO: Globally add a success snack bar to show after successful action (think about it 🤔)
-
     //TODO: re-render the table after successfully performing the action
   });
 };
@@ -214,12 +211,15 @@ const renderNewsletterTab = async (parentContainer: HTMLElement) => {
     newsletterEmailsTable.appendChild(spinner);
 
     // send message to background to get data
-    const response = await chrome.runtime.sendMessage({ event: IMessageEvent.GET_NEWSLETTER_EMAILS });
+    const newsletterEmails = await chrome.runtime.sendMessage({ event: IMessageEvent.GET_NEWSLETTER_EMAILS });
+
+    console.log('🚀 ~ file: newsletter.ts:216 ~ renderNewsletterTab ~ newsletterEmails:', newsletterEmails);
+
     // remove loading spinner
     spinner.remove();
-    if (response.newsletterEmails) {
+    if (newsletterEmails) {
       // render table from the data
-      await renderTable(response.newsletterEmails);
+      await renderTable(newsletterEmails);
     } else {
       // show message saying no newsletter emails found
       const msg = renderTextMsg(

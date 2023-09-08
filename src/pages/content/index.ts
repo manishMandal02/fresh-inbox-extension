@@ -175,11 +175,12 @@ setTimeout(async () => {
   // check if mail magic is enabled or not
   // const isEnabled = await chrome.storage.sync.get('isMailMagicEnabled');
   // run the app
+
   try {
     await startApp();
+
     //TODO: testing- delete this later
-    // showSettingsModal();
-    await chrome.runtime.sendMessage({ event: IMessageEvent.GET_NEWSLETTER_EMAILS });
+    showSettingsModal();
   } catch (err) {
     console.log('🚀 ~ file: index.ts:185 ~ setTimeout ~ err:', err);
   }

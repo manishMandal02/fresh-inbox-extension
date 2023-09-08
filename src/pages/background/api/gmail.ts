@@ -1,5 +1,6 @@
 import { MAIL_MAGIC_FILTER_EMAIL, storageKeys } from '@src/pages/background/constants/app.constants';
 import { getEmailsFromFilterQuery } from '../utils/getEmailsFromFilterQuery';
+import { removeDuplicateEmails } from '../utils/removeDuplicateEmails';
 
 const API_MAX_RESULT = 500;
 
@@ -27,6 +28,21 @@ type GmailFilters = {
 type FilterEmails = {
   filterId?: string;
   emails: string[];
+};
+
+type IGmailMessage = {
+  id: string;
+  threadId: string;
+};
+type GetMsgAPIResponseSuccess = {
+  messages: IGmailMessage[];
+  nextPageToken?: string;
+  resultSizeEstimate: number;
+};
+
+export type NewsletterEmails = {
+  email: string;
+  name: string;
 };
 
 // get  filter by Id
@@ -218,16 +234,6 @@ const batchDeleteEmails = async (token: string, ids: string[]) => {
   }
 };
 
-type IGmailMessage = {
-  id: string;
-  threadId: string;
-};
-type APIResponseSuccess = {
-  messages: IGmailMessage[];
-  nextPageToken?: string;
-  resultSizeEstimate: number;
-};
-
 const deleteAllMails = async ({ token, email }: APIHandleParams) => {
   const fetchOptions: Partial<RequestInit> = {
     method: 'GET',
@@ -243,7 +249,7 @@ const deleteAllMails = async ({ token, email }: APIHandleParams) => {
     nextPageToken ? `pageToken=${nextPageToken}` : ''
   }`;
 
-  let parsedRes: APIResponseSuccess | null = null;
+  let parsedRes: GetMsgAPIResponseSuccess | null = null;
 
   //* do... while() loop to  handle pagination delete if messages/gmail exceeds API max limit (500)
   //* keep fetching & deleting emails until nextPageToken is null
@@ -321,8 +327,6 @@ ${request.method} ${request.path}
 
   const requestBody = `${batchRequest.join('')}\n--${boundary}--`;
 
-  console.log('🚀 ~ file: gmail.ts:321 ~ getSenderEmailsFromIds ~ requestBody:', requestBody);
-
   const fetchOptions = {
     method: 'POST',
     headers: {
@@ -332,29 +336,49 @@ ${request.method} ${request.path}
     body: requestBody,
   };
 
-  console.log('🚀 ~ getSenderEmailsFromIds ~ fetchOptions:', fetchOptions);
-
   try {
     const res = await fetch(`https://gmail.googleapis.com/batch/gmail/v1`, fetchOptions);
 
     if (res.ok) {
       // Read the response text as multipart/mixed
-      const responseText = await res.text();
+      const responseText = (await res.text()).toString();
 
-      console.log('🚀 ~ file: gmail.ts:344 ~ getSenderEmailsFromIds ~ responseText:', responseText);
+      console.log('🚀 ~ file: gmail.ts:345 ~ getSenderEmailsFromIds ~ responseText:', responseText);
 
-      // regular expression pattern to match email addresses
-      const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+      // // regular expression pattern to match email addresses
+      // const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
 
-      // Use the match method to find all email addresses in the response string
-      const emailAddresses = responseText.replaceAll('u003c', '').match(emailPattern);
+      // // Use the match method to find all email addresses in the response string
+      // let emailAddresses = responseText.replaceAll('u003c', '').match(emailPattern) as string[];
 
-      if (emailAddresses) {
-        // remove duplicates emails
-        const uniqueEmails = [...new Set(emailAddresses)];
+      // find the headers in the response
+      const headersRegex = /"headers":\s*\[([^[\]]*("(name|value)":\s*"[^"]*")[^[\]]*)*\]/g;
+      const headerMatches = responseText.match(headersRegex);
 
-        console.log('🚀 ~ file: gmail.ts:352 ~ getSenderEmailsFromIds ~ uniqueEmails:', uniqueEmails);
-        return uniqueEmails;
+      // sender emails (name, emails)
+      const senderEmails: NewsletterEmails[] = [];
+
+      // lop through each header match to get names and emails
+      for (const header of headerMatches!) {
+        // clean the string (remove "{}[]"")
+        const cleanStrPattern = /[{"\[\]}]/g;
+        // parse value string, contains name & emails
+        const valueStr = header.split(`"value":`)[1].replace(cleanStrPattern, '').trim();
+        // name
+
+        console.log('🚀 ~ file: gmail.ts:368 ~ getSenderEmailsFromIds ~ valueStr:', valueStr);
+
+        const name = valueStr.split(`\\u003c`)[0].trim();
+        // email
+        const email = valueStr.split(`\\u003c`)[1].replace('\\u003e', '').trim();
+        senderEmails.push({ name, email });
+
+        console.log('🚀 ~ file: gmail.ts:375 ~ getSenderEmailsFromIds ~ email:', email);
+      }
+
+      if (senderEmails.length > 0) {
+        // return sender email address
+        return senderEmails;
       } else {
         throw new Error('No email addresses found in the response.');
       }
@@ -382,7 +406,7 @@ const getNewsletterEmails = async (token: string) => {
   let batches: string[][] = [];
 
   // newsletter emails (processed & filtered)
-  const newsletterEmails = [''];
+  let newsletterEmails: NewsletterEmails[] = [];
 
   try {
     // do while loop to handle pagination (gmail api has a response limit of 500)
@@ -408,9 +432,6 @@ const getNewsletterEmails = async (token: string) => {
       } else {
         nextPageToken = null;
       }
-      console.log('🚀 ~ file: gmail.ts:408 ~ getNewsletterEmails ~ nextPageToken:', nextPageToken);
-
-      // console.log('🚀 ~ file: gmail.ts:385 ~ getNewsletterEmails ~ parsedRes:', parsedRes);
 
       // dividing the messageIds into batches ~
       // so we can use the gmail batch api to group multiple requests into on
@@ -423,12 +444,8 @@ const getNewsletterEmails = async (token: string) => {
       }
       //  end of do while loop...
 
-      console.log('🚀 ~ file: gmail.ts:396 ~ getNewsletterEmails ~ batches:', batches);
-
       // process batches to get newsletter emails
       for (const batch of batches) {
-        console.log('🚀 ~ file: gmail.ts:406 ~ getNewsletterEmails ~ batch:', batch);
-
         // get sender emails from the message ids queried
         const senderEmails = await getSenderEmailsFromIds({
           messageIds: batch,
@@ -447,18 +464,22 @@ const getNewsletterEmails = async (token: string) => {
               email => !syncStorageData[storageKeys.UNSUBSCRIBED_EMAILS].includes(email)
             );
             // store the filtered emails
-            newsletterEmails.push(...filteredEmails);
+            newsletterEmails = removeDuplicateEmails([...newsletterEmails, ...filteredEmails]);
           } else {
             // store the emails
-            newsletterEmails.push(...senderEmails);
+            newsletterEmails = removeDuplicateEmails([...newsletterEmails, ...senderEmails]);
+          }
+          if (!newsletterEmails[0]) {
+            newsletterEmails.splice(0, 1);
           }
         }
       }
+      console.log('🚀 ~ file: gmail.ts:447 ~ getNewsletterEmails ~ nextPageToken:', nextPageToken);
     } while (nextPageToken !== null && newsletterEmails.length < 100);
 
-    console.log('🚀 ~ file: gmail.ts:459 ~ getNewsletterEmails ~ nextPageToken:', nextPageToken);
-
     console.log('🚀 ~ file: gmail.ts:404 ~ getNewsletterEmails ~ newsletterEmails:', newsletterEmails);
+    // remove duplicates emails
+
     return newsletterEmails;
 
     //
