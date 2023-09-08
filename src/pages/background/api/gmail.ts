@@ -378,16 +378,21 @@ const getNewsletterEmails = async (token: string) => {
 
   let nextPageToken: string | null = null;
 
-  const queryParams = `maxResults=${API_MAX_RESULT}&q={"Newsletter", "Unsubscribe"} in:anywhere&${
-    nextPageToken ? `pageToken=${nextPageToken}` : ''
-  }`;
-
-  //
+  // message ids batches to be processed
   let batches: string[][] = [];
+
+  // newsletter emails (processed & filtered)
+  const newsletterEmails = [''];
 
   try {
     // do while loop to handle pagination (gmail api has a response limit of 500)
     do {
+      const queryParams = `maxResults=${API_MAX_RESULT}&q={"Unsubscribe"} in:anywhere&${
+        nextPageToken ? `pageToken=${nextPageToken}` : ''
+      }`;
+
+      console.log('🚀 ~ file: gmail.ts:395 ~ getNewsletterEmails ~ queryParams:', queryParams);
+
       const res = await fetch(
         `https://gmail.googleapis.com/gmail/v1/users/me/messages?${queryParams}`,
         fetchOptions
@@ -400,9 +405,12 @@ const getNewsletterEmails = async (token: string) => {
       // save next page token if present to fetch next batch of messages
       if (parsedRes.nextPageToken) {
         nextPageToken = parsedRes.nextPageToken;
+      } else {
+        nextPageToken = null;
       }
+      console.log('🚀 ~ file: gmail.ts:408 ~ getNewsletterEmails ~ nextPageToken:', nextPageToken);
 
-      console.log('🚀 ~ file: gmail.ts:385 ~ getNewsletterEmails ~ parsedRes:', parsedRes);
+      // console.log('🚀 ~ file: gmail.ts:385 ~ getNewsletterEmails ~ parsedRes:', parsedRes);
 
       // dividing the messageIds into batches ~
       // so we can use the gmail batch api to group multiple requests into on
@@ -414,27 +422,41 @@ const getNewsletterEmails = async (token: string) => {
         batches.push(parsedRes.messages.slice(i, i + BATCH_SIZE).map(msg => msg.id));
       }
       //  end of do while loop...
-    } while (nextPageToken !== null);
 
-    console.log('🚀 ~ file: gmail.ts:396 ~ getNewsletterEmails ~ batches:', batches);
+      console.log('🚀 ~ file: gmail.ts:396 ~ getNewsletterEmails ~ batches:', batches);
 
-    // newsletter emails (processed & filtered)
-    const newsletterEmails = [''];
+      // process batches to get newsletter emails
+      for (const batch of batches) {
+        console.log('🚀 ~ file: gmail.ts:406 ~ getNewsletterEmails ~ batch:', batch);
 
-    // process batches to get newsletter emails
-    for (const batch of batches) {
-      console.log('🚀 ~ file: gmail.ts:406 ~ getNewsletterEmails ~ batch:', batch);
+        // get sender emails from the message ids queried
+        const senderEmails = await getSenderEmailsFromIds({
+          messageIds: batch,
+          token,
+        });
+        if (senderEmails) {
+          // checking if emails are already unsubscribed
+          const syncStorageData = await chrome.storage.sync.get(storageKeys.UNSUBSCRIBED_EMAILS);
 
-      // get sender emails from the message ids queried
-      const senderEmails = await getSenderEmailsFromIds({
-        messageIds: batch,
-        token,
-      });
-      if (senderEmails) {
-        // store the emails
-        newsletterEmails.push(...senderEmails);
+          if (
+            syncStorageData[storageKeys.UNSUBSCRIBED_EMAILS] &&
+            syncStorageData[storageKeys.UNSUBSCRIBED_EMAILS].length > 0
+          ) {
+            // filter emails that are not already unsubscribed
+            const filteredEmails = senderEmails.filter(
+              email => !syncStorageData[storageKeys.UNSUBSCRIBED_EMAILS].includes(email)
+            );
+            // store the filtered emails
+            newsletterEmails.push(...filteredEmails);
+          } else {
+            // store the emails
+            newsletterEmails.push(...senderEmails);
+          }
+        }
       }
-    }
+    } while (nextPageToken !== null && newsletterEmails.length < 100);
+
+    console.log('🚀 ~ file: gmail.ts:459 ~ getNewsletterEmails ~ nextPageToken:', nextPageToken);
 
     console.log('🚀 ~ file: gmail.ts:404 ~ getNewsletterEmails ~ newsletterEmails:', newsletterEmails);
     return newsletterEmails;
