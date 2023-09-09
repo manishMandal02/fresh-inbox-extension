@@ -1,6 +1,6 @@
 import { MAIL_MAGIC_FILTER_EMAIL, storageKeys } from '@src/pages/background/constants/app.constants';
-import { getEmailsFromFilterQuery } from '../utils/getEmailsFromFilterQuery';
-import { removeDuplicateEmails } from '../utils/removeDuplicateEmails';
+import { getEmailsFromFilterQuery } from '../../utils/getEmailsFromFilterQuery';
+import { removeDuplicateEmails } from '../../utils/removeDuplicateEmails';
 
 const API_MAX_RESULT = 500;
 
@@ -235,61 +235,65 @@ const batchDeleteEmails = async (token: string, ids: string[]) => {
 };
 
 const deleteAllMails = async ({ token, email }: APIHandleParams) => {
-  const fetchOptions: Partial<RequestInit> = {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  };
+  try {
+    const fetchOptions: Partial<RequestInit> = {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
 
-  let nextPageToken: string | null = null;
+    let nextPageToken: string | null = null;
 
-  const queryParams = `from:${email}&maxResults=${API_MAX_RESULT}&${
-    nextPageToken ? `pageToken=${nextPageToken}` : ''
-  }`;
+    const queryParams = `from:${email}&maxResults=${API_MAX_RESULT}&${
+      nextPageToken ? `pageToken=${nextPageToken}` : ''
+    }`;
 
-  let parsedRes: GetMsgAPIResponseSuccess | null = null;
+    let parsedRes: GetMsgAPIResponseSuccess | null = null;
 
-  //* do... while() loop to  handle pagination delete if messages/gmail exceeds API max limit (500)
-  //* keep fetching & deleting emails until nextPageToken is null
-  do {
-    // fetch message/emails
-    const res = await fetch(
-      `https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${queryParams}${
-        nextPageToken ? `&pageToken=${nextPageToken}` : ''
-      }`,
-      fetchOptions
-    );
-    parsedRes = await res.json();
-
-    // stop if no messages found
-    if (!parsedRes.messages || (parsedRes.messages && parsedRes.messages.length < 1)) {
-      console.log(
-        '🚀 ~ file: gmailAPI.ts:38 ~ deleteAllMails ~ Failed to get gmail message: parsedRes:',
-        parsedRes
+    //* do... while() loop to  handle pagination delete if messages/gmail exceeds API max limit (500)
+    //* keep fetching & deleting emails until nextPageToken is null
+    do {
+      // fetch message/emails
+      const res = await fetch(
+        `https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${queryParams}${
+          nextPageToken ? `&pageToken=${nextPageToken}` : ''
+        }`,
+        fetchOptions
       );
-      return;
-    }
-    console.log('🚀 ~ file: gmailAPI.ts:23 ~ deleteAllMails ~ messages:', parsedRes);
+      parsedRes = await res.json();
 
-    // save next page token if present to fetch next batch of messages
-    if (parsedRes.nextPageToken) {
-      nextPageToken = parsedRes.nextPageToken;
-    } else {
-      nextPageToken = null;
-    }
+      // stop if no messages found
+      if (!parsedRes.messages || (parsedRes.messages && parsedRes.messages.length < 1)) {
+        console.log(
+          '🚀 ~ file: gmailAPI.ts:38 ~ deleteAllMails ~ Failed to get gmail message: parsedRes:',
+          parsedRes
+        );
+        return;
+      }
+      console.log('🚀 ~ file: gmailAPI.ts:23 ~ deleteAllMails ~ messages:', parsedRes);
 
-    // get message ids from success response
-    const msgIds = parsedRes.messages.map(msg => msg.id);
+      // save next page token if present to fetch next batch of messages
+      if (parsedRes.nextPageToken) {
+        nextPageToken = parsedRes.nextPageToken;
+      } else {
+        nextPageToken = null;
+      }
 
-    // batch delete messages/emails
-    await batchDeleteEmails(token, msgIds);
-  } while (nextPageToken !== null);
-  //* end of do...while loop
+      // get message ids from success response
+      const msgIds = parsedRes.messages.map(msg => msg.id);
+
+      // batch delete messages/emails
+      await batchDeleteEmails(token, msgIds);
+    } while (nextPageToken !== null);
+    //* end of do...while loop
+  } catch (err) {
+    console.log('🚀 ~ file: gmail.ts:242 ~ deleteAllMails ~ err:', err);
+  }
 };
 
-const unsubscribeAndDeleteAllMails = async (email: string, token: string) => {
+const unsubscribeAndDeleteAllMails = async ({ email, token }: APIHandleParams) => {
   // unsubscribe
   await unsubscribe({ token, email });
 
@@ -451,34 +455,43 @@ const getNewsletterEmails = async (token: string) => {
           messageIds: batch,
           token,
         });
-        if (senderEmails) {
-          // checking if emails are already unsubscribed
-          const syncStorageData = await chrome.storage.sync.get(storageKeys.UNSUBSCRIBED_EMAILS);
 
-          if (
-            syncStorageData[storageKeys.UNSUBSCRIBED_EMAILS] &&
-            syncStorageData[storageKeys.UNSUBSCRIBED_EMAILS].length > 0
-          ) {
-            // filter emails that are not already unsubscribed
-            const filteredEmails = senderEmails.filter(
-              email => !syncStorageData[storageKeys.UNSUBSCRIBED_EMAILS].includes(email)
-            );
-            // store the filtered emails
-            newsletterEmails = removeDuplicateEmails([...newsletterEmails, ...filteredEmails]);
-          } else {
-            // store the emails
-            newsletterEmails = removeDuplicateEmails([...newsletterEmails, ...senderEmails]);
-          }
-          if (!newsletterEmails[0]) {
-            newsletterEmails.splice(0, 1);
-          }
+        // store the emails
+        newsletterEmails = removeDuplicateEmails([...newsletterEmails, ...senderEmails]);
+      }
+
+      //* check if emails are already unsubscribed or whitelisted
+      if (newsletterEmails.length > 0) {
+        const unsubscribedEmailsStorage = await chrome.storage.sync.get(storageKeys.UNSUBSCRIBED_EMAILS);
+        const whitelistedEmailsStorage = await chrome.storage.sync.get(storageKeys.UNSUBSCRIBED_EMAILS);
+
+        // emails to filter out, combining unsubscribed and whitelisted emails
+        const filterEmails = [];
+
+        if (unsubscribedEmailsStorage && unsubscribedEmailsStorage[storageKeys.UNSUBSCRIBED_EMAILS]) {
+          filterEmails.push(...unsubscribedEmailsStorage[storageKeys.UNSUBSCRIBED_EMAILS]);
+        }
+
+        if (whitelistedEmailsStorage && whitelistedEmailsStorage[storageKeys.WHITELISTED_EMAILS]) {
+          filterEmails.push(...whitelistedEmailsStorage[storageKeys.WHITELISTED_EMAILS]);
+        }
+
+        if (filterEmails.length > 0) {
+          // filter emails already unsubscribed or whitelisted
+          const filteredEmails = newsletterEmails.filter(email => !filterEmails.includes(email));
+          // store the filtered emails
+          newsletterEmails = removeDuplicateEmails([...newsletterEmails, ...filteredEmails]);
+        } else {
+          // store the emails
+          newsletterEmails = removeDuplicateEmails([...newsletterEmails]);
+        }
+        if (!newsletterEmails[0]) {
+          newsletterEmails.splice(0, 1);
         }
       }
-      console.log('🚀 ~ file: gmail.ts:447 ~ getNewsletterEmails ~ nextPageToken:', nextPageToken);
     } while (nextPageToken !== null && newsletterEmails.length < 100);
 
     console.log('🚀 ~ file: gmail.ts:404 ~ getNewsletterEmails ~ newsletterEmails:', newsletterEmails);
-    // remove duplicates emails
 
     return newsletterEmails;
 

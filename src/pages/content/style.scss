@@ -616,7 +616,7 @@ $text-dark: #282828;
               > tr {
                 padding: 3px 12px;
                 > td {
-                  padding: 10px 24px;
+                  padding: 10px 20px;
                   font-size: 15px;
                   color: #2c2c2c;
                   display: flex;
@@ -624,12 +624,20 @@ $text-dark: #282828;
                   align-items: center;
                   > span {
                     margin: 0;
+                    font-size: 12.5px;
                     // serial number
                     > strong {
                       margin-right: 1px;
-                      font-weight: 400;
-                      color: #373737;
-                      font-size: 14px;
+                      font-weight: 500;
+                      color: #2b2b2b;
+                      font-size: 12px;
+                      opacity: 0.7;
+                    }
+                    // name
+                    > span {
+                      margin-right: 4px;
+                      font-size: 13.5px;
+                      color: #2b2b2b;
                     }
                   }
                   > div {

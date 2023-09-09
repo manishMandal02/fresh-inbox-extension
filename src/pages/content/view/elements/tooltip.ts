@@ -21,11 +21,4 @@ const addTooltip = (parentEl: HTMLElement, title: string) => {
   });
 };
 
-const removeTooltip = (parentEl: HTMLElement) => {
-  // remove tooltip element
-  parentEl.querySelector('span#mailMagic-tooltip')?.remove();
-  // remove parent el
-  parentEl.remove();
-};
-
-export { addTooltip, removeTooltip };
+export { addTooltip };

@@ -9,6 +9,7 @@ export enum IMessageEvent {
   REFRESH_TABLE = 'refreshTable',
   GET_NEWSLETTER_EMAILS = 'getNewsletterEmails',
   RE_SUBSCRIBE = 'reSubscribe',
+  WHITELIST_EMAIL = 'whitelistEmail',
 }
 export interface IMessageBody {
   event: IMessageEvent;

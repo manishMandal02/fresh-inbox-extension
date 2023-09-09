@@ -6,6 +6,7 @@ import {
   handleDeleteAllMails,
   handleUnsubscribe,
   handleUnsubscribeAndDeleteAllMails,
+  handleWhitelist,
 } from '../utils/emailActions';
 
 export interface IHoverCardElements {
@@ -16,31 +17,6 @@ export interface IHoverCardElements {
   deleteAllMailsBtn: HTMLButtonElement;
   unsubscribeAndDeleteAllMailsBtn: HTMLButtonElement;
 }
-
-//* handle white list email
-const handleWhiteListEmail = async (ev: MouseEvent) => {
-  ev.stopPropagation();
-
-  // get email and name from global variables
-  const { email } = mailMagicGlobalVariables;
-
-  try {
-    // get all white listed emails from extension storage
-    const syncStorageData = await chrome.storage.sync.get(storageKeys.WHITELISTED_EMAILS);
-    // add email to while list
-    const updatedWhileListedEmails = [...syncStorageData[storageKeys.WHITELISTED_EMAILS], email];
-
-    // save the updated list to extension storage
-    await chrome.storage.sync.set({ [storageKeys.WHITELISTED_EMAILS]: updatedWhileListedEmails });
-
-    // remove mail magic assistant button
-  } catch (err) {
-    console.log(
-      `🚀 ~ file: unsubscribeHoverCard.ts:24 ~ handleWhiteListEmail ❌ Failed to add email to white list email: ${email} ~ err:`,
-      err
-    );
-  }
-};
 
 //* handle mouseover on hoverCard
 const handleMouseOverHoverCard = (ev: MouseEvent) => {
@@ -163,7 +139,7 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
   }
 
   // add onClick listener to white list email button
-  whiteListEmailBtn.addEventListener('click', handleWhiteListEmail);
+  whiteListEmailBtn.addEventListener('click', handleWhitelist);
 
   // add onClick listener to delete all mails button
   deleteAllMailsBtn.addEventListener('click', ev => {

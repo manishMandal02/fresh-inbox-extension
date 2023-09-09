@@ -1,4 +1,4 @@
-import { IUserInfo } from '../background.types';
+import { IUserInfo } from '../../types/background.types';
 
 export const USER_ACCESS_DENIED = 'The user did not approve access.';
 

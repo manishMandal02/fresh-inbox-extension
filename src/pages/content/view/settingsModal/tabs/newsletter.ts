@@ -2,21 +2,50 @@ import {
   handleUnsubscribe,
   handleDeleteAllMails,
   handleUnsubscribeAndDeleteAllMails,
+  handleWhitelist,
 } from '@src/pages/content/utils/emailActions';
 import { storageKeys } from '@src/pages/content/constants/app.constants';
 
 import { showConfirmModal } from '../../elements/confirmModal';
-import { addTooltip, removeTooltip } from '../../elements/tooltip';
+import { addTooltip } from '../../elements/tooltip';
 import { randomId } from '@src/pages/content/utils/randomId';
 import { getLoadingSpinner } from '../../elements/loadingSpinner';
-import { hideLoadingSnackbar, showLoadingSnackbar } from '../../elements/snackbar';
 import wait from '@src/pages/content/utils/wait';
-import { IMessageEvent } from '@src/pages/content/content.types';
-import { renderTextMsg } from '../../elements/text';
 
 type NewsletterData = {
   email: string;
   name: string;
+};
+
+// show loading spinner instead of action buttons for table row when email actions is processing
+const renderLoadingSpinnerInsteadOfButtons = (tableRow: HTMLTableRowElement) => {
+  // get all the action buttons for that row
+  const actionBtnContainer = tableRow.getElementsByTagName('div')?.[0];
+  // storing the buttons because we will re-add them, if action fails
+
+  // hide the buttons
+  for (const btn of actionBtnContainer.getElementsByTagName('button')) {
+    btn.style.display = 'none';
+  }
+
+  // create a spinner
+  const spinner = getLoadingSpinner();
+
+  // add spinner and remove buttons
+  actionBtnContainer.appendChild(spinner);
+
+  // return a callback fn which when called will hide the loading spinner
+  return (showActionButtons?: boolean) => {
+    // remove/hide spinner
+    spinner.remove();
+
+    if (showActionButtons) {
+      // show the buttons
+      for (const btn of actionBtnContainer.getElementsByTagName('button')) {
+        btn.style.display = 'inline-block';
+      }
+    }
+  };
 };
 
 // render table
@@ -47,17 +76,19 @@ const renderTable = async (data: NewsletterData[]) => {
   newsletterEmails.forEach(({ email, name }, idx) => {
     console.log('🚀 ~ file: newsletter.ts:44 ~ renderTable ~ email:', email);
 
-    // table row
     const tableRow = document.createElement('tr');
     // unique id for each row
     const rowId = randomId();
 
-    // map over data
+    // table row html
     let tableRowData = `
                 <td>
                     
-                    <span><strong>${idx + 1}.</strong> ${email}</span>
+                    <span><strong>${idx + 1}.</strong> <span>${name
+      .replaceAll(`\\`, '')
+      .trim()}</span>(${email})</span>
                     <div id='newsletterTab-actionBtn'>
+                      <button id='newsletterTab-actionBtn-whitelist-${rowId}'>✅</button>
                       <button id='newsletterTab-actionBtn-unsubscribe-${rowId}'>❌</button>
                       <button id='newsletterTab-actionBtn-deleteAllMails-${rowId}'>🗑️</button>
                       <button id='newsletterTab-actionBtn-unsubscribeAndDeleteAllMails-${rowId}'>❌ + 🗑️</button>
@@ -73,50 +104,40 @@ const renderTable = async (data: NewsletterData[]) => {
 
     //* add event listener to all the action buttons
     // get button elements
+    const whitelistBtn = document.getElementById(`newsletterTab-actionBtn-whitelist-${rowId}`);
     const unsubscribeBtn = document.getElementById(`newsletterTab-actionBtn-unsubscribe-${rowId}`);
     const deleteAllMails = document.getElementById(`newsletterTab-actionBtn-deleteAllMails-${rowId}`);
     const unsubscribeAndDeleteAllMailsBtn = document.getElementById(
       `newsletterTab-actionBtn-unsubscribeAndDeleteAllMails-${rowId}`
     );
 
-    if (!unsubscribeBtn || !deleteAllMails || !unsubscribeAndDeleteAllMailsBtn) return;
+    if (!whitelistBtn || !unsubscribeBtn || !deleteAllMails || !unsubscribeAndDeleteAllMailsBtn) return;
 
-    unsubscribeBtn.addEventListener('click', async ev => {
+    whitelistBtn.addEventListener('click', async ev => {
+      ev.stopPropagation();
       // set global variable state
       mailMagicGlobalVariables.email = email;
-      //TODO: get name
-      mailMagicGlobalVariables.name = '';
-      //TODO: show a loading spinner instead of action buttons for that row
-      // get all the action buttons for that row
-      const actionBtnContainer = tableRow.getElementsByTagName('div')?.[0];
-      // storing the buttons because we will re-add them, if action fails
+      mailMagicGlobalVariables.name = name;
 
-      // hide the buttons
-      for (const btn of actionBtnContainer.getElementsByTagName('button')) {
-        btn.style.display = 'none';
-      }
+      // TODO: show loading spinner
 
-      // create a spinner
-      const spinner = getLoadingSpinner();
+      // handle whitelist action
+      await handleWhitelist();
+    });
 
-      // add spinner and remove buttons
-      actionBtnContainer.appendChild(spinner);
+    unsubscribeBtn.addEventListener('click', async ev => {
+      ev.stopPropagation();
 
-      //TODO: show a loading snackbar
-      showLoadingSnackbar({ title: 'Unsubscribing from', email });
+      // set global variable state
+      mailMagicGlobalVariables.email = email;
+      mailMagicGlobalVariables.name = name;
 
-      await wait(3000);
+      // show loading spinner
+      const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
 
-      // remove/hide spinner
-      spinner.remove();
-      hideLoadingSnackbar();
+      await handleUnsubscribe();
 
-      // show the buttons
-      for (const btn of actionBtnContainer.getElementsByTagName('button')) {
-        btn.style.display = 'inline-block';
-      }
-
-      // await handleUnsubscribe();
+      // ToDo: re-render table if action success (remove the email from table)
     });
 
     deleteAllMails.addEventListener('click', async ev => {
@@ -124,7 +145,9 @@ const renderTable = async (data: NewsletterData[]) => {
 
       // set global variable state
       mailMagicGlobalVariables.email = email;
+      mailMagicGlobalVariables.name = name;
 
+      // TODO: show loading spinner
       showConfirmModal({
         msg: 'Are you sure you want to delete all mails  from',
         email,
@@ -137,6 +160,9 @@ const renderTable = async (data: NewsletterData[]) => {
 
       // set global variable state
       mailMagicGlobalVariables.email = email;
+      mailMagicGlobalVariables.name = name;
+
+      // TODO: show loading spinner
 
       showConfirmModal({
         msg: 'Are you sure you want to delete all mails and unsubscribe from',
@@ -146,6 +172,7 @@ const renderTable = async (data: NewsletterData[]) => {
     });
 
     // add tooltips to buttons
+    addTooltip(whitelistBtn, 'Whitelist/Keep');
     addTooltip(unsubscribeBtn, 'Unsubscribe');
     addTooltip(deleteAllMails, 'Delete All Mails');
     addTooltip(unsubscribeAndDeleteAllMailsBtn, 'Unsubscribe & \n Delete All Mails');
@@ -181,64 +208,52 @@ const renderNewsletterTab = async (parentContainer: HTMLElement) => {
 
   parentContainer.appendChild(newsletterTabContainer);
 
-  // TODO: testing... table view
-  // await renderTable([
-  //   { email: 'newsletter.test@flipkart.com' },
-  //   { email: 'newsletter.test@flipkart.com' },
-  //   { email: 'newsletter.test@flipkart.com' },
-  //   { email: 'newsletter.test@flipkart.com' },
-  //   { email: 'newsletter.test-three@example.com' },
-  //   { email: 'newsletter.test-three@example.com' },
-  //   { email: 'mailing-list-world@google.co.com' },
-  //   { email: 'mailing-list-world@google.co.com' },
-  //   { email: 'mailing-list-world@google.co.com' },
-  //   { email: 'manish@one.com' },
-  //   { email: 'manish@one.com' },
-  //   { email: 'asdasdasewq343as@asdasfasfdas.com' },
-  //   { email: 'manishMandal02032@one.com' },
-  //   { email: 'manishMandal02032@one.com' },
-  //   { email: 'manish@one.com' },
-  //   { email: 'asdasdasewq343wasdas@asdasfasfdas.com' },
-  // ]);
+  // TODO: testing... table view -delete later
+  await renderTable([
+    { name: '\\Turing - U.S. Software Jobs\\', email: 'noply+14@turing.com' },
+    { name: 'Fiverr', email: 'no-reply@ounce.fiverr.com' },
+    { name: '\\Founders, Newton School\\', email: 'namstey@netonschool.live' },
+  ]);
 
   //* get newsletters data
   // loading spinner to show while fetching emails
   const spinner = getLoadingSpinner();
-  try {
-    // get table container
-    const newsletterEmailsTable = document.getElementById('newsletterTab-table');
-    // append spinner
-    newsletterEmailsTable.appendChild(spinner);
+  // TODO: uncomment
+  // try {
+  //   // get table container
+  //   const newsletterEmailsTable = document.getElementById('newsletterTab-table');
+  //   // append spinner
+  //   newsletterEmailsTable.appendChild(spinner);
 
-    // send message to background to get data
-    const newsletterEmails = await chrome.runtime.sendMessage({ event: IMessageEvent.GET_NEWSLETTER_EMAILS });
+  //   // send message to background to get data
+  //   const newsletterEmails = await chrome.runtime.sendMessage({ event: IMessageEvent.GET_NEWSLETTER_EMAILS });
 
-    console.log('🚀 ~ file: newsletter.ts:216 ~ renderNewsletterTab ~ newsletterEmails:', newsletterEmails);
+  //   console.log('🚀 ~ file: newsletter.ts:216 ~ renderNewsletterTab ~ newsletterEmails:', newsletterEmails);
 
-    // remove loading spinner
-    spinner.remove();
-    if (newsletterEmails) {
-      // render table from the data
-      await renderTable(newsletterEmails);
-    } else {
-      // show message saying no newsletter emails found
-      const msg = renderTextMsg(
-        `📭 No Newsletter or mailing list emails found in your Inbox. <br/> ℹ️ Emails already unsubscribed by Mail Magic won't be visible here.`
-      );
-      // append msg to table
-      const tableContainer = document.getElementById('newsletterTab-table');
-      tableContainer.appendChild(msg);
-    }
-  } catch (err) {
-    // remove loading spinner
-    spinner.remove();
-    console.log('🚀 ~ file: newsletter.ts:51 ~ renderNewsletterTab ~ err):', err);
-    // show a error message: saying something went wrong
-    const msg = renderTextMsg('❌ Something went wrong, Failed to get newsletter');
-    // append msg to table
-    const tableContainer = document.getElementById('newsletterTab-table');
-    tableContainer.appendChild(msg);
-  }
+  //   // remove loading spinner
+  //   spinner.remove();
+  //   if (newsletterEmails) {
+  //     // render table from the data
+  //     await renderTable(newsletterEmails);
+  //   } else {
+  //     // show message saying no newsletter emails found
+  //     const msg = renderTextMsg(
+  //       `📭 No Newsletter or mailing list emails found in your Inbox. <br/> ℹ️ Emails already unsubscribed by Mail Magic won't be visible here.`
+  //     );
+  //     // append msg to table
+  //     const tableContainer = document.getElementById('newsletterTab-table');
+  //     tableContainer.appendChild(msg);
+  //   }
+  // } catch (err) {
+  //   // remove loading spinner
+  //   spinner.remove();
+  //   console.log('🚀 ~ file: newsletter.ts:51 ~ renderNewsletterTab ~ err):', err);
+  //   // show a error message: saying something went wrong
+  //   const msg = renderTextMsg('❌ Something went wrong, Failed to get newsletter');
+  //   // append msg to table
+  //   const tableContainer = document.getElementById('newsletterTab-table');
+  //   tableContainer.appendChild(msg);
+  // }
 };
 
 // remove the newsletter tab from DOM
