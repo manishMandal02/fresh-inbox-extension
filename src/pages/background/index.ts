@@ -33,14 +33,6 @@ let userInfo: IUserInfo = null;
 let token = '';
 let activeTabId = 0;
 
-//TODO: Get current user info
-
-// TODO: Check if we have user token
-
-// if (res.error === USER_ACCESS_DENIED) {
-//   //TODO: user didn't complete the auth flow or denied access
-// }
-
 const isAuthTokenValid = async () => {
   try {
     userInfo = await getUserInfo();

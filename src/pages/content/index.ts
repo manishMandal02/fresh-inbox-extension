@@ -17,7 +17,6 @@ import { refreshEmailsTable } from './utils/refreshEmailsTable';
 import { mailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
 import { storageKeys } from './constants/app.constants';
 import { showSettingsModal } from './view/settingsModal';
-import { showLoadingSnackbar, showSnackbar } from './view/elements/snackbar';
 
 // types
 // content script global variables
@@ -169,6 +168,8 @@ chrome.runtime.onMessage.addListener(
 
 //TODO: start/restart app logic when on inbox url: https://mail.google.com/mail/u/0/#inbox (get id from url, ex:inbox)
 //TODO: and also when they see a email and come back to the email table
+
+//TODO:  check the chrome-sync-storage if app is enabled or not, better to do this in the background script on the very first call
 
 // execute this script after 2.5s
 setTimeout(async () => {
