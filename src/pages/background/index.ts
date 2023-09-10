@@ -178,6 +178,8 @@ chrome.runtime.onMessage.addListener(
         }
       }
 
+      // TODO: handle re-subscribe
+
       case IMessageEvent.Disable_MailMagic: {
         //TODO: disable mail magic
         try {

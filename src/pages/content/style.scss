@@ -585,6 +585,7 @@ $text-dark: #282828;
         align-items: flex-start;
         flex-direction: column;
         max-height: 100%;
+        min-height: 100%;
         > p {
           font-size: 14px;
           color: #181717;
@@ -652,6 +653,43 @@ $text-dark: #282828;
               }
               > tr:nth-child(even) {
                 background-color: #0959d00a;
+              }
+              #newsletterTab-refresh-table {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                background-color: #e8eff9;
+                padding: 14px 0;
+                > q {
+                  font-size: 13px;
+                  color: $text-dark;
+                  text-align: center;
+                  line-height: 20px;
+                  margin: 0;
+                  margin-bottom: 8px;
+                  > strong {
+                    font-size: 13px;
+                    font-weight: 500;
+                  }
+                }
+
+                > button {
+                  cursor: pointer;
+                  border-radius: 6px;
+                  padding: 6px 12px;
+                  font-size: 13px;
+                  text-align: center;
+                  color: $text-dark;
+                  outline: none;
+                  border: none;
+                  background-color: #f9f9f9;
+                  box-shadow: #00000029 0px 1px 4px;
+                  font-weight: 500;
+                  > span {
+                    margin-right: 2px;
+                  }
+                }
               }
             }
           }

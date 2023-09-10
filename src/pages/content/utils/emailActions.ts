@@ -19,6 +19,7 @@ const handleUnsubscribe = async () => {
     });
     // hide snackbar
     hideLoadingSnackbar();
+    return res;
   } catch (err) {
     hideLoadingSnackbar();
     console.log('🚀 ~ file: emailActions.ts: ~ handleUnsubscribe ~ err:', err);
@@ -37,9 +38,10 @@ const handleDeleteAllMails = async () => {
       email,
     });
     // send message/event to background script
-    await chrome.runtime.sendMessage({ event: IMessageEvent.Delete_All_Mails, email, name });
+    const res = await chrome.runtime.sendMessage({ event: IMessageEvent.Delete_All_Mails, email, name });
     // hide snackbar
     hideLoadingSnackbar();
+    return res;
   } catch (err) {
     hideLoadingSnackbar();
     console.log('🚀 ~ file: emailActions.ts: ~ handleDeleteAllMails ~ err:', err);
@@ -59,10 +61,15 @@ const handleUnsubscribeAndDeleteAllMails = async () => {
     });
 
     // send message/event to background script
-    await chrome.runtime.sendMessage({ event: IMessageEvent.Unsubscribe_And_Delete_All_Mails, email, name });
+    const res = await chrome.runtime.sendMessage({
+      event: IMessageEvent.Unsubscribe_And_Delete_All_Mails,
+      email,
+      name,
+    });
 
     // hide snackbar
     hideLoadingSnackbar();
+    return res;
   } catch (err) {
     hideLoadingSnackbar();
     console.log('🚀 ~ file: emailActions.ts: ~ handleDeleteAllMails ~ err:', err);
@@ -82,10 +89,11 @@ const handleReSubscribe = async () => {
     });
 
     // send message/event to background script
-    await chrome.runtime.sendMessage({ event: IMessageEvent.RE_SUBSCRIBE, email, name });
+    const res = await chrome.runtime.sendMessage({ event: IMessageEvent.RE_SUBSCRIBE, email, name });
 
     // hide snackbar
     hideLoadingSnackbar();
+    return res;
   } catch (err) {
     hideLoadingSnackbar();
     console.log('🚀 ~ file: emailActions.ts: ~ handleDeleteAllMails ~ err:', err);
@@ -104,10 +112,11 @@ const handleWhitelist = async () => {
     });
 
     // send message/event to background script
-    await chrome.runtime.sendMessage({ event: IMessageEvent.WHITELIST_EMAIL, email, name });
+    const res = await chrome.runtime.sendMessage({ event: IMessageEvent.WHITELIST_EMAIL, email, name });
 
     // hide snackbar
     hideLoadingSnackbar();
+    return res;
   } catch (err) {
     hideLoadingSnackbar();
     console.log('🚀 ~ file: emailActions.ts: ~ handleWhitelist ~ err:', err);
