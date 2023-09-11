@@ -8,7 +8,7 @@ type whitelistEmailsParams = {
 export const whitelistEmails = async ({ token, email }: whitelistEmailsParams) => {
   try {
     // get whitelisted emails from storage
-    const syncStorageData = await chrome.storage.sync.get(storageKeys.WHITELISTED_EMAILS);
+    const syncStorageData = await chrome.storage.local.get(storageKeys.WHITELISTED_EMAILS);
 
     // new list of whitelisted email
     const newWhitelistedEmails = [email];
@@ -23,7 +23,7 @@ export const whitelistEmails = async ({ token, email }: whitelistEmailsParams) =
     }
 
     // save the new list to the
-    await chrome.storage.sync.set({ [storageKeys.WHITELISTED_EMAILS]: newWhitelistedEmails });
+    await chrome.storage.local.set({ [storageKeys.WHITELISTED_EMAILS]: newWhitelistedEmails });
     console.log('✅ Successfully saved email to whitelisting list');
   } catch (err) {
     console.log(

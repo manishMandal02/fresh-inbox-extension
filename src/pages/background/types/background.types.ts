@@ -8,9 +8,13 @@ export enum IMessageEvent {
   Disable_MailMagic = 'disableMailMagic',
   REFRESH_TABLE = 'refreshTable',
   GET_NEWSLETTER_EMAILS = 'getNewsletterEmails',
+  GET_UNSUBSCRIBED_EMAILS = 'getUnsubscribedEmails',
+  GET_WHITELISTED_EMAILS = 'getWhitelistedEmails',
+  CHECK_NEWSLETTER_EMAILS_ON_PAGE = 'checkForNewsletterEmailsOnPage',
   RE_SUBSCRIBE = 'reSubscribe',
   WHITELIST_EMAIL = 'whitelistEmail',
 }
+
 export interface IMessageBody {
   event: IMessageEvent;
   email?: string;

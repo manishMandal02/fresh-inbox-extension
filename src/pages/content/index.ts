@@ -15,7 +15,6 @@ import { IMessageBody, IMessageEvent } from './content.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
 import { refreshEmailsTable } from './utils/refreshEmailsTable';
 import { mailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
-import { storageKeys } from './constants/app.constants';
 import { showSettingsModal } from './view/settingsModal';
 
 // types
@@ -45,73 +44,93 @@ const getAllMails = async () => {
   // get all mail nodes on current page in the table by email attribute
   allMailNodes = Array.from(document.querySelectorAll('tr>td>div:last-child>span>span[email]'));
 
-  console.log('🚀 ~ file: index.ts:16 ~ getAllMails ~ allMailNodes:', allMailNodes.length);
-
-  // TODO: don't show assistant button for white listed emails
-  let whiteListedEmails: null | string[] = null;
-  // get white listed emails from extension storage
-  const syncStorageData = await chrome.storage.sync.get(storageKeys.WHITELISTED_EMAILS);
-  if (
-    syncStorageData[storageKeys.WHITELISTED_EMAILS] &&
-    syncStorageData[storageKeys.WHITELISTED_EMAILS].length > 0
-  ) {
-    whiteListedEmails = syncStorageData[storageKeys.WHITELISTED_EMAILS];
+  if (allMailNodes.length < 1) {
+    console.log('❌ No emails (nodes) found on this page.');
+    return;
   }
 
-  if (allMailNodes.length > 0) {
-    for (const email of allMailNodes) {
-      const emailAttr = email.getAttribute('email');
-      const name = email.getAttribute('name');
+  console.log('🚀 ~ file: index.ts:16 ~ getAllMails ~ allMailNodes:', allMailNodes.length);
 
-      //* skips the iteration if the current email is white listed
-      // assistant button won't be rendered
-      if (whiteListedEmails && whiteListedEmails.includes(emailAttr)) {
-        continue;
-      }
+  let newsletterEmails = [''];
 
-      //***** append unsubscribe  button
-      // container to add unsubscribe button
-      const mailMagicAssistantBtnContainer = email.closest('div');
-
-      const mailMagicAssistantBtn = document.createElement('span');
-      mailMagicAssistantBtn.classList.add('mailMagic-assistant-btn');
-
-      // append the button to container
-      mailMagicAssistantBtnContainer.appendChild(mailMagicAssistantBtn);
-
-      // add onmouseover (on hover) event listener to unsubscribe button
-      mailMagicAssistantBtn.addEventListener('click', (ev: MouseEvent) => {
-        ev.stopPropagation();
-        // plan something for this
-      });
-      // add onmouseover (on hover) event listener to unsubscribe button
-      mailMagicAssistantBtn.addEventListener('mouseover', () => {
-        mailMagicGlobalVariables.assistantBtnContainerId = randomId();
-        mailMagicAssistantBtnContainer.id = mailMagicGlobalVariables.assistantBtnContainerId;
-        //
-        mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn = true;
-        setTimeout(async () => {
-          await showHoverCard({
-            name,
-            parentElId: mailMagicGlobalVariables.assistantBtnContainerId,
-            email: emailAttr,
-            hoverCardElements: mailMagicGlobalVariables.hoverCardElements,
-          });
-        }, 300);
-      });
-
-      mailMagicAssistantBtn.addEventListener('mouseout', () => {
-        setTimeout(() => {
-          hideHoverCard({
-            parentElId: mailMagicGlobalVariables.assistantBtnContainerId,
-            hoverCardElements: mailMagicGlobalVariables.hoverCardElements,
-          });
-        }, 800);
-        mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn = false;
-      });
+  // get email and name from each mail node
+  let allEmailsOnPage = allMailNodes.map(mailNode => {
+    if (mailNode.getAttribute('email')) {
+      return mailNode.getAttribute('email');
+    } else {
+      return null;
     }
-  } else {
-    console.log('❌ No emails found on page');
+  });
+
+  // remove null/empty values
+  allEmailsOnPage = allEmailsOnPage.filter(email => email);
+
+  const res = await chrome.runtime.sendMessage({
+    event: IMessageEvent.CHECK_NEWSLETTER_EMAILS_ON_PAGE,
+    emails: allEmailsOnPage,
+  });
+
+  if (res) {
+    newsletterEmails = res;
+  }
+
+  // do nothing if no newsletter emails found
+  if (newsletterEmails.length < 1) {
+    console.log('🙌 No newsletter emails found on this page.');
+    return;
+  }
+
+  // loop through all mail nodes to embed assistant button
+  for (const email of allMailNodes) {
+    const emailAttr = email.getAttribute('email');
+    const name = email.getAttribute('name');
+
+    //* skips the iteration if the current email is not a newsletter email
+    // assistant button won't be rendered
+    if (newsletterEmails.length > 0 && !newsletterEmails.includes(emailAttr)) {
+      continue;
+    }
+
+    // append unsubscribe  button
+    // container to add unsubscribe button
+    const mailMagicAssistantBtnContainer = email.closest('div');
+
+    const mailMagicAssistantBtn = document.createElement('span');
+    mailMagicAssistantBtn.classList.add('mailMagic-assistant-btn');
+
+    // append the button to container
+    mailMagicAssistantBtnContainer.appendChild(mailMagicAssistantBtn);
+
+    // add onmouseover (on hover) event listener to unsubscribe button
+    mailMagicAssistantBtn.addEventListener('click', (ev: MouseEvent) => {
+      ev.stopPropagation();
+      // plan something for this
+    });
+    // add onmouseover (on hover) event listener to unsubscribe button
+    mailMagicAssistantBtn.addEventListener('mouseover', () => {
+      mailMagicGlobalVariables.assistantBtnContainerId = randomId();
+      mailMagicAssistantBtnContainer.id = mailMagicGlobalVariables.assistantBtnContainerId;
+      //
+      mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn = true;
+      setTimeout(async () => {
+        await showHoverCard({
+          name,
+          parentElId: mailMagicGlobalVariables.assistantBtnContainerId,
+          email: emailAttr,
+          hoverCardElements: mailMagicGlobalVariables.hoverCardElements,
+        });
+      }, 300);
+    });
+
+    mailMagicAssistantBtn.addEventListener('mouseout', () => {
+      setTimeout(() => {
+        hideHoverCard({
+          parentElId: mailMagicGlobalVariables.assistantBtnContainerId,
+          hoverCardElements: mailMagicGlobalVariables.hoverCardElements,
+        });
+      }, 800);
+      mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn = false;
+    });
   }
 };
 
@@ -136,6 +155,8 @@ const startApp = async () => {
     embedMailMagicBtn();
   }
 };
+
+// TODO: a global error handler to catch any errors, (also add the chrome runtime error method)
 
 //TODO: check if emails were loaded
 // if-not: then wait for 500ms then check again (keep repeating)

@@ -178,6 +178,12 @@ chrome.runtime.onMessage.addListener(
         }
       }
 
+      //TODO: handle check for newsletter emails on page
+
+      //TODO: handle get whitelisted emails
+
+      //TODO: handle get whitelisted emails
+
       // TODO: handle re-subscribe
 
       case IMessageEvent.Disable_MailMagic: {

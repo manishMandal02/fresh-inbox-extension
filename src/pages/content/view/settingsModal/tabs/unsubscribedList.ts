@@ -1,17 +1,6 @@
-import { storageKeys } from '@src/pages/content/constants/app.constants';
 import { handleReSubscribe } from '@src/pages/content/utils/emailActions';
 import { getLoadingSpinner } from '../../elements/loadingSpinner';
-
-// get email from table row
-const getEmailFromTableRow = (button: HTMLButtonElement) => {
-  const email = button.parentElement?.parentElement?.getElementsByTagName('span')[0].innerHTML;
-
-  if (!email) {
-    throw new Error('Email not found');
-  }
-
-  return email;
-};
+import { getUnsubscribedEmails } from '@src/pages/content/utils/getEmailsFromStorage';
 
 // render table
 const renderTable = async () => {
@@ -20,8 +9,7 @@ const renderTable = async () => {
   if (!tableEl) return;
 
   // get unsubscribed emails from chrome storage
-  const syncStorageData = await chrome.storage.sync.get(storageKeys.UNSUBSCRIBED_EMAILS);
-  const unsubscribedEmails = syncStorageData[storageKeys.UNSUBSCRIBED_EMAILS] || [];
+  const unsubscribedEmails = await getUnsubscribedEmails();
 
   // set num of unsubscribed emails
   const numOfNewsletterEmails = document.getElementById('unsubscribedListTab-numUnsubscribedEmails');
@@ -95,17 +83,18 @@ const renderUnsubscribedListTab = async (parentContainer: HTMLElement) => {
   //     console.log('🚀 ~ file: newsletter.ts:51 ~ renderUnsubscribedListTab ~ err):', err);
   //   }
 
-  //* add event listener to re-subscribe button
+  // handle on click of re-subscribe button
   // get re-subscribe button element
   const reSubscribeBtn = document.getElementById('unsubscribedListTab-actionBtn-reSubscribeBtn');
 
   if (!reSubscribeBtn) return;
 
+  // click event listener
   reSubscribeBtn.addEventListener('click', async ev => {
     // get email from the table row
-    const email = getEmailFromTableRow(ev.currentTarget as HTMLButtonElement);
     // set global variable state
-    mailMagicGlobalVariables.email = email;
+    // TODO:
+    // mailMagicGlobalVariables.email = email;
     //TODO: get name
     mailMagicGlobalVariables.name = '';
     // handle re-subscribe

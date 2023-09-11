@@ -1,13 +1,11 @@
-import { IMessageBody, IMessageEvent } from '../content.types';
-import { hideLoadingSnackbar, showLoadingSnackbar } from './elements/snackbar';
 import { showConfirmModal } from './elements/confirmModal';
-import { storageKeys } from '../constants/app.constants';
 import {
   handleDeleteAllMails,
   handleUnsubscribe,
   handleUnsubscribeAndDeleteAllMails,
   handleWhitelist,
 } from '../utils/emailActions';
+import { getUnsubscribedEmails } from '../utils/getEmailsFromStorage';
 
 export interface IHoverCardElements {
   hoverCard: HTMLDivElement;
@@ -117,8 +115,9 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
   hoverCard.addEventListener('mouseout', handleMouseOutHoverCard);
 
   // check if the email (currently hovered over) is already unsubscribed or not
-  const syncStorageData = await chrome.storage.sync.get(storageKeys.UNSUBSCRIBED_EMAILS);
-  if (syncStorageData[storageKeys.UNSUBSCRIBED_EMAILS]?.includes(email)) {
+  const unsubscribedEmailsList = await getUnsubscribedEmails();
+  const isUnsubscribed = unsubscribedEmailsList?.includes(email);
+  if (isUnsubscribed) {
     // if already unsubscribed, show only deleteAllMails button
     unsubscribeBtn.remove();
     unsubscribeAndDeleteAllMailsBtn.remove();

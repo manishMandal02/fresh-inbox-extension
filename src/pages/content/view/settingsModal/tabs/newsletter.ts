@@ -67,19 +67,19 @@ const getNewsletterData = async ({ shouldRefreshData }: { shouldRefreshData?: bo
     } else {
       //T check if the newsletter emails data is already stored in chrome.storage.local
       // get local storage data
-      const localChromeStorage = await chrome.storage.local.get(storageKeys.NEWSLETTER_EMAILS);
+      const chromeLocalStorage = await chrome.storage.local.get(storageKeys.NEWSLETTER_EMAILS);
 
       // check if newsletters data already exists
       if (
-        localChromeStorage[storageKeys.NEWSLETTER_EMAILS] &&
-        localChromeStorage[storageKeys.NEWSLETTER_EMAILS].length > 0
+        chromeLocalStorage[storageKeys.NEWSLETTER_EMAILS] &&
+        chromeLocalStorage[storageKeys.NEWSLETTER_EMAILS].length > 0
       ) {
         // data already exists, use it
-        newsletterEmails = localChromeStorage[storageKeys.NEWSLETTER_EMAILS];
+        newsletterEmails = chromeLocalStorage[storageKeys.NEWSLETTER_EMAILS];
 
         console.log(
-          '🚀 ~ file: newsletter.ts:241 ~ renderNewsletterTab ~ localChromeStorage[storageKeys.NEWSLETTER_EMAILS]:',
-          localChromeStorage[storageKeys.NEWSLETTER_EMAILS]
+          '🚀 ~ file: newsletter.ts:241 ~ renderNewsletterTab ~ chromeLocalStorage[storageKeys.NEWSLETTER_EMAILS]:',
+          chromeLocalStorage[storageKeys.NEWSLETTER_EMAILS]
         );
       } else {
         // data doesn't exist, fetch from background script
@@ -155,31 +155,17 @@ const renderLoadingSpinnerInsteadOfButtons = (tableRow: HTMLTableRowElement) => 
 };
 
 // render table
-const renderTable = async (data: NewsletterData[]) => {
+const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
   // get table
   const tableEl = document.getElementById('newsletterTab-table');
   if (!tableEl) return;
 
   // set num of newsletters (emails) found
   const numOfNewsletterEmails = document.getElementById('newsletterTab-numNewsletterEmails');
-  numOfNewsletterEmails.innerHTML = `${data.length}`;
-
-  let newsletterEmails = data;
-
-  // get unsubscribed emails from chrome storage
-  const syncStorageData = await chrome.storage.sync.get(storageKeys.UNSUBSCRIBED_EMAILS);
-  const unsubscribedEmails = syncStorageData[storageKeys.UNSUBSCRIBED_EMAILS] || [];
-
-  // check if email is already unsubscribed
-  if (unsubscribedEmails.length > 0) {
-    // filter emails that are already unsubscribed
-    newsletterEmails = newsletterEmails.filter(email => {
-      return !unsubscribedEmails.includes(email);
-    });
-  }
+  numOfNewsletterEmails.innerHTML = `${newsletterEmailsData.length}`;
 
   // loop over emails data to render table rows
-  newsletterEmails.forEach(({ email, name }, idx) => {
+  newsletterEmailsData.forEach(({ email, name }, idx) => {
     const tableRow = document.createElement('tr');
     // unique id for each row
     const rowId = randomId();
