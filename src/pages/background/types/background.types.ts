@@ -15,6 +15,11 @@ export enum IMessageEvent {
   WHITELIST_EMAIL = 'whitelistEmail',
 }
 
+export enum FILTER_ACTION {
+  TRASH = 'TRASH',
+  INBOX = 'INBOX',
+}
+
 export interface IMessageBody {
   event: IMessageEvent;
   email?: string;
@@ -24,3 +29,32 @@ export interface IUserInfo {
   email: string;
   userId: string;
 }
+
+export type GmailFilter = {
+  id: string;
+  criteria: {
+    query: string;
+  };
+  action: {
+    addLabelIds: string[];
+  };
+};
+
+export type GmailFilters = {
+  filters: GmailFilter[];
+};
+
+export type FilterEmails = {
+  filterId?: string;
+  emails: string[];
+};
+
+export type IGmailMessage = {
+  id: string;
+  threadId: string;
+};
+
+export type NewsletterEmails = {
+  email: string;
+  name: string;
+};

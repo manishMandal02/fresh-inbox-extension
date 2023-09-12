@@ -1,195 +1,50 @@
 import { MAIL_MAGIC_FILTER_EMAIL, storageKeys } from '@src/pages/background/constants/app.constants';
-import { getEmailsFromFilterQuery } from '../../utils/getEmailsFromFilterQuery';
 import { removeDuplicateEmails } from '../../utils/removeDuplicateEmails';
+import { FILTER_ACTION, IGmailMessage, NewsletterEmails } from '../../types/background.types';
+import { getMailMagicFilter } from './gmail/helpers/getMailMagicFilter';
+import { deleteFilter, getFilterById } from './gmail/helpers/gmailFilters';
+import { createFilter } from 'vite';
 
 const API_MAX_RESULT = 500;
-
-const TRASH_ACTION = 'TRASH';
 
 type APIHandleParams = {
   email: string;
   token: string;
 };
 
-type GmailFilter = {
-  id: string;
-  criteria: {
-    query: string;
-  };
-  action: {
-    addLabelIds: string[];
-  };
-};
-
-type GmailFilters = {
-  filters: GmailFilter[];
-};
-
-type FilterEmails = {
-  filterId?: string;
-  emails: string[];
-};
-
-type IGmailMessage = {
-  id: string;
-  threadId: string;
-};
 type GetMsgAPIResponseSuccess = {
   messages: IGmailMessage[];
   nextPageToken?: string;
   resultSizeEstimate: number;
 };
 
-export type NewsletterEmails = {
-  email: string;
-  name: string;
-};
-
-// get  filter by Id
-const getFilterById = async (token: string, id: string): Promise<FilterEmails | null> => {
-  const fetchOptions = {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  try {
-    const res = await fetch(
-      `https://gmail.googleapis.com/gmail/v1/users/me/settings/filters/${id}`,
-      fetchOptions
-    );
-    const parsedRes: GmailFilter | null = await res.json();
-    if (!parsedRes || !parsedRes.criteria.query) throw new Error('❌ Failed to get filters');
-
-    // get emails from query
-    const emails = getEmailsFromFilterQuery(parsedRes.criteria.query);
-
-    return { emails };
-  } catch (err) {
-    console.log('🚀 ~ file: gmail.ts:25 ~ checkForTrashFilter: ❌ Failed get filters ~ err:', err);
-    return null;
-  }
-};
-
-// get mail-magic filter id also return all emails optionally
-const getMailMagicFilter = async (token: string): Promise<FilterEmails | null> => {
-  const fetchOptions = {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
-  try {
-    const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/settings/filters', fetchOptions);
-    const parsedRes: GmailFilters | null = await res.json();
-    if (!parsedRes.filters) throw new Error('Failed to get filters');
-
-    let filterId = '';
-    let emails: string[] = [];
-
-    for (const filter of parsedRes.filters) {
-      if ((filter.action.addLabelIds.length = 1) && filter.action.addLabelIds[0] === TRASH_ACTION) {
-        // get emails from the filter criteria
-        const queryEmails = getEmailsFromFilterQuery(filter.criteria.query);
-        if (queryEmails.includes(MAIL_MAGIC_FILTER_EMAIL)) {
-          filterId = filter.id;
-          emails = queryEmails;
-          // stop the loop
-          break;
-        }
-      }
-    }
-    if (filterId) {
-      return {
-        filterId,
-        emails,
-      };
-    } else {
-      throw new Error('Mail Magic filter not found');
-    }
-  } catch (err) {
-    console.log('🚀 ~ file: gmail.ts:25 ~ checkForTrashFilter: ❌ Failed get filters ~ err:', err);
-    return null;
-  }
-};
-
-// create filter with mail-magic email get emails array
-const createFilter = async (token: string, emails: string[]): Promise<string | null> => {
-  // format the emails into a single query string for filter criteria
-  const criteriaQuery = `{${emails.map(email => `from:${email} `)}}`;
-
-  const fetchOptions = {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      action: {
-        addLabelIds: [TRASH_ACTION],
-      },
-      criteria: {
-        query: criteriaQuery,
-      },
-    }),
-  };
-
-  try {
-    const res = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/settings/filters`, fetchOptions);
-    console.log(`✅ Successfully created filter`);
-    const newFilter: GmailFilter = await res.json();
-    return newFilter.id;
-  } catch (err) {
-    console.log('🚀 ~ file: gmail.ts:126 ~ createFilter ❌ Failed to create filter ~ err:', err);
-    return null;
-  }
-};
-
-// delete previous mail-magic filter with id
-const deleteFilter = async (token: string, id: string) => {
-  //
-  const fetchOptions = {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  try {
-    await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/settings/filters${id}`, fetchOptions);
-    console.log(`✅ Successfully deleted filter`);
-  } catch (err) {
-    console.log(`❌ ~ file: gmail.ts:110 ~ deleteFilter:Failed to delete filter id:${id} ~ err:`, err);
-  }
-};
-
 //* unsubscribe/block email
 const unsubscribe = async ({ token, email }: APIHandleParams) => {
   try {
     // check if mail-magic filter id exists in storage
-    const syncStore = await chrome.storage.sync.get(storageKeys.MAIL_MAGIC_FILTER_ID);
+    const syncStore = await chrome.storage.sync.get(storageKeys.MAIL_MAGIC_UNSUBSCRIBE_FILTER_ID);
     let filterId = '';
     let prevFilterEmails = [''];
-    if (syncStore && syncStore.MAIL_MAGIC_FILTER_ID) {
+    if (syncStore && syncStore.MAIL_MAGIC_UNSUBSCRIBE_FILTER_ID) {
       // mailMagicFilterId found in storage
       // get filter by id and return emails
-      const filterEmails = await getFilterById(token, syncStore.MAIL_MAGIC_FILTER_ID);
-      filterId = syncStore.MAIL_MAGIC_FILTER_ID;
+      const filterEmails = await getFilterById(token, syncStore.MAIL_MAGIC_UNSUBSCRIBE_FILTER_ID);
+      filterId = syncStore.MAIL_MAGIC_UNSUBSCRIBE_FILTER_ID;
       prevFilterEmails = filterEmails.emails;
     } else {
       // if mailMagicFilterId not found in storage
       // find mail-magic filter from from users filter (gmail api)
-      const filterEmails = await getMailMagicFilter(token);
+      const filterEmails = await getMailMagicFilter({ token, filterAction: FILTER_ACTION.TRASH });
       if (filterEmails) {
         filterId = filterEmails.filterId;
         prevFilterEmails = filterEmails.emails;
         // set mailMagicFilterId to storage
-        await chrome.storage.sync.set({ [storageKeys.MAIL_MAGIC_FILTER_ID]: filterId });
+        await chrome.storage.sync.set({ [storageKeys.MAIL_MAGIC_UNSUBSCRIBE_FILTER_ID]: filterId });
       } else {
         // mailMagicFilter not found - create a new mailMagicFilter with the email to unsubscribe/block
         const newFilterId = await createFilter(token, [MAIL_MAGIC_FILTER_EMAIL, email]);
         // set mailMagicFilterId to storage
-        await chrome.storage.sync.set({ [storageKeys.MAIL_MAGIC_FILTER_ID]: newFilterId });
+        await chrome.storage.sync.set({ [storageKeys.MAIL_MAGIC_UNSUBSCRIBE_FILTER_ID]: newFilterId });
         return;
       }
     }
@@ -305,6 +160,7 @@ type GetSendEmailFromIdsParams = {
   messageIds: string[];
   token: string;
 };
+
 const getSenderEmailsFromIds = async ({ messageIds, token }: GetSendEmailFromIdsParams) => {
   // Construct the batch request body
   const batchRequestBody = messageIds.map(id => {
