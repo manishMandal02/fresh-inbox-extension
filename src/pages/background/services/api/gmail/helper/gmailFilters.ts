@@ -1,5 +1,4 @@
-import { TRASH_ACTION } from '@src/pages/background/constants/app.constants';
-import { FilterEmails, GmailFilter } from '@src/pages/background/types/background.types';
+import { FILTER_ACTION, FilterEmails, GmailFilter } from '@src/pages/background/types/background.types';
 import { getEmailsFromFilterQuery } from './getEmailsFromFilterQuery';
 
 // get  filter by Id
@@ -28,8 +27,18 @@ export const getFilterById = async (token: string, id: string): Promise<FilterEm
   }
 };
 
+type CreateFilterParams = {
+  token: string;
+  emails: string[];
+  filterAction: FILTER_ACTION;
+};
+
 // create filter with mail-magic email get emails array
-export const createFilter = async (token: string, emails: string[]): Promise<string | null> => {
+export const createFilter = async ({
+  token,
+  emails,
+  filterAction,
+}: CreateFilterParams): Promise<string | null> => {
   // format the emails into a single query string for filter criteria
   const criteriaQuery = `{${emails.map(email => `from:${email} `)}}`;
 
@@ -41,7 +50,7 @@ export const createFilter = async (token: string, emails: string[]): Promise<str
     },
     body: JSON.stringify({
       action: {
-        addLabelIds: [TRASH_ACTION],
+        addLabelIds: [filterAction],
       },
       criteria: {
         query: criteriaQuery,

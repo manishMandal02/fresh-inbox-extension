@@ -19,4 +19,5 @@ export interface IMessageBody {
   event: IMessageEvent;
   email?: string;
   name?: string;
+  isWhiteListed?: boolean;
 }

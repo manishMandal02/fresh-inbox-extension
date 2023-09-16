@@ -1,5 +1,6 @@
 import { storageKeys } from '../constants/app.constants';
 import { IMessageEvent } from '../content.types';
+import { getLocalStorageByKey } from './getLocalStorageByKey';
 
 // get list of unsubscribed emails
 export const getUnsubscribedEmails = async (): Promise<string[]> => {
@@ -7,11 +8,11 @@ export const getUnsubscribedEmails = async (): Promise<string[]> => {
 
   try {
     // check if unsubscribed emails already exist in storage
-    const localStorageData = await chrome.storage.local.get(storageKeys.UNSUBSCRIBED_EMAILS);
+    const storageData = await getLocalStorageByKey<string[]>(storageKeys.UNSUBSCRIBED_EMAILS);
 
-    if (localStorageData[storageKeys.UNSUBSCRIBED_EMAILS]) {
+    if (storageData) {
       // if emails exist, return them
-      unsubscribedEmails = localStorageData[storageKeys.UNSUBSCRIBED_EMAILS];
+      unsubscribedEmails = storageData;
     } else {
       // if  not, get from background script
 
@@ -34,11 +35,11 @@ export const getWhitelistedEmails = async (): Promise<string[]> => {
 
   try {
     // check if whitelisted emails already exist in storage
-    const localStorageData = await chrome.storage.local.get(storageKeys.WHITELISTED_EMAILS);
+    const storageData = await getLocalStorageByKey<string[]>(storageKeys.WHITELISTED_EMAILS);
 
-    if (localStorageData[storageKeys.WHITELISTED_EMAILS]) {
+    if (storageData) {
       // if emails exist, return them
-      whitelistedEmails = localStorageData[storageKeys.WHITELISTED_EMAILS];
+      whitelistedEmails = storageData;
     } else {
       // if  not, get from background script
 

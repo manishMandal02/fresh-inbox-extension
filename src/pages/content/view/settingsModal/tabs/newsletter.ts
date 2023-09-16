@@ -13,6 +13,7 @@ import { getLoadingSpinner } from '../../elements/loadingSpinner';
 import { renderTextMsg } from '../../elements/text';
 import { IMessageEvent } from '@src/pages/content/content.types';
 import wait from '@src/pages/content/utils/wait';
+import { getLocalStorageByKey } from '@src/pages/content/utils/getLocalStorageByKey';
 
 type NewsletterData = {
   email: string;
@@ -67,20 +68,14 @@ const getNewsletterData = async ({ shouldRefreshData }: { shouldRefreshData?: bo
     } else {
       //T check if the newsletter emails data is already stored in chrome.storage.local
       // get local storage data
-      const chromeLocalStorage = await chrome.storage.local.get(storageKeys.NEWSLETTER_EMAILS);
+      const storageData = await getLocalStorageByKey<NewsletterData[]>(storageKeys.NEWSLETTER_EMAILS);
 
       // check if newsletters data already exists
-      if (
-        chromeLocalStorage[storageKeys.NEWSLETTER_EMAILS] &&
-        chromeLocalStorage[storageKeys.NEWSLETTER_EMAILS].length > 0
-      ) {
+      if (storageData) {
         // data already exists, use it
-        newsletterEmails = chromeLocalStorage[storageKeys.NEWSLETTER_EMAILS];
+        newsletterEmails = storageData;
 
-        console.log(
-          '🚀 ~ file: newsletter.ts:241 ~ renderNewsletterTab ~ chromeLocalStorage[storageKeys.NEWSLETTER_EMAILS]:',
-          chromeLocalStorage[storageKeys.NEWSLETTER_EMAILS]
-        );
+        console.log('🚀 ~ file: newsletter.ts:78 ~ getNewsletterData ~ storageData:', storageData);
       } else {
         // data doesn't exist, fetch from background script
         await getNewsletterEmailsFromBackground();

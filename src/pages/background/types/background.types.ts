@@ -20,10 +20,18 @@ export enum FILTER_ACTION {
   INBOX = 'INBOX',
 }
 
+export type FilterType = 'whitelist' | 'unsubscribe';
+
+export type APIHandleParams = {
+  email: string;
+  token: string;
+};
+
 export interface IMessageBody {
   event: IMessageEvent;
   email?: string;
   name?: string;
+  isWhiteListed?: boolean;
 }
 export interface IUserInfo {
   email: string;

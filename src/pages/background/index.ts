@@ -5,11 +5,14 @@ import { clearToken, getAuthToken, getUserInfo, launchGoogleAuthFlow } from './s
 import {
   deleteAllMails,
   getNewsletterEmails,
-  unsubscribe,
   unsubscribeAndDeleteAllMails,
-} from './services/api';
-import { whitelistEmails } from './services/storage';
-import { getUnsubscribedEmails } from './services/api/gmail/getUnsubscribedEmails';
+  unsubscribeEmail,
+} from './services/api/gmail/handler';
+import { getUnsubscribedEmails } from './services/api/gmail/handler/getUnsubscribedEmails';
+import { getWhitelistedEmails } from './services/api/gmail/handler/getWhitelistedEmails';
+import { whitelistEmail } from './services/api/gmail/handler/whitelisteEmail';
+import { emit } from 'process';
+import { resubscribeEmail } from './services/api/gmail/handler/resubscribeEmail';
 
 reloadOnUpdate('pages/background');
 
@@ -93,7 +96,7 @@ chrome.runtime.onMessage.addListener(
         case IMessageEvent.Unsubscribe: {
           console.log('Received unsubscribe request for:', request.email);
           try {
-            await unsubscribe({ token, email: request.email });
+            await unsubscribeEmail({ token, email: request.email, isWhiteListed: request.isWhiteListed });
             return true;
           } catch (err) {
             console.log(
@@ -159,33 +162,39 @@ chrome.runtime.onMessage.addListener(
           }
         }
 
+        // handle whitelist email
         case IMessageEvent.WHITELIST_EMAIL: {
-          console.log('Received whitelistEmail request for:', request.email);
-
-          try {
-            // TODO: handle whitelist email
-            await whitelistEmails({ token, email: request.email });
-            return true;
-          } catch (err) {
-            console.log(
-              '🚀 ~ file: index.ts:148 ~ asyncMessageHandler<IMessageBody,string|boolean|NewsletterEmails[]> ~ err:',
-              err
-            );
-            return false;
-          }
+          console.log('Received WHITELIST_EMAIL request for:', request.email);
+          return await whitelistEmail(token, request.email);
         }
 
         //TODO: handle check for newsletter emails on page
+        case IMessageEvent.CHECK_NEWSLETTER_EMAILS_ON_PAGE: {
+          console.log('Received CHECK_NEWSLETTER_EMAILS_ON_PAGE request');
 
-        //TODO: handle get unsubscribed emails
+          return true;
+        }
+
         case IMessageEvent.GET_UNSUBSCRIBED_EMAILS: {
+          console.log('Received GET_UNSUBSCRIBED_EMAILS request');
           const unsubscribedEmails = await getUnsubscribedEmails(token);
           return unsubscribedEmails;
         }
 
-        //TODO: handle get whitelisted emails
+        // handle get whitelisted emails
+        case IMessageEvent.GET_WHITELISTED_EMAILS: {
+          console.log('Received GET_WHITELISTED_EMAILS request');
 
-        // TODO: handle re-subscribe
+          const whitelistedEmails = await getWhitelistedEmails(token);
+          return whitelistedEmails;
+        }
+
+        // handle re-subscribe
+        case IMessageEvent.RE_SUBSCRIBE: {
+          console.log('Received RE_SUBSCRIBE request for ', request.email);
+          const res = await resubscribeEmail(token, request.email);
+          return res;
+        }
 
         case IMessageEvent.Disable_MailMagic: {
           //TODO: disable mail magic
