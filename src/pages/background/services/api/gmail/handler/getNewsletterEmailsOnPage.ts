@@ -29,7 +29,7 @@ export const getNewsletterEmailsOnPage = async ({
       dateRange.endDate
     } before:${dateRange.startDate}`;
 
-    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:28 ~ searchQuery ~ searchQuery:', searchQuery);
+    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:32 ~ searchQuery ~ searchQuery:', searchQuery);
 
     // call to gmail api
     const res = await fetch(
@@ -40,7 +40,7 @@ export const getNewsletterEmailsOnPage = async ({
     // parse response
     const parsedRes: GetMsgAPIResponseSuccess = await res.json();
 
-    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:43 ~ parsedRes:', parsedRes);
+    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:41 ~ parsedRes:', parsedRes);
 
     if (!parsedRes.messages) {
       console.log('🙌 No newsletter emails found.');
@@ -48,6 +48,8 @@ export const getNewsletterEmailsOnPage = async ({
     }
 
     const messages = parsedRes.messages;
+
+    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:48 ~ messages:', messages);
 
     // check for newsletter emails based on search query filter
     // check if the ids of messages received from api match the messages ids on page
@@ -59,12 +61,10 @@ export const getNewsletterEmailsOnPage = async ({
       })
       .map(email => email.email);
 
-    console.log('🚀 ~ file: checkIfNewsletterEmails.ts:61 ~ matchedIds:', newsletterEmails);
-
     return newsletterEmails;
   } catch (err) {
     console.log('🚀 ~ file: checkIfNewsletterEmails.ts:14 ~ getNewsletterEmailsOnPage ~ err:', err);
-    return [];
     //TODO: send to global error handler
+    return [];
   }
 };

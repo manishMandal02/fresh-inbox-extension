@@ -39,6 +39,9 @@ window.mailMagicGlobalVariables = {
   isMouseOverMailMagicAssistantBtn: false,
 };
 
+//TODO: get the current selected category
+
+
 // get all mails visible on page
 const getAllMails = async () => {
   let allMailNodes: Element[] | [] = [];
@@ -86,11 +89,6 @@ const getAllMails = async () => {
     },
   });
 
-  console.log('🚀 ~ file: index.ts:89 ~ getAllMails ~ res:', res);
-
-  //TODO: testings
-  return;
-
   if (res) {
     newsletterEmails = res;
   }
@@ -108,7 +106,7 @@ const getAllMails = async () => {
 
     //* skips the iteration if the current email is not a newsletter email
     // assistant button won't be rendered
-    if (newsletterEmails.length > 0 && !newsletterEmails.includes(emailAttr)) {
+    if (!newsletterEmails.includes(emailAttr)) {
       continue;
     }
 
@@ -208,10 +206,13 @@ chrome.runtime.onMessage.addListener(
   })
 );
 
-//TODO: start/restart app logic when on inbox url: https://mail.google.com/mail/u/0/#inbox (get id from url, ex:inbox)
+//TODO: embed the settings button on all the url as the content script is only allowed on gmail's web app
+
+//TODO: embed assistant button when on inbox url: https://mail.google.com/mail/u/0/#inbox (get id from url, ex:inbox)
+//urls to run on with ids: #inbox, #starred, #all, #spam 
 //TODO: and also when they see a email and come back to the email table
 
-//TODO:  check the chrome-sync-storage if app is enabled or not, better to do this in the background script on the very first call
+//TODO: check the chrome-sync-storage if app is enabled or not, better to do this in the background script on the very first call
 
 // execute this script after 2.5s
 setTimeout(async () => {
