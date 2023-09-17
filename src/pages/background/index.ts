@@ -13,6 +13,8 @@ import { getWhitelistedEmails } from './services/api/gmail/handler/getWhiteliste
 import { whitelistEmail } from './services/api/gmail/handler/whitelisteEmail';
 import { emit } from 'process';
 import { resubscribeEmail } from './services/api/gmail/handler/resubscribeEmail';
+import { check } from 'prettier';
+import { getNewsletterEmailsOnPage } from './services/api/gmail/handler/getNewsletterEmailsOnPage';
 
 reloadOnUpdate('pages/background');
 
@@ -169,10 +171,10 @@ chrome.runtime.onMessage.addListener(
         }
 
         //TODO: handle check for newsletter emails on page
-        case IMessageEvent.CHECK_NEWSLETTER_EMAILS_ON_PAGE: {
+        case IMessageEvent.GET_NEWSLETTER_EMAILS_ON_PAGE: {
           console.log('Received CHECK_NEWSLETTER_EMAILS_ON_PAGE request');
-
-          return true;
+          const res = await getNewsletterEmailsOnPage({ token, dataOnPage: request.dataOnPage });
+          return res;
         }
 
         case IMessageEvent.GET_UNSUBSCRIBED_EMAILS: {

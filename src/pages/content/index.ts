@@ -11,11 +11,12 @@ import {
 } from './view/unsubscribeHoverCard';
 import { randomId } from './utils/randomId';
 import { renderAuthModal } from './view/authModal';
-import { IMessageBody, IMessageEvent } from './content.types';
+import { EmailId, IMessageBody, IMessageEvent } from './content.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
 import { refreshEmailsTable } from './utils/refreshEmailsTable';
 import { mailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
 import { showSettingsModal } from './view/settingsModal';
+import { getDateRangeFromNodes } from './utils/getDateRangeFromNodes';
 
 // types
 // content script global variables
@@ -44,6 +45,8 @@ const getAllMails = async () => {
   // get all mail nodes on current page in the table by email attribute
   allMailNodes = Array.from(document.querySelectorAll('tr>td>div:last-child>span>span[email]'));
 
+  //TODO: get start and end dates as well (format:mm-dd-yyyy)
+
   if (allMailNodes.length < 1) {
     console.log('❌ No emails (nodes) found on this page.');
     return;
@@ -54,9 +57,14 @@ const getAllMails = async () => {
   let newsletterEmails = [''];
 
   // get email and name from each mail node
-  let allEmailsOnPage = allMailNodes.map(mailNode => {
+  let allEmailsOnPage: EmailId[] = allMailNodes.map(mailNode => {
     if (mailNode.getAttribute('email')) {
-      return mailNode.getAttribute('email');
+      const email = mailNode.getAttribute('email');
+      const idNode = mailNode
+        .closest('td')
+        .nextElementSibling.querySelector('span[data-legacy-last-message-id]');
+      const id = idNode.getAttribute('data-legacy-last-message-id');
+      return { email, id };
     } else {
       return null;
     }
@@ -65,10 +73,23 @@ const getAllMails = async () => {
   // remove null/empty values
   allEmailsOnPage = allEmailsOnPage.filter(email => email);
 
-  const res = await chrome.runtime.sendMessage({
-    event: IMessageEvent.CHECK_NEWSLETTER_EMAILS_ON_PAGE,
-    emails: allEmailsOnPage,
+  // date range
+  const dateRange = getDateRangeFromNodes(allMailNodes);
+
+  // get date range: start and end dates form table nodes
+
+  const res = await chrome.runtime.sendMessage<IMessageBody>({
+    event: IMessageEvent.GET_NEWSLETTER_EMAILS_ON_PAGE,
+    dataOnPage: {
+      emails: allEmailsOnPage,
+      dateRange: dateRange,
+    },
   });
+
+  console.log('🚀 ~ file: index.ts:89 ~ getAllMails ~ res:', res);
+
+  //TODO: testings
+  return;
 
   if (res) {
     newsletterEmails = res;
@@ -202,7 +223,7 @@ setTimeout(async () => {
     await startApp();
 
     //TODO: testing- delete this later
-    showSettingsModal();
+    // showSettingsModal();
   } catch (err) {
     console.log('🚀 ~ file: index.ts:185 ~ setTimeout ~ err:', err);
   }

@@ -1,11 +1,9 @@
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
-import { APIHandleParams, IGmailMessage } from '@src/pages/background/types/background.types';
-
-type GetMsgAPIResponseSuccess = {
-  messages: IGmailMessage[];
-  nextPageToken?: string;
-  resultSizeEstimate: number;
-};
+import {
+  APIHandleParams,
+  GetMsgAPIResponseSuccess,
+  GmailMessage,
+} from '@src/pages/background/types/background.types';
 
 // delete all mails in batches for faster processing
 const batchDeleteMails = async (token: string, ids: string[]) => {

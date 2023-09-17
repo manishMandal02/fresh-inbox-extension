@@ -2,7 +2,7 @@ import { FILTER_ACTION } from '@src/pages/background/types/background.types';
 import { storageKeys } from '@src/pages/background/constants/app.constants';
 import { getFilterById } from '../helper/gmailFilters';
 import { getFilterId } from '../helper/getFilterId';
-import { getLocalStorageByKey } from '@src/pages/content/utils/getLocalStorageByKey';
+import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';
 
 export const getUnsubscribedEmails = async (token: string): Promise<string[]> => {
   let filterEmails = [''];

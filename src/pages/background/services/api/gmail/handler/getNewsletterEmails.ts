@@ -87,7 +87,7 @@ const getSenderEmailsFromIds = async ({ messageIds, token }: GetSendEmailFromIds
   }
 };
 
-//* get newsletters/mailing list emails form Gmail ap
+// get newsletters/mailing list emails form Gmail ap
 export const getNewsletterEmails = async (token: string) => {
   const fetchOptions = {
     method: 'GET',

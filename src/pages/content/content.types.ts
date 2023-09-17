@@ -10,9 +10,23 @@ export enum IMessageEvent {
   GET_NEWSLETTER_EMAILS = 'getNewsletterEmails',
   GET_UNSUBSCRIBED_EMAILS = 'getUnsubscribedEmails',
   GET_WHITELISTED_EMAILS = 'getWhitelistedEmails',
-  CHECK_NEWSLETTER_EMAILS_ON_PAGE = 'checkForNewsletterEmailsOnPage',
+  GET_NEWSLETTER_EMAILS_ON_PAGE = 'getNewsletterEmailsOnPage',
   RE_SUBSCRIBE = 'reSubscribe',
   WHITELIST_EMAIL = 'whitelistEmail',
+}
+
+export type EmailId = {
+  email: string;
+  id: string;
+};
+
+// for checking newsletter emails on page
+export interface DataOnPage {
+  emails: EmailId[];
+  dateRange: {
+    startDate: string; // yyyy-mm-dd
+    endDate: string; // yyyy-mm-dd
+  };
 }
 
 export interface IMessageBody {
@@ -20,4 +34,5 @@ export interface IMessageBody {
   email?: string;
   name?: string;
   isWhiteListed?: boolean;
+  dataOnPage?: DataOnPage;
 }
