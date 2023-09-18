@@ -14,7 +14,7 @@ type GetNewsletterEmailsOnPageParams = {
 
 export const getNewsletterEmailsOnPage = async ({
   token,
-  dataOnPage: { emails, dateRange },
+  dataOnPage: { emails, dateRange, category, folder },
 }: GetNewsletterEmailsOnPageParams) => {
   try {
     const fetchOptions = {
@@ -24,12 +24,15 @@ export const getNewsletterEmailsOnPage = async ({
         'Content-Type': 'application/json',
       },
     };
-    // search query get emails on current page
-    const searchQuery = `from:(${emails.map(email => `${email.email}`).join(' OR ')}) "unsubscribe" after:${
-      dateRange.endDate
-    } before:${dateRange.startDate}`;
+    // search query to check if the provided emails are newsletter emails or not
+    // filter based on date range, category and folder (so that we get only the emails on the current page not all)
+    const searchQuery = `from:(${emails.map(email => `${email.email}`).join(' OR ')}) "unsubscribe"
+     after:${dateRange.endDate} before:${dateRange.startDate} 
+    ${category ? `category:${category}` : ''} 
+    ${folder === 'all' ? '' : `in:${folder}`}
+    `;
 
-    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:32 ~ searchQuery ~ searchQuery:', searchQuery);
+    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:35 ~ searchQuery:', searchQuery);
 
     // call to gmail api
     const res = await fetch(
@@ -49,8 +52,6 @@ export const getNewsletterEmailsOnPage = async ({
 
     const messages = parsedRes.messages;
 
-    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:48 ~ messages:', messages);
-
     // check for newsletter emails based on search query filter
     // check if the ids of messages received from api match the messages ids on page
     const newsletterEmails = emails
@@ -60,6 +61,8 @@ export const getNewsletterEmailsOnPage = async ({
         }
       })
       .map(email => email.email);
+
+    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:67 ~ newsletterEmails:', newsletterEmails);
 
     return newsletterEmails;
   } catch (err) {

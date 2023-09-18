@@ -20,9 +20,13 @@ export type EmailId = {
   id: string;
 };
 
+export type GmailFolder = 'all' | 'inbox' | 'spam';
+
 // for checking newsletter emails on page
 export interface DataOnPage {
   emails: EmailId[];
+  category?: string;
+  folder?: GmailFolder;
   dateRange: {
     startDate: string; // yyyy-mm-dd
     endDate: string; // yyyy-mm-dd

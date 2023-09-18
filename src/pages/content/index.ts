@@ -1,8 +1,3 @@
-/**
- * @description
- * Chrome extensions don't support modules in content scripts.
- */
-
 import {
   IHoverCardElements,
   hideHoverCard,
@@ -15,8 +10,9 @@ import { EmailId, IMessageBody, IMessageEvent } from './content.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
 import { refreshEmailsTable } from './utils/refreshEmailsTable';
 import { mailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
-import { showSettingsModal } from './view/settingsModal';
 import { getDateRangeFromNodes } from './utils/getDateRangeFromNodes';
+import { getSelectedCategory } from './utils/getSelectedCategory';
+import { geCurrentIdFromURL } from './utils/geCurrentIdFromURL';
 
 // types
 // content script global variables
@@ -40,7 +36,6 @@ window.mailMagicGlobalVariables = {
 };
 
 //TODO: get the current selected category
-
 
 // get all mails visible on page
 const getAllMails = async () => {
@@ -79,11 +74,17 @@ const getAllMails = async () => {
   // date range
   const dateRange = getDateRangeFromNodes(allMailNodes);
 
-  // get date range: start and end dates form table nodes
+  // get current folder (anchor ids in url like inbox, spam, all, etc.)
+  const currentFolder = geCurrentIdFromURL();
+
+  // get current selected category
+  const selectedCategory = getSelectedCategory();
 
   const res = await chrome.runtime.sendMessage<IMessageBody>({
     event: IMessageEvent.GET_NEWSLETTER_EMAILS_ON_PAGE,
     dataOnPage: {
+      category: selectedCategory || null,
+      folder: currentFolder,
       emails: allEmailsOnPage,
       dateRange: dateRange,
     },
@@ -102,11 +103,15 @@ const getAllMails = async () => {
   // loop through all mail nodes to embed assistant button
   for (const email of allMailNodes) {
     const emailAttr = email.getAttribute('email');
+
+    console.log('🚀 ~ file: index.ts:107 ~ getAllMails ~ emailAttr:', emailAttr);
+
     const name = email.getAttribute('name');
 
     //* skips the iteration if the current email is not a newsletter email
     // assistant button won't be rendered
     if (!newsletterEmails.includes(emailAttr)) {
+      console.log('🚀 ~ file: index.ts:112 ~ getAllMails ~ SKIP❌:', emailAttr);
       continue;
     }
 
@@ -119,6 +124,11 @@ const getAllMails = async () => {
 
     // append the button to container
     mailMagicAssistantBtnContainer.appendChild(mailMagicAssistantBtn);
+
+    console.log(
+      '🚀 ~ file: index.ts:128 ~ getAllMails ~ mailMagicAssistantBtnContainer:',
+      mailMagicAssistantBtnContainer
+    );
 
     // add onmouseover (on hover) event listener to unsubscribe button
     mailMagicAssistantBtn.addEventListener('click', (ev: MouseEvent) => {
@@ -206,10 +216,10 @@ chrome.runtime.onMessage.addListener(
   })
 );
 
-//TODO: embed the settings button on all the url as the content script is only allowed on gmail's web app
+//TODO: Embed the settings button on all the url as the content script is only allowed on gmail's web app
 
-//TODO: embed assistant button when on inbox url: https://mail.google.com/mail/u/0/#inbox (get id from url, ex:inbox)
-//urls to run on with ids: #inbox, #starred, #all, #spam 
+//TODO: Embed/re-Embed assistant button when on inbox url: https://mail.google.com/mail/u/0/#inbox (get id from url, ex:inbox)
+//urls to run on with ids: #inbox, #starred, #all, #spam
 //TODO: and also when they see a email and come back to the email table
 
 //TODO: check the chrome-sync-storage if app is enabled or not, better to do this in the background script on the very first call
@@ -228,4 +238,4 @@ setTimeout(async () => {
   } catch (err) {
     console.log('🚀 ~ file: index.ts:185 ~ setTimeout ~ err:', err);
   }
-}, 1500);
+}, 2500);
