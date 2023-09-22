@@ -23,15 +23,18 @@ const getSenderEmailsFromIds = async ({ messageIds, token }: GetSendEmailFromIds
     };
   });
 
-  const boundary = 'newsletter-boundary'; // Use a unique boundary
+  console.log('🔵🔵🔵 ');
+
+  // request boundary
+  const boundary = 'newsletter_boundary';
 
   const batchRequest = batchRequestBody.map(request => {
     return `--${boundary}
-  Content-Type: application/http
-  Content-ID: ${request.headers['Content-ID']}
-  
-  ${request.method} ${request.path}
-  `;
+Content-Type: application/http
+Content-ID: ${request.headers['Content-ID']}
+
+${request.method} ${request.path}
+`;
   });
 
   const requestBody = `${batchRequest.join('')}\n--${boundary}--`;
@@ -47,6 +50,8 @@ const getSenderEmailsFromIds = async ({ messageIds, token }: GetSendEmailFromIds
 
   try {
     const res = await fetch(`https://gmail.googleapis.com/batch/gmail/v1`, fetchOptions);
+
+    console.log('🚀 ~ file: getNewsletterEmails.ts:55 ~ getSenderEmailsFromIds ~ res:', res);
 
     if (res.ok) {
       // Read the response text as multipart/mixed
@@ -65,11 +70,21 @@ const getSenderEmailsFromIds = async ({ messageIds, token }: GetSendEmailFromIds
         const cleanStrPattern = /[{"\[\]}]/g;
         // parse value string, contains name & emails
         const valueStr = header.split(`"value":`)[1].replace(cleanStrPattern, '').trim();
-        // name
 
-        const name = valueStr.split(`\\u003c`)[0].trim();
+        console.log('🚀 ~ file: getNewsletterEmails.ts:75 ~ getSenderEmailsFromIds ~ valueStr:', valueStr);
+
+        // name
+        let name = valueStr.split(`\\u003c`)[0].trim();
         // email
-        const email = valueStr.split(`\\u003c`)[1].replace('\\u003e', '').trim();
+        let email = valueStr.split(`\\u003c`)[1]
+          ? valueStr.split(`\\u003c`)[1].replace('\\u003e', '').trim()
+          : '';
+
+        if (!email) {
+          email = name;
+          name = '';
+        }
+
         senderEmails.push({ name, email });
       }
 
@@ -93,7 +108,6 @@ export const getNewsletterEmails = async (token: string) => {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
     },
   };
 
@@ -108,9 +122,11 @@ export const getNewsletterEmails = async (token: string) => {
   try {
     // do while loop to handle pagination (gmail api has a response limit of 500)
     do {
-      const queryParams = `maxResults=${API_MAX_RESULT}&q={"unsubscribe" "newsletter"} in:anywhere&${
-        nextPageToken ? `pageToken=${nextPageToken}` : ''
-      }`;
+      const queryParams = encodeURIComponent(
+        `maxResults=${API_MAX_RESULT}&q={"unsubscribe" "newsletter"} in:anywhere${
+          nextPageToken ? `&pageToken=${nextPageToken}` : ''
+        }`
+      );
 
       console.log('🚀 ~ file: gmail.ts:395 ~ getNewsletterEmails ~ queryParams:', queryParams);
 
@@ -120,6 +136,8 @@ export const getNewsletterEmails = async (token: string) => {
       );
 
       const parsedRes = await res.json();
+
+      console.log('🚀 ~ file: getNewsletterEmails.ts:125 ~ getNewsletterEmails ~ parsedRes:', parsedRes);
 
       if (parsedRes.messages && parsedRes.messages.length < 1) throw new Error('No emails found');
 
@@ -148,6 +166,11 @@ export const getNewsletterEmails = async (token: string) => {
           messageIds: batch,
           token,
         });
+
+        console.log(
+          '🚀 ~ file: getNewsletterEmails.ts:170 ~ getNewsletterEmails ~ senderEmails:',
+          senderEmails
+        );
 
         // store the emails
         newsletterEmails = removeDuplicateEmails([...newsletterEmails, ...senderEmails]);

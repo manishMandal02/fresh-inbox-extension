@@ -1,5 +1,4 @@
 import { FILTER_ACTION } from '@src/pages/background/types/background.types';
-import { getFilterId } from './getFilterId';
 import { createFilter, deleteFilter, getFilterById } from './gmailFilters';
 import { storageKeys } from '@src/pages/background/constants/app.constants';
 
@@ -25,7 +24,11 @@ export const addEmailToFilter = async ({ token, email, filterId, filterAction }:
   // sync storage (store's id)
   const storageKey = getStorageKeyByAction(filterAction);
 
+  console.log('🚀 ~ file: updateFilter.ts:28 ~ addEmailToFilter ~ storageKey:', storageKey);
+
   const filter = await getFilterById(token, filterId);
+
+  console.log('🚀 ~ file: updateFilter.ts:32 ~ addEmailToFilter ~ filter:', filter);
 
   // add email to existing filter emails
   const updatedFilterEmails = [...filter.emails, email];
@@ -35,6 +38,8 @@ export const addEmailToFilter = async ({ token, email, filterId, filterAction }:
 
   // create new filter with updated emails
   const newFilterId = await createFilter({ token, emails: updatedFilterEmails, filterAction });
+
+  console.log('🚀 ~ file: updateFilter.ts:43 ~ addEmailToFilter ~ newFilterId:', newFilterId);
 
   // save new filter id to sync storage
   await chrome.storage.sync.set({ [storageKey.sync]: newFilterId });

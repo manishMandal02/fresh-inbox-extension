@@ -22,12 +22,17 @@ export const getMailMagicFilter = async ({
   try {
     const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/settings/filters', fetchOptions);
     const parsedRes: GmailFilters | null = await res.json();
-    if (!parsedRes.filters) throw new Error('Failed to get filters');
+
+    console.log('🚀 ~ file: getMailMagicFilter.ts:26 ~ parsedRes:', parsedRes);
+
+    if (!parsedRes.filter) throw new Error('Failed to get filters');
 
     let filterId = '';
     let emails: string[] = [];
 
-    for (const filter of parsedRes.filters) {
+    for (const filter of parsedRes.filter) {
+      console.log('🚀 ~ file: getMailMagicFilter.ts:35 ~ filter:', filter);
+
       if ((filter.action.addLabelIds.length = 1) && filter.action.addLabelIds[0] === filterAction) {
         // get emails from the filter criteria
         const queryEmails = getEmailsFromFilterQuery(filter.criteria.query);

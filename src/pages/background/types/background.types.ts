@@ -74,7 +74,7 @@ export type GmailFilter = {
 };
 
 export type GmailFilters = {
-  filters: GmailFilter[];
+  filter: GmailFilter[];
 };
 
 export type FilterEmails = {

@@ -3,6 +3,7 @@ import { FILTER_ACTION } from '@src/pages/background/types/background.types';
 import { createFilter } from './gmailFilters';
 import { getMailMagicFilter } from './getMailMagicFilter';
 import { getSyncStorageByKey } from '@src/pages/background/utils/getStorageByKey';
+import { checkFilterIdExists } from './checkFilterIdExists';
 
 type GetFilterIdParams = {
   token: string;
@@ -18,13 +19,17 @@ export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): P
   try {
     //get id from storage
     const filterId = await getSyncStorageByKey(storageKey);
-    if (filterId) {
+    if (filterId && (await checkFilterIdExists(token, filterId))) {
+      // check if filter with this id exists
+      // if yes, return id
+
+      // if not
       // return filter id if present
       return filterId;
     } else {
       // search for whitelist/inbox filter in users filter (gmail-api)
-      const res = await getMailMagicFilter({ token, filterAction: FILTER_ACTION.INBOX });
-      if (res.filterId) {
+      const res = await getMailMagicFilter({ token, filterAction: filterAction });
+      if (res && res.filterId) {
         // save to sync storage
         await chrome.storage.sync.set({ [storageKey]: res.filterId });
 
@@ -33,6 +38,9 @@ export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): P
 
       // if not found in storage or in the user's filters, then create new filter with the give action
       const newFilterId = await createFilter({ token, emails: [MAIL_MAGIC_FILTER_EMAIL], filterAction });
+
+      console.log('🚀 ~ file: getFilterId.ts:42 ~ getFilterId ~ newFilterId:', newFilterId);
+
       if (newFilterId) {
         // save the new filter id to sync storage
         await chrome.storage.sync.set({ [storageKey]: newFilterId });

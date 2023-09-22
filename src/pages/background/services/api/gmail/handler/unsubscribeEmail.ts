@@ -14,12 +14,20 @@ export const unsubscribeEmail = async ({ token, email, isWhiteListed }: Unsubscr
   try {
     // check if mail-magic filter id exists in storage
     const filterId = await getFilterId({ token, filterAction: FILTER_ACTION.TRASH });
+
+    console.log('🚀 ~ file: unsubscribeEmail.ts:18 ~ unsubscribeEmail ~ filterId:', filterId);
+
     if (filterId) {
       // update filter: add email to filter
       await addEmailToFilter({ token, filterId, email, filterAction: FILTER_ACTION.TRASH });
 
       // check if the email exists in the newsletters list (local.storage), if yes remove it
       const newsletterEmails = await getLocalStorageByKey<string[]>(storageKeys.NEWSLETTER_EMAILS);
+
+      console.log(
+        '🚀 ~ file: unsubscribeEmail.ts:27 ~ unsubscribeEmail ~ newsletterEmails:',
+        newsletterEmails
+      );
 
       if (newsletterEmails && newsletterEmails.length > 0 && newsletterEmails.includes(email)) {
         // remove the email from newsletter list
