@@ -170,7 +170,7 @@ chrome.runtime.onMessage.addListener(
           return await whitelistEmail(token, request.email);
         }
 
-        //TODO: handle check for newsletter emails on page
+        // handle check for newsletter emails on page
         case IMessageEvent.GET_NEWSLETTER_EMAILS_ON_PAGE: {
           console.log('Received CHECK_NEWSLETTER_EMAILS_ON_PAGE request');
           const res = await getNewsletterEmailsOnPage({ token, dataOnPage: request.dataOnPage });

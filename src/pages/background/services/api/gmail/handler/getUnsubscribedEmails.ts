@@ -5,7 +5,7 @@ import { getFilterId } from '../helper/getFilterId';
 import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';
 
 export const getUnsubscribedEmails = async (token: string): Promise<string[]> => {
-  let filterEmails = [''];
+  let filterEmails = [];
   try {
     // get whitelisted emails from local.storage
     const unsubscribedEmails = await getLocalStorageByKey<string[]>(storageKeys.UNSUBSCRIBED_EMAILS);

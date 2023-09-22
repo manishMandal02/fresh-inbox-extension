@@ -13,6 +13,7 @@ import { mailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
 import { getDateRangeFromNodes } from './utils/getDateRangeFromNodes';
 import { getSelectedCategory } from './utils/getSelectedCategory';
 import { geCurrentIdFromURL } from './utils/geCurrentIdFromURL';
+import { showSettingsModal } from './view/settingsModal';
 
 // types
 // content script global variables
@@ -234,7 +235,7 @@ setTimeout(async () => {
     await startApp();
 
     //TODO: testing- delete this later
-    // showSettingsModal();
+    showSettingsModal();
   } catch (err) {
     console.log('🚀 ~ file: index.ts:185 ~ setTimeout ~ err:', err);
   }

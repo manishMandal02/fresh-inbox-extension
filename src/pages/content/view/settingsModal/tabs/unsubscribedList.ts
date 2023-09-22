@@ -1,37 +1,92 @@
 import { handleReSubscribe } from '@src/pages/content/utils/emailActions';
 import { getLoadingSpinner } from '../../elements/loadingSpinner';
 import { getUnsubscribedEmails } from '@src/pages/content/utils/getEmailsFromStorage';
+import { randomId } from '@src/pages/content/utils/randomId';
+import { renderLoadingSpinnerInsteadOfButtons } from '@src/pages/content/utils/renderLoadingSpinnerInsteadOfButtons';
+import { addTooltip } from '../../elements/tooltip';
+import { renderTextMsg } from '../../elements/text';
+import wait from '@src/pages/content/utils/wait';
+
+// tab body html structure
+const unsubscribedListTabContainerInnerHTML = `
+<p>Mail Magic has unsubscribed <u id='unsubscribedListTab-numUnsubscribedEmails'>0</u> emails to keep your 📨 inbox clean.</p>
+
+<hr /> 
+
+<div>
+    <table>
+        <tbody  id='unsubscribedListTab-table'>
+        </tbody>
+    </table>
+
+</div>
+    `;
 
 // render table
-const renderTable = async () => {
+const renderTable = async (unsubscribedEmails: string[]) => {
   // get table
   const tableEl = document.getElementById('unsubscribedListTab-table');
   if (!tableEl) return;
-
-  // get unsubscribed emails from chrome storage
-  const unsubscribedEmails = await getUnsubscribedEmails();
 
   // set num of unsubscribed emails
   const numOfNewsletterEmails = document.getElementById('unsubscribedListTab-numUnsubscribedEmails');
   numOfNewsletterEmails.innerHTML = `${unsubscribedEmails.length}`;
 
-  // map over data
-  const tableData = unsubscribedEmails
-    .map(email => {
-      return `
-    <tr>
-        <td>
-            <span>
-            ${email}
-            </span>
-            <div>
-            <button id='unsubscribedListTab-actionBtn-reSubscribeBtn'>↩️</button>
-            </div>
-        </td>
-    </tr>
+  for (const email of unsubscribedEmails) {
+    // unique id for each row
+    const rowId = randomId();
+    // render table row
+    const tableRow = document.createElement('tr');
+    // add html to row
+    tableRow.innerHTML = `
+      <td>
+      <span>
+      ${email}
+      </span>
+      <div>
+      <button
+      id="unsubscribedListTab-reSubscribeBtn-${rowId}"
+      >
+      ↩️          
+      </button>
+      </div>
+      </td>
     `;
-    })
-    .join('');
+
+    tableEl.appendChild(tableRow);
+
+    // add event listener to reSubscribe button
+    const reSubscribeBtn = document.getElementById(`unsubscribedListTab-reSubscribeBtn-${rowId}`);
+
+    if (!reSubscribeBtn) return;
+
+    reSubscribeBtn.addEventListener('click', async () => {
+      // show loading spinner
+      // set global variable state
+      mailMagicGlobalVariables.email = email;
+      mailMagicGlobalVariables.name = '';
+
+      // show loading spinner
+      const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
+
+      // handle whitelist action
+      const isSuccess = await handleReSubscribe();
+
+      // hide loading spinner
+      if (isSuccess) {
+        hideLoadingSpinner();
+      } else {
+        hideLoadingSpinner(true);
+      }
+    });
+
+    // add tooltips to buttons
+    addTooltip(reSubscribeBtn, 'Re-Subscribe');
+
+    //TODO: re-render table on success
+
+    // end of for loop
+  }
 
   // show loading spinner fetching data
   const spinner = getLoadingSpinner();
@@ -46,66 +101,48 @@ const renderUnsubscribedListTab = async (parentContainer: HTMLElement) => {
 
   unsubscribedListTabContainer.id = 'settingsModal-unsubscribedListTab';
 
-  // html structure
-  unsubscribedListTabContainer.innerHTML = `
-    <p>Mail Magic has unsubscribed <u id='unsubscribedListTab-numUnsubscribedEmails'>0</u> emails to keep your 📨 inbox clean.</p>
-
-    <hr /> 
-
-    <div>
-        <table>
-            <tbody  id='unsubscribedListTab-table'>
-            </tbody>
-        </table>
-
-    </div>
-
-    `;
-
   parentContainer.appendChild(unsubscribedListTabContainer);
 
-  //TODO: get data
+  // show loading spinner while fetching data
+  const spinner = getLoadingSpinner();
+  const loadingMsg = renderTextMsg('Getting unsubscribed emails list...');
+  try {
+    // append loading spinner and message
+    unsubscribedListTabContainer.append(spinner, loadingMsg);
 
-  //* get newsletters data
-  // send message to background to get data
-  await renderTable();
+    // get unsubscribed emails list
+    const unsubscribedEmails = await getUnsubscribedEmails();
 
-  //   try {
-  //     const response = await chrome.runtime.sendMessage({ event: IMessageEvent.GET_NEWSLETTER_EMAILS });
-  //     if (response.newsletterEmails) {
-  //       // render table from the data
-  //      await renderTable(response.newsletterEmails);
-  //     } else {
-  //       //TODO: render a message saying that no emails have been unsubscribed by mail magic yet
-  //       throw new Error('No ');
-  //     }
-  //   } catch (err) {
-  //     console.log('🚀 ~ file: newsletter.ts:51 ~ renderUnsubscribedListTab ~ err):', err);
-  //   }
+    console.log(
+      '🚀 ~ file: unsubscribedList.ts:116 ~ renderUnsubscribedListTab ~ unsubscribedEmails:',
+      unsubscribedEmails
+    );
+    // remove loading spinner
+    spinner.remove();
+    loadingMsg.remove();
 
-  // handle on click of re-subscribe button
-  // get re-subscribe button element
-  const reSubscribeBtn = document.getElementById('unsubscribedListTab-actionBtn-reSubscribeBtn');
-
-  if (!reSubscribeBtn) return;
-
-  // click event listener
-  reSubscribeBtn.addEventListener('click', async ev => {
-    // get email from the table row
-    // set global variable state
-    // TODO:
-    // mailMagicGlobalVariables.email = email;
-    //TODO: get name
-    mailMagicGlobalVariables.name = '';
-    // handle re-subscribe
-    handleReSubscribe();
-  });
-
-  //TODO: show the loading spinner snackbar + a loading icon instead the action button (can show the other action which is left)
-
-  //TODO: Globally add a success snack bar to show after successful action (think about it 🤔)
-
-  //TODO: re-render the table after successfully performing the action
+    if (!unsubscribedEmails) {
+      // show error message
+      const errorMsg = renderTextMsg('failed to get unsubscribed emails');
+      unsubscribedListTabContainer.appendChild(errorMsg);
+    } else if (unsubscribedEmails.length === 0) {
+      // show error message
+      const noDataMsg = renderTextMsg(
+        'No Unsubscribed emails found, Start unsubscribing to newsletter emails.'
+      );
+      unsubscribedListTabContainer.appendChild(noDataMsg);
+    } else {
+      // found unsubscribed emails
+      // add inner html structure to tab container
+      unsubscribedListTabContainer.innerHTML = unsubscribedListTabContainerInnerHTML;
+      // wait for 100ms
+      await wait(100);
+      // render table with data
+      await renderTable(unsubscribedEmails);
+    }
+  } catch (err) {
+    console.log('🚀 ~ file: unsubscribedList.ts:112 ~ renderUnsubscribedListTab ~ err:', err);
+  }
 };
 
 // remove the unsubscribed list tab from DOM

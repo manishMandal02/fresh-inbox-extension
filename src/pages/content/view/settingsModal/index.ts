@@ -1,6 +1,7 @@
 import { removeAboutTab, renderAboutTab } from './tabs/about';
 import { removeNewsletterTab, renderNewsletterTab } from './tabs/newsletter';
 import { removeUnsubscribedListTab, renderUnsubscribedListTab } from './tabs/unsubscribedList';
+import { removeWhitelistedEmailsTab, renderWhitelistedEmailsTab } from './tabs/whitelistedEmails';
 
 const handleCloseSettingsModal = (ev: MouseEvent) => {
   ev.stopPropagation();
@@ -8,7 +9,7 @@ const handleCloseSettingsModal = (ev: MouseEvent) => {
   hideSettingsModal();
 };
 
-type ActiveTab = 'about' | 'newsletter' | 'unsubscribedList';
+type ActiveTab = 'about' | 'newsletter' | 'unsubscribedList' | 'whitelistedEmails';
 
 let activeTab: ActiveTab = 'about';
 
@@ -32,6 +33,7 @@ const showSettingsModal = () => {
             <li class='settingsModal-activeTab' id='settingsTabs-about'>About</li>
             <li id='settingsTabs-newsletter'>Newsletter Hunt</li>
             <li id='settingsTabs-unsubscribed'>Unsubscribed Emails</li>
+            <li id='settingsTabs-whitelisted'>Whitelisted Emails</li>
         </div>
 
     </div>
@@ -66,6 +68,7 @@ const showSettingsModal = () => {
   const aboutTab = document.getElementById('settingsTabs-about');
   const newsletterTab = document.getElementById('settingsTabs-newsletter');
   const unsubscribedList = document.getElementById('settingsTabs-unsubscribed');
+  const whitelistedEmailsTab = document.getElementById('settingsTabs-whitelisted');
 
   //* about tab event listener
   aboutTab.addEventListener('click', ev => {
@@ -78,12 +81,12 @@ const showSettingsModal = () => {
     // remove active class from other tabs
     newsletterTab.classList.remove('settingsModal-activeTab');
     unsubscribedList.classList.remove('settingsModal-activeTab');
+    whitelistedEmailsTab.classList.remove('settingsModal-activeTab');
 
     // remove tab body of other tabs
-
     removeNewsletterTab();
-
     removeUnsubscribedListTab();
+    removeWhitelistedEmailsTab();
 
     // add active class name
     aboutTab.classList.add('settingsModal-activeTab');
@@ -103,11 +106,12 @@ const showSettingsModal = () => {
     // remove active class from other tabs
     aboutTab.classList.remove('settingsModal-activeTab');
     unsubscribedList.classList.remove('settingsModal-activeTab');
+    whitelistedEmailsTab.classList.remove('settingsModal-activeTab');
 
     // remove tab body of other tabs
     removeAboutTab();
-    // remove unsubscribedList tab
     removeUnsubscribedListTab();
+    removeWhitelistedEmailsTab();
 
     newsletterTab.classList.add('settingsModal-activeTab');
     //render newsletter
@@ -126,16 +130,41 @@ const showSettingsModal = () => {
     // remove active class from other tabs
     aboutTab.classList.remove('settingsModal-activeTab');
     newsletterTab.classList.remove('settingsModal-activeTab');
+    whitelistedEmailsTab.classList.remove('settingsModal-activeTab');
 
     // remove tab body of other tabs
     removeAboutTab();
-    // remove newsletter tab
     removeNewsletterTab();
+    removeWhitelistedEmailsTab();
 
     // add active class name
     unsubscribedList.classList.add('settingsModal-activeTab');
     // render unsubscribedList tab
     await renderUnsubscribedListTab(tabBodyContainer);
+  });
+
+  whitelistedEmailsTab.addEventListener('click', async ev => {
+    ev.stopPropagation();
+
+    // if this is active tab already, do nothing
+    if (activeTab === 'whitelistedEmails') return;
+
+    activeTab = 'whitelistedEmails';
+
+    // remove active class from other tabs
+    aboutTab.classList.remove('settingsModal-activeTab');
+    newsletterTab.classList.remove('settingsModal-activeTab');
+    unsubscribedList.classList.remove('settingsModal-activeTab');
+
+    // remove tab body of other tabs
+    removeAboutTab();
+    removeNewsletterTab();
+    removeUnsubscribedListTab();
+
+    // add active class name
+    whitelistedEmailsTab.classList.add('settingsModal-activeTab');
+    // render unsubscribedList tab
+    await renderWhitelistedEmailsTab(tabBodyContainer);
   });
 };
 
@@ -146,10 +175,15 @@ const hideSettingsModal = () => {
   const modalCard = document.getElementById('settingsModal-card');
 
   if (!modalContainer || !backdrop || !modalCard) return;
-  // remove elements
-  modalCard.remove();
-  backdrop.remove();
+
+  // remove child elements
+  for (const child of modalCard.children) {
+    child.remove();
+  }
+  // remove main elements
   modalContainer.remove();
+  backdrop.remove();
+  modalCard.remove();
 };
 
 export { showSettingsModal };

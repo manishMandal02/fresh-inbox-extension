@@ -14,6 +14,7 @@ import { renderTextMsg } from '../../elements/text';
 import { IMessageEvent } from '@src/pages/content/content.types';
 import wait from '@src/pages/content/utils/wait';
 import { getLocalStorageByKey } from '@src/pages/content/utils/getLocalStorageByKey';
+import { renderLoadingSpinnerInsteadOfButtons } from '@src/pages/content/utils/renderLoadingSpinnerInsteadOfButtons';
 
 type NewsletterData = {
   email: string;
@@ -116,37 +117,6 @@ const getNewsletterData = async ({ shouldRefreshData }: { shouldRefreshData?: bo
     const tableContainer = document.getElementById('newsletterTab-table');
     tableContainer.appendChild(msg);
   }
-};
-
-// show loading spinner instead of action buttons for table row when email actions is processing
-const renderLoadingSpinnerInsteadOfButtons = (tableRow: HTMLTableRowElement) => {
-  // get all the action buttons for that row
-  const actionBtnContainer = tableRow.getElementsByTagName('div')?.[0];
-  // storing the buttons because we will re-add them, if action fails
-
-  // hide the buttons
-  for (const btn of actionBtnContainer.getElementsByTagName('button')) {
-    btn.style.display = 'none';
-  }
-
-  // create a spinner
-  const spinner = getLoadingSpinner();
-
-  // add spinner and remove buttons
-  actionBtnContainer.appendChild(spinner);
-
-  // return a callback fn which when called will hide the loading spinner
-  return (showActionButtons?: boolean) => {
-    // remove/hide spinner
-    spinner.remove();
-
-    if (showActionButtons) {
-      // show the buttons
-      for (const btn of actionBtnContainer.getElementsByTagName('button')) {
-        btn.style.display = 'inline-block';
-      }
-    }
-  };
 };
 
 // render table
@@ -301,8 +271,10 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
     addTooltip(unsubscribeAndDeleteAllMailsBtn, 'Unsubscribe & \n Delete All Mails');
 
     //TODO: re-render the table after successfully performing the action
+    // end of for loop
   });
-  //TODO: show refresh button to reload table data
+
+  // show refresh button to reload table data
   const refreshTableContainer = document.createElement('div');
 
   refreshTableContainer.id = 'newsletterTab-refresh-table';

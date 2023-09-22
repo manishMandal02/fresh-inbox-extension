@@ -5,7 +5,7 @@ import { getFilterById } from '../helper/gmailFilters';
 import { getFilterId } from '../helper/getFilterId';
 
 export const getWhitelistedEmails = async (token: string): Promise<string[]> => {
-  let filterEmails = [''];
+  let filterEmails = [];
   try {
     // get whitelisted emails from local.storage
     const whitelistedEmails = await getLocalStorageByKey<string[]>(storageKeys.WHITELISTED_EMAILS);

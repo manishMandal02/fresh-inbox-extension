@@ -15,10 +15,9 @@ export const getUnsubscribedEmails = async (): Promise<string[]> => {
       unsubscribedEmails = storageData;
     } else {
       // if  not, get from background script
-
       // send message/event to background script to fetch emails
       const emails = await chrome.runtime.sendMessage({ event: IMessageEvent.GET_UNSUBSCRIBED_EMAILS });
-      if (emails.length) {
+      if (emails) {
         unsubscribedEmails = emails;
       }
     }
