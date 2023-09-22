@@ -747,17 +747,12 @@ $text-dark: #282828;
                       font-size: 12px;
                       opacity: 0.7;
                     }
-                    // name
-                    > span {
-                      margin-right: 4px;
-                      font-size: 13.5px;
-                      color: #2b2b2b;
-                    }
                   }
                   > div {
                     display: flex;
                     align-items: center;
                     justify-content: flex-start;
+                    margin-right: 1rem;
                     > button {
                       margin-right: 5px;
                       cursor: pointer;
@@ -827,12 +822,6 @@ $text-dark: #282828;
                       color: #2b2b2b;
                       font-size: 12px;
                       opacity: 0.7;
-                    }
-                    // name
-                    > span {
-                      margin-right: 4px;
-                      font-size: 13.5px;
-                      color: #2b2b2b;
                     }
                   }
                   > div {
