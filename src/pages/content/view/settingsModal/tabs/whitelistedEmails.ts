@@ -168,17 +168,7 @@ const renderWhitelistedEmailsTab = async (parentContainer: HTMLElement) => {
     whitelistedEmailsTabContainer.append(spinner, loadingMsg);
 
     // get whitelisted emails list
-    // const whitelistedEmails = await getWhitelistedEmails();
-    const whitelistedEmails = [
-      'test@testexample.com',
-      'test2@testexample.com',
-      'test@testexample.com',
-      'test3test3test3@testexample.com',
-      'asdas343wdasdas@testexample.com',
-      'test3test3test3@testexample.com',
-      'asdas343wdasdasasdas343wdasdasasdas343wda@testexample.com',
-      '24@testexample.com',
-    ];
+    const whitelistedEmails = await getWhitelistedEmails();
 
     console.log(
       '🚀 ~ file: whitelistedEmails.ts:116 ~ renderWhitelistedEmailsTab ~ whitelistedEmails:',

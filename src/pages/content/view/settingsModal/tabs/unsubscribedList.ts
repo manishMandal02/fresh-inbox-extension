@@ -32,7 +32,7 @@ const renderTable = async (unsubscribedEmails: string[]) => {
   const numOfNewsletterEmails = document.getElementById('unsubscribedListTab-numUnsubscribedEmails');
   numOfNewsletterEmails.innerHTML = `${unsubscribedEmails.length}`;
 
-  for (const email of unsubscribedEmails) {
+  unsubscribedEmails.forEach((email, idx) => {
     // unique id for each row
     const rowId = randomId();
     // render table row
@@ -40,16 +40,13 @@ const renderTable = async (unsubscribedEmails: string[]) => {
     // add html to row
     tableRow.innerHTML = `
       <td>
-      <span>
-      ${email}
-      </span>
-      <div>
-      <button
-      id="unsubscribedListTab-reSubscribeBtn-${rowId}"
-      >
-      ↩️          
-      </button>
-      </div>
+      <span><strong>${idx + 1}.</strong> ${email}</span>
+        <div>
+          <button
+          id="unsubscribedListTab-reSubscribeBtn-${rowId}">
+            ✅
+          </button>
+        </div>
       </td>
     `;
 
@@ -86,12 +83,7 @@ const renderTable = async (unsubscribedEmails: string[]) => {
     //TODO: re-render table on success
 
     // end of for loop
-  }
-
-  // show loading spinner fetching data
-  const spinner = getLoadingSpinner();
-  tableEl.appendChild(spinner);
-  //   tableEl.innerHTML = tableData;
+  });
 };
 
 // render unsubscribed list tab
@@ -111,7 +103,17 @@ const renderUnsubscribedListTab = async (parentContainer: HTMLElement) => {
     unsubscribedListTabContainer.append(spinner, loadingMsg);
 
     // get unsubscribed emails list
-    const unsubscribedEmails = await getUnsubscribedEmails();
+    // const unsubscribedEmails = await getUnsubscribedEmails();
+    const unsubscribedEmails = [
+      'test@testexample.com',
+      'test2@testexample.com',
+      'test@testexample.com',
+      'test3test3test3@testexample.com',
+      'asdas343wdasdas@testexample.com',
+      'test3test3test3@testexample.com',
+      'asdas343wdasdasasdas343wdasdasasdas343wda@testexample.com',
+      '24@testexample.com',
+    ];
 
     console.log(
       '🚀 ~ file: unsubscribedList.ts:116 ~ renderUnsubscribedListTab ~ unsubscribedEmails:',
