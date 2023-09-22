@@ -103,17 +103,7 @@ const renderUnsubscribedListTab = async (parentContainer: HTMLElement) => {
     unsubscribedListTabContainer.append(spinner, loadingMsg);
 
     // get unsubscribed emails list
-    // const unsubscribedEmails = await getUnsubscribedEmails();
-    const unsubscribedEmails = [
-      'test@testexample.com',
-      'test2@testexample.com',
-      'test@testexample.com',
-      'test3test3test3@testexample.com',
-      'asdas343wdasdas@testexample.com',
-      'test3test3test3@testexample.com',
-      'asdas343wdasdasasdas343wdasdasasdas343wda@testexample.com',
-      '24@testexample.com',
-    ];
+    const unsubscribedEmails = await getUnsubscribedEmails();
 
     console.log(
       '🚀 ~ file: unsubscribedList.ts:116 ~ renderUnsubscribedListTab ~ unsubscribedEmails:',
