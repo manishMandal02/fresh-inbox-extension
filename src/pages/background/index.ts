@@ -1,5 +1,11 @@
 import reloadOnUpdate from 'virtual:reload-on-update-in-background-script';
-import { IMessageBody, IMessageEvent, IUserInfo, NewsletterEmails } from './types/background.types';
+import {
+  FILTER_ACTION,
+  IMessageBody,
+  IMessageEvent,
+  IUserInfo,
+  NewsletterEmails,
+} from './types/background.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
 import { clearToken, getAuthToken, getUserInfo, launchGoogleAuthFlow } from './services/auth';
 import {
@@ -15,6 +21,7 @@ import { emit } from 'process';
 import { resubscribeEmail } from './services/api/gmail/handler/resubscribeEmail';
 import { check } from 'prettier';
 import { getNewsletterEmailsOnPage } from './services/api/gmail/handler/getNewsletterEmailsOnPage';
+import { getLabelID } from './services/api/gmail/helper/getLabelID';
 
 reloadOnUpdate('pages/background');
 

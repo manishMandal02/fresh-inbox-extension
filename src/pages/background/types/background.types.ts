@@ -69,7 +69,8 @@ export type GmailFilter = {
     query: string;
   };
   action: {
-    addLabelIds: string[];
+    addLabelIds?: string[];
+    removeLabelIds?: string[];
   };
 };
 

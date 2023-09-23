@@ -1,5 +1,5 @@
 import { FILTER_ACTION } from '@src/pages/background/types/background.types';
-import { storageKeys } from '@src/pages/background/constants/app.constants';
+import { MAIL_MAGIC_FILTER_EMAIL, storageKeys } from '@src/pages/background/constants/app.constants';
 import { getFilterById } from '../helper/gmailFilters';
 import { getFilterId } from '../helper/getFilterId';
 import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';
@@ -20,8 +20,9 @@ export const getUnsubscribedEmails = async (token: string): Promise<string[]> =>
         // if exists, get emails from filter by id
         const res = await getFilterById(token, unsubscribeFilterId);
         if (res) {
+          const unsubscribeEmails = res.emails.filter(email => email !== MAIL_MAGIC_FILTER_EMAIL);
           // save emails to local.storage
-          await chrome.storage.local.set({ [storageKeys.UNSUBSCRIBED_EMAILS]: res.emails });
+          await chrome.storage.local.set({ [storageKeys.UNSUBSCRIBED_EMAILS]: unsubscribeEmails });
           filterEmails = res.emails;
         } else {
           throw new Error('❌ Failed to get unsubscribe filter emails');

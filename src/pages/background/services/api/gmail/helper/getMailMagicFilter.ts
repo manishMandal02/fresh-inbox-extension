@@ -1,6 +1,35 @@
-import { FILTER_ACTION, FilterEmails, GmailFilters } from '@src/pages/background/types/background.types';
+import {
+  FILTER_ACTION,
+  FilterEmails,
+  GmailFilter,
+  GmailFilters,
+} from '@src/pages/background/types/background.types';
 import { getEmailsFromFilterQuery } from './getEmailsFromFilterQuery';
 import { MAIL_MAGIC_FILTER_EMAIL } from '@src/pages/background/constants/app.constants';
+
+// check if filter is mail mail magic filter (TRASH or INBOX filter created by mail magic)
+
+const isMailMagicFilter = (filter: GmailFilter, filterAction: FILTER_ACTION): boolean => {
+  const labelId = filterAction === FILTER_ACTION.TRASH ? ['TRASH'] : ['SPAM'];
+
+  const checkCondition = () => {
+    // check for filter based on labels/action
+
+    if (labelId.length[0] === FILTER_ACTION.TRASH) {
+      // check for TRASH filter
+      return filter.action.addLabelIds.length === 1 && filter.action.addLabelIds[0] === labelId[0];
+    } else {
+      // check for INBOX filter
+      return (
+        filter.action.removeLabelIds.length === 2 &&
+        filter.action.removeLabelIds[0] === labelId[0] &&
+        filter.action.removeLabelIds[1] === labelId[1]
+      );
+    }
+  };
+
+  return checkCondition();
+};
 
 type GetMailMagicFilterParams = {
   token: string;
@@ -33,7 +62,7 @@ export const getMailMagicFilter = async ({
     for (const filter of parsedRes.filter) {
       console.log('🚀 ~ file: getMailMagicFilter.ts:35 ~ filter:', filter);
 
-      if ((filter.action.addLabelIds.length = 1) && filter.action.addLabelIds[0] === filterAction) {
+      if (isMailMagicFilter(filter, filterAction)) {
         // get emails from the filter criteria
         const queryEmails = getEmailsFromFilterQuery(filter.criteria.query);
         if (queryEmails.includes(MAIL_MAGIC_FILTER_EMAIL)) {

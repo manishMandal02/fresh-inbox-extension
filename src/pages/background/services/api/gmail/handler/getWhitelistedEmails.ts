@@ -1,5 +1,5 @@
 import { FILTER_ACTION } from '@src/pages/background/types/background.types';
-import { storageKeys } from '@src/pages/background/constants/app.constants';
+import { MAIL_MAGIC_FILTER_EMAIL, storageKeys } from '@src/pages/background/constants/app.constants';
 import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';
 import { getFilterById } from '../helper/gmailFilters';
 import { getFilterId } from '../helper/getFilterId';
@@ -20,8 +20,10 @@ export const getWhitelistedEmails = async (token: string): Promise<string[]> => 
         // if exists, get emails from filter by id
         const res = await getFilterById(token, whitelistFilterId);
         if (res) {
+          const whitelistedEmails = res.emails.filter(email => email !== MAIL_MAGIC_FILTER_EMAIL);
+
           // save emails to local.storage
-          await chrome.storage.local.set({ [storageKeys.WHITELISTED_EMAILS]: res.emails });
+          await chrome.storage.local.set({ [storageKeys.WHITELISTED_EMAILS]: whitelistedEmails });
           filterEmails = res.emails;
         } else {
           throw new Error('❌ Failed to get whitelist filter emails');

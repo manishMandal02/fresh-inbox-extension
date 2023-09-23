@@ -23,8 +23,6 @@ const getSenderEmailsFromIds = async ({ messageIds, token }: GetSendEmailFromIds
     };
   });
 
-  console.log('🔵🔵🔵 ');
-
   // request boundary
   const boundary = 'newsletter_boundary';
 
@@ -51,7 +49,7 @@ ${request.method} ${request.path}
   try {
     const res = await fetch(`https://gmail.googleapis.com/batch/gmail/v1`, fetchOptions);
 
-    console.log('🚀 ~ file: getNewsletterEmails.ts:55 ~ getSenderEmailsFromIds ~ res:', res);
+    // console.log('🚀 ~ file: getNewsletterEmails.ts:55 ~ getSenderEmailsFromIds ~ res:', res);
 
     if (res.ok) {
       // Read the response text as multipart/mixed
@@ -70,8 +68,6 @@ ${request.method} ${request.path}
         const cleanStrPattern = /[{"\[\]}]/g;
         // parse value string, contains name & emails
         const valueStr = header.split(`"value":`)[1].replace(cleanStrPattern, '').trim();
-
-        console.log('🚀 ~ file: getNewsletterEmails.ts:75 ~ getSenderEmailsFromIds ~ valueStr:', valueStr);
 
         // name
         let name = valueStr.split(`\\u003c`)[0].trim();
@@ -122,13 +118,14 @@ export const getNewsletterEmails = async (token: string) => {
   try {
     // do while loop to handle pagination (gmail api has a response limit of 500)
     do {
-      const queryParams = encodeURIComponent(
-        `maxResults=${API_MAX_RESULT}&q={"unsubscribe" "newsletter"} in:anywhere${
-          nextPageToken ? `&pageToken=${nextPageToken}` : ''
-        }`
+      console.log(
+        '🚀 ~ file: getNewsletterEmails.ts:125 ~ getNewsletterEmails ~ nextPageToken: 🏁🏁',
+        nextPageToken
       );
 
-      console.log('🚀 ~ file: gmail.ts:395 ~ getNewsletterEmails ~ queryParams:', queryParams);
+      const queryParams = `maxResults=${API_MAX_RESULT}&q={"unsubscribe" "newsletter"} in:anywhere${
+        nextPageToken ? `&pageToken=${nextPageToken}` : ''
+      }`;
 
       const res = await fetch(
         `https://gmail.googleapis.com/gmail/v1/users/me/messages?${queryParams}`,
@@ -148,6 +145,11 @@ export const getNewsletterEmails = async (token: string) => {
         nextPageToken = null;
       }
 
+      console.log(
+        '🚀 ~ file: getNewsletterEmails.ts:145 ~ getNewsletterEmails ~ nextPageToken:',
+        nextPageToken
+      );
+
       // dividing the messageIds into batches ~
       // so we can use the gmail batch api to group multiple requests into on
       const BATCH_SIZE = 45;
@@ -157,29 +159,53 @@ export const getNewsletterEmails = async (token: string) => {
         // if last batch is not more than half of batch size then add to previous batch
         batches.push(parsedRes.messages.slice(i, i + BATCH_SIZE).map(msg => msg.id));
       }
-      //  end of do while loop...
+      console.log(
+        '🚀 ~ file: getNewsletterEmails.ts:158 ~ getNewsletterEmails ~ batches.length:',
+        batches.length
+      );
 
       // process batches to get newsletter emails
       for (const batch of batches) {
+        // console.log(
+        //   '🚀 ~ file: getNewsletterEmails.ts:159 ~ getNewsletterEmails ~ batch.length:',
+        //   batch.length
+        // );
+
         // get sender emails from the message ids queried
         const senderEmails = await getSenderEmailsFromIds({
           messageIds: batch,
           token,
         });
 
-        console.log(
-          '🚀 ~ file: getNewsletterEmails.ts:170 ~ getNewsletterEmails ~ senderEmails:',
-          senderEmails
-        );
+        // console.log(
+        //   '🚀 ~ file: getNewsletterEmails.ts:170 ~ getNewsletterEmails ~ senderEmails:',
+        //   senderEmails
+        // );
 
         // store the emails
         newsletterEmails = removeDuplicateEmails([...newsletterEmails, ...senderEmails]);
+
+        // console.log(
+        //   '🚀 ~ file: getNewsletterEmails.ts:177 ~ getNewsletterEmails ~ newsletterEmails:',
+        //   newsletterEmails
+        // );
       }
 
-      //* check if emails are already unsubscribed or whitelisted
+      //* check if these emails are already unsubscribed or whitelisted
       if (newsletterEmails.length > 0) {
         const unsubscribedEmails = await getUnsubscribedEmails(token);
+
+        // console.log(
+        //   '🚀 ~ file: getNewsletterEmails.ts:182 ~ getNewsletterEmails ~ unsubscribedEmails:',
+        //   unsubscribedEmails
+        // );
+
         const whitelistedEmails = await getWhitelistedEmails(token);
+
+        // console.log(
+        //   '🚀 ~ file: getNewsletterEmails.ts:189 ~ getNewsletterEmails ~ whitelistedEmails:',
+        //   whitelistedEmails
+        // );
 
         // emails to filter out, combining unsubscribed and whitelisted emails
         const filterEmails = [];
@@ -193,6 +219,11 @@ export const getNewsletterEmails = async (token: string) => {
         }
 
         if (filterEmails.length > 0) {
+          console.log(
+            '🚀 ~ file: getNewsletterEmails.ts:207 ~ getNewsletterEmails ~ filterEmails:',
+            filterEmails
+          );
+
           // filter emails already unsubscribed or whitelisted
           const filteredNewsletterEmails = newsletterEmails.filter(email => !filterEmails.includes(email));
           // store the filtered emails
@@ -205,6 +236,7 @@ export const getNewsletterEmails = async (token: string) => {
           newsletterEmails.splice(0, 1);
         }
       }
+      //end of do-while loop
     } while (nextPageToken !== null && newsletterEmails.length < 100);
 
     console.log('🚀 ~ file: gmail.ts:404 ~ getNewsletterEmails ~ newsletterEmails:', newsletterEmails);

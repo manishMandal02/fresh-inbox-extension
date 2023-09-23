@@ -50,6 +50,14 @@ export const createFilter = async ({
   // format the emails into a single query string for filter criteria
   const criteriaQuery = `{${emails.map(email => `from:${email} `)}}`;
 
+  //* explanation of labels/action
+  // addLabelIds adds label to the email present in the filter (here TRASH label will be added to the unsubscribed email)
+
+  // removeLabelIds removes label to the email present in the filter (here SPAM label will be removed from the whitelisted email)
+
+  const dynamicFilterAction =
+    filterAction === FILTER_ACTION.TRASH ? { addLabelIds: ['TRASH'] } : { removeLabelIds: ['SPAM'] };
+
   const fetchOptions = {
     method: 'POST',
     headers: {
@@ -57,9 +65,7 @@ export const createFilter = async ({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      action: {
-        addLabelIds: [filterAction],
-      },
+      action: dynamicFilterAction,
       criteria: {
         query: criteriaQuery,
       },
@@ -68,9 +74,10 @@ export const createFilter = async ({
 
   try {
     const res = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/settings/filters`, fetchOptions);
-    console.log(`✅ Successfully created filter`);
+
     const newFilter: GmailFilter = await res.json();
 
+    console.log(`✅ Successfully created filter`);
     console.log('🚀 ~ file: gmailFilters.ts:74 ~ newFilter:', newFilter);
 
     return newFilter.id;
