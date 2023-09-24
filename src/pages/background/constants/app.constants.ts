@@ -1,5 +1,5 @@
 // dummy email used to tag unsubscribe/block emails in filter
-export const MAIL_MAGIC_FILTER_EMAIL = 'hello@getmailmagic.com';
+export const MAIL_MAGIC_FILTER_EMAIL = 'filter@getmailmagic.com';
 export const API_MAX_RESULT = 500;
 
 export const storageKeys = {

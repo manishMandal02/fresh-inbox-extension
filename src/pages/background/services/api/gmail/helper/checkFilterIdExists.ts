@@ -4,6 +4,9 @@ import { getFilterById } from './gmailFilters';
 export const checkFilterIdExists = async (token: string, filterId: string): Promise<boolean> => {
   try {
     const filter = await getFilterById(token, filterId);
+
+    console.log('🚀 ~ file: checkFilterIdExists.ts:8 ~ checkFilterIdExists ~ filter: 🔵', filter);
+
     if (filter && filter.filterId) {
       return true;
     } else {

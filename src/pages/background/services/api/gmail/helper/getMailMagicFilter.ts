@@ -10,25 +10,25 @@ import { MAIL_MAGIC_FILTER_EMAIL } from '@src/pages/background/constants/app.con
 // check if filter is mail mail magic filter (TRASH or INBOX filter created by mail magic)
 
 const isMailMagicFilter = (filter: GmailFilter, filterAction: FILTER_ACTION): boolean => {
-  const labelId = filterAction === FILTER_ACTION.TRASH ? ['TRASH'] : ['SPAM'];
+  const labelId = filterAction === FILTER_ACTION.TRASH ? 'TRASH' : 'SPAM';
+
+  console.log('🚀 ~ file: getMailMagicFilter.ts:15 ~ isMailMagicFilter ~ labelId:', labelId);
 
   const checkCondition = () => {
     // check for filter based on labels/action
 
-    if (labelId.length[0] === FILTER_ACTION.TRASH) {
+    if (labelId === 'TRASH') {
       // check for TRASH filter
-      return filter.action.addLabelIds.length === 1 && filter.action.addLabelIds[0] === labelId[0];
+      return filter.action?.addLabelIds?.length === 1 && filter.action.addLabelIds[0] === labelId;
     } else {
       // check for INBOX filter
-      return (
-        filter.action.removeLabelIds.length === 2 &&
-        filter.action.removeLabelIds[0] === labelId[0] &&
-        filter.action.removeLabelIds[1] === labelId[1]
-      );
+      return filter.action?.removeLabelIds?.length === 1 && filter.action.removeLabelIds[0] === labelId;
     }
   };
 
-  return checkCondition();
+  console.log('🚀 ~ file: getMailMagicFilter.ts:29 ~ checkCondition ~ checkCondition:', checkCondition());
+
+  return !!checkCondition();
 };
 
 type GetMailMagicFilterParams = {
@@ -65,7 +65,12 @@ export const getMailMagicFilter = async ({
       if (isMailMagicFilter(filter, filterAction)) {
         // get emails from the filter criteria
         const queryEmails = getEmailsFromFilterQuery(filter.criteria.query);
+
+        console.log('🚀 ~ file: getMailMagicFilter.ts:69 ~ queryEmails:', queryEmails);
+
         if (queryEmails.includes(MAIL_MAGIC_FILTER_EMAIL)) {
+          console.log('🚀 ~ file: getMailMagicFilter.ts:73 ~ It is a Mail Magic filter 🔵');
+
           filterId = filter.id;
           emails = queryEmails;
           // stop the loop

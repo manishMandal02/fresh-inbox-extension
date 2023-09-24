@@ -1,5 +1,9 @@
 import { storageKeys } from '@src/pages/background/constants/app.constants';
-import { APIHandleParams, FILTER_ACTION } from '@src/pages/background/types/background.types';
+import {
+  APIHandleParams,
+  FILTER_ACTION,
+  NewsletterEmails,
+} from '@src/pages/background/types/background.types';
 import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';
 import { getFilterId } from '../helper/getFilterId';
 import { getWhitelistedEmails } from './getWhitelistedEmails';
@@ -22,16 +26,20 @@ export const unsubscribeEmail = async ({ token, email, isWhiteListed }: Unsubscr
       await addEmailToFilter({ token, filterId, email, filterAction: FILTER_ACTION.TRASH });
 
       // check if the email exists in the newsletters list (local.storage), if yes remove it
-      const newsletterEmails = await getLocalStorageByKey<string[]>(storageKeys.NEWSLETTER_EMAILS);
+      const newsletterEmails = await getLocalStorageByKey<NewsletterEmails[]>(storageKeys.NEWSLETTER_EMAILS);
 
-      console.log(
-        '🚀 ~ file: unsubscribeEmail.ts:27 ~ unsubscribeEmail ~ newsletterEmails:',
-        newsletterEmails
-      );
+      if (
+        newsletterEmails &&
+        newsletterEmails.length > 0 &&
+        !!newsletterEmails.find(e => e.email === email)
+      ) {
+        console.log(
+          '🚀 ~ file: unsubscribeEmail.ts:29 ~ unsubscribeEmail ~ newsletterEmails: 🔵',
+          newsletterEmails
+        );
 
-      if (newsletterEmails && newsletterEmails.length > 0 && newsletterEmails.includes(email)) {
         // remove the email from newsletter list
-        const updatedNewsletterEmails = newsletterEmails.filter(e => e !== email);
+        const updatedNewsletterEmails = newsletterEmails.filter(e => e.email !== email);
         // save updated newsletter emails
         await chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: updatedNewsletterEmails });
       }

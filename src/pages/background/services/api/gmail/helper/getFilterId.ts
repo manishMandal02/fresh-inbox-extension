@@ -19,7 +19,12 @@ export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): P
   try {
     //get id from storage
     const filterId = await getSyncStorageByKey(storageKey);
+
+    console.log('🚀 ~ file: getFilterId.ts:23 ~ getFilterId ~ filterId: 🔵', filterId);
+
     if (filterId && (await checkFilterIdExists(token, filterId))) {
+      console.log('🚀 ~  Filter found in storage: 🔵');
+
       // check if filter with this id exists
       // if yes, return id
 
@@ -28,6 +33,8 @@ export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): P
       return filterId;
     } else {
       // search for whitelist/inbox filter in users filter (gmail-api)
+      console.log('🚀 ~  Filter not found in storage: 🔵');
+
       const res = await getMailMagicFilter({ token, filterAction });
       if (res?.filterId) {
         // save to sync storage
@@ -38,8 +45,6 @@ export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): P
 
       // if not found in storage or in the user's filters, then create new filter with the give action
       const newFilterId = await createFilter({ token, filterAction, emails: [MAIL_MAGIC_FILTER_EMAIL] });
-
-      console.log('🚀 ~ file: getFilterId.ts:42 ~ getFilterId ~ newFilterId:', newFilterId);
 
       if (newFilterId) {
         // save the new filter id to sync storage

@@ -20,10 +20,8 @@ export const getWhitelistedEmails = async (token: string): Promise<string[]> => 
         // if exists, get emails from filter by id
         const res = await getFilterById(token, whitelistFilterId);
         if (res) {
-          const whitelistedEmails = res.emails.filter(email => email !== MAIL_MAGIC_FILTER_EMAIL);
-
           // save emails to local.storage
-          await chrome.storage.local.set({ [storageKeys.WHITELISTED_EMAILS]: whitelistedEmails });
+          await chrome.storage.local.set({ [storageKeys.WHITELISTED_EMAILS]: res.emails });
           filterEmails = res.emails;
         } else {
           throw new Error('❌ Failed to get whitelist filter emails');

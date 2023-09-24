@@ -1,5 +1,6 @@
 import { FILTER_ACTION, FilterEmails, GmailFilter } from '@src/pages/background/types/background.types';
 import { getEmailsFromFilterQuery } from './getEmailsFromFilterQuery';
+import { MAIL_MAGIC_FILTER_EMAIL } from '@src/pages/background/constants/app.constants';
 
 // get  filter by Id
 export const getFilterById = async (token: string, id: string): Promise<FilterEmails | null> => {
@@ -26,9 +27,13 @@ export const getFilterById = async (token: string, id: string): Promise<FilterEm
     if (!parsedRes || !parsedRes.criteria.query) throw new Error('❌ Failed to get filters');
 
     // get emails from query
-    const emails = getEmailsFromFilterQuery(parsedRes.criteria.query);
+    let emails = getEmailsFromFilterQuery(parsedRes.criteria.query);
 
-    return { emails };
+    // remove mail-magic identity email from  emails
+
+    emails = emails.filter(email => email !== MAIL_MAGIC_FILTER_EMAIL);
+
+    return { emails, filterId: parsedRes.id };
   } catch (err) {
     console.log('🚀 ~ file: gmail.ts:25 ~ checkForTrashFilter: ❌ Failed get filters ~ err:', err);
     return null;
@@ -48,7 +53,16 @@ export const createFilter = async ({
   filterAction,
 }: CreateFilterParams): Promise<string | null> => {
   // format the emails into a single query string for filter criteria
-  const criteriaQuery = `{${emails.map(email => `from:${email} `)}}`;
+  console.log('🚀 ~ file: gmailFilters.ts:54 ~ emails:', emails);
+
+  // if the emails doesn't include mail-magic identity email, add it
+  if (emails.indexOf(MAIL_MAGIC_FILTER_EMAIL) === -1) {
+    emails.unshift(MAIL_MAGIC_FILTER_EMAIL);
+  }
+
+  const criteriaQuery = `from:(${emails.map(email => `${email}`).join(' OR ')})`;
+
+  console.log('🚀 ~ file: gmailFilters.ts:56 ~ criteriaQuery:', criteriaQuery);
 
   //* explanation of labels/action
   // addLabelIds adds label to the email present in the filter (here TRASH label will be added to the unsubscribed email)
@@ -77,9 +91,9 @@ export const createFilter = async ({
 
     const newFilter: GmailFilter = await res.json();
 
-    console.log(`✅ Successfully created filter`);
     console.log('🚀 ~ file: gmailFilters.ts:74 ~ newFilter:', newFilter);
 
+    console.log(`✅ Successfully created filter`);
     return newFilter.id;
   } catch (err) {
     console.log('🚀 ~ file: gmail.ts:126 ~ createFilter ❌ Failed to create filter ~ err:', err);
