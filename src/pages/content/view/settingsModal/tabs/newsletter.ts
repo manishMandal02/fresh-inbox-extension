@@ -115,6 +115,7 @@ const getNewsletterData = async ({ shouldRefreshData }: { shouldRefreshData?: bo
     const msg = renderTextMsg('❌ Something went wrong, Failed to get newsletter');
     // append msg to table
     const tableContainer = document.getElementById('newsletterTab-table');
+    if (!tableContainer) return;
     tableContainer.appendChild(msg);
   }
 };

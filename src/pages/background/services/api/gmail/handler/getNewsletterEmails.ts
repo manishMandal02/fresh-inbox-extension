@@ -192,6 +192,7 @@ export const getNewsletterEmails = async (token: string) => {
       }
 
       //* check if these emails are already unsubscribed or whitelisted
+      // TODO: this is not working, check
       if (newsletterEmails.length > 0) {
         const unsubscribedEmails = await getUnsubscribedEmails(token);
 

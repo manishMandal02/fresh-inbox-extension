@@ -38,6 +38,7 @@ export const getUnsubscribedEmails = async (token: string): Promise<string[]> =>
         throw new Error('❌ Failed to get unsubscribe filter id');
       }
     }
+    return filterEmails;
   } catch (err) {
     console.log('🚀 ~ file: getUnsubscribedEmails.ts:25 ~ ❌ Failed to get unsubscribe filters ~ err:', err);
     return filterEmails;

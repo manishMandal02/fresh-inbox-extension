@@ -30,6 +30,7 @@ export const getWhitelistedEmails = async (token: string): Promise<string[]> => 
         throw new Error('❌ Failed to get whitelist filter id');
       }
     }
+    return filterEmails;
   } catch (err) {
     console.log('🚀 ~ file: getWhitelistedEmails.ts:26 ~ getWhitelistedEmails ~ err:', err);
     return filterEmails;

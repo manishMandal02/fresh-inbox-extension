@@ -18,8 +18,6 @@ export const getFilterById = async (token: string, id: string): Promise<FilterEm
 
     const parsedRes: GmailFilter | null = await res.json();
 
-    console.log('🚀 ~ file: gmailFilters.ts:19 ~ getFilterById ~ parsedRes:', parsedRes);
-
     if (!parsedRes.id) {
       throw new Error('❌ Filter not found');
     }
@@ -52,17 +50,16 @@ export const createFilter = async ({
   emails,
   filterAction,
 }: CreateFilterParams): Promise<string | null> => {
-  // format the emails into a single query string for filter criteria
-  console.log('🚀 ~ file: gmailFilters.ts:54 ~ emails:', emails);
+  //
+  const emailsList = emails;
 
   // if the emails doesn't include mail-magic identity email, add it
-  if (emails.indexOf(MAIL_MAGIC_FILTER_EMAIL) === -1) {
-    emails.unshift(MAIL_MAGIC_FILTER_EMAIL);
+  if (emailsList.indexOf(MAIL_MAGIC_FILTER_EMAIL) === -1) {
+    emailsList.unshift(MAIL_MAGIC_FILTER_EMAIL);
   }
 
-  const criteriaQuery = `from:(${emails.map(email => `${email}`).join(' OR ')})`;
-
-  console.log('🚀 ~ file: gmailFilters.ts:56 ~ criteriaQuery:', criteriaQuery);
+  // format the emails into a single query string for filter criteria
+  const criteriaQuery = `from:(${emailsList.map(email => `${email}`).join(' OR ')})`;
 
   //* explanation of labels/action
   // addLabelIds adds label to the email present in the filter (here TRASH label will be added to the unsubscribed email)

@@ -13,4 +13,4 @@ const getEmailsFromFilterQuery = (filterQuery: string) => {
   return emails.filter(email => email);
 };
 
-export { getEmailsFromFilterQuery };
+export { getEmailsFromFilterQuery }; 

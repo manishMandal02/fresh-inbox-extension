@@ -20,16 +20,10 @@ export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): P
     //get id from storage
     const filterId = await getSyncStorageByKey(storageKey);
 
-    console.log('🚀 ~ file: getFilterId.ts:23 ~ getFilterId ~ filterId: 🔵', filterId);
-
+    // check if filter exists in gmail filters
     if (filterId && (await checkFilterIdExists(token, filterId))) {
       console.log('🚀 ~  Filter found in storage: 🔵');
 
-      // check if filter with this id exists
-      // if yes, return id
-
-      // if not
-      // return filter id if present
       return filterId;
     } else {
       // search for whitelist/inbox filter in users filter (gmail-api)
