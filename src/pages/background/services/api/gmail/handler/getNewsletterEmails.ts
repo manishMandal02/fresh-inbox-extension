@@ -166,29 +166,14 @@ export const getNewsletterEmails = async (token: string) => {
 
       // process batches to get newsletter emails
       for (const batch of batches) {
-        // console.log(
-        //   '🚀 ~ file: getNewsletterEmails.ts:159 ~ getNewsletterEmails ~ batch.length:',
-        //   batch.length
-        // );
-
         // get sender emails from the message ids queried
         const senderEmails = await getSenderEmailsFromIds({
           messageIds: batch,
           token,
         });
 
-        // console.log(
-        //   '🚀 ~ file: getNewsletterEmails.ts:170 ~ getNewsletterEmails ~ senderEmails:',
-        //   senderEmails
-        // );
-
         // store the emails
         newsletterEmails = removeDuplicateEmails([...newsletterEmails, ...senderEmails]);
-
-        // console.log(
-        //   '🚀 ~ file: getNewsletterEmails.ts:177 ~ getNewsletterEmails ~ newsletterEmails:',
-        //   newsletterEmails
-        // );
       }
 
       //* check if these emails are already unsubscribed or whitelisted
@@ -196,17 +181,7 @@ export const getNewsletterEmails = async (token: string) => {
       if (newsletterEmails.length > 0) {
         const unsubscribedEmails = await getUnsubscribedEmails(token);
 
-        // console.log(
-        //   '🚀 ~ file: getNewsletterEmails.ts:182 ~ getNewsletterEmails ~ unsubscribedEmails:',
-        //   unsubscribedEmails
-        // );
-
         const whitelistedEmails = await getWhitelistedEmails(token);
-
-        // console.log(
-        //   '🚀 ~ file: getNewsletterEmails.ts:189 ~ getNewsletterEmails ~ whitelistedEmails:',
-        //   whitelistedEmails
-        // );
 
         // emails to filter out, combining unsubscribed and whitelisted emails
         const filterEmails = [];
@@ -226,7 +201,15 @@ export const getNewsletterEmails = async (token: string) => {
           );
 
           // filter emails already unsubscribed or whitelisted
-          const filteredNewsletterEmails = newsletterEmails.filter(email => !filterEmails.includes(email));
+          const filteredNewsletterEmails = newsletterEmails.filter(
+            email => !filterEmails.includes(email.email)
+          );
+
+          console.log(
+            '🚀 ~ file: getNewsletterEmails.ts:221 ~ getNewsletterEmails ~ filteredNewsletterEmails:',
+            filteredNewsletterEmails
+          );
+
           // store the filtered emails
           newsletterEmails = removeDuplicateEmails(filteredNewsletterEmails);
         } else {

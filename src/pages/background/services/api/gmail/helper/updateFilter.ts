@@ -26,14 +26,8 @@ export const addEmailToFilter = async ({ token, email, filterId, filterAction }:
 
   const filter = await getFilterById(token, filterId);
 
-  console.log('🚀 ~ file: updateFilter.ts:32 ~ addEmailToFilter ~ filter:', filter.emails);
-
-  console.log('🚀 ~ file: updateFilter.ts:34 ~ addEmailToFilter ~ email:', email);
-
   // add email to existing filter emails
   const updatedFilterEmails = [...filter.emails, email];
-
-  console.log('🚀 ~ file: updateFilter.ts:38 ~ addEmailToFilter ~ updatedFilterEmails:', updatedFilterEmails);
 
   // delete existing filter
   await deleteFilter(token, filterId);

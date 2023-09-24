@@ -10,11 +10,6 @@ export const getUnsubscribedEmails = async (token: string): Promise<string[]> =>
     // get whitelisted emails from local.storage
     const unsubscribedEmails = await getLocalStorageByKey<string[]>(storageKeys.UNSUBSCRIBED_EMAILS);
     if (unsubscribedEmails && unsubscribedEmails.length > 0) {
-      console.log(
-        '🚀 ~ file: getUnsubscribedEmails.ts:14 ~ getUnsubscribedEmails ~ unsubscribedEmails:',
-        unsubscribedEmails
-      );
-
       filterEmails = unsubscribedEmails;
     } else {
       // if emails not present in local.storage get it from user's filter (gmail-api)
@@ -24,8 +19,6 @@ export const getUnsubscribedEmails = async (token: string): Promise<string[]> =>
       if (unsubscribeFilterId) {
         // if exists, get emails from filter by id
         const res = await getFilterById(token, unsubscribeFilterId);
-
-        console.log('🚀 ~ file: getUnsubscribedEmails.ts:28 ~ getUnsubscribedEmails ~ res:', res);
 
         if (res) {
           // save emails to local.storage

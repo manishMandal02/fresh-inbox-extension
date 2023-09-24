@@ -6,9 +6,9 @@ import {
 } from '@src/pages/content/utils/emailActions';
 import { storageKeys } from '@src/pages/content/constants/app.constants';
 
+import { randomId } from '@src/pages/content/utils/randomId';
 import { showConfirmModal } from '../../elements/confirmModal';
 import { addTooltip } from '../../elements/tooltip';
-import { randomId } from '@src/pages/content/utils/randomId';
 import { getLoadingSpinner } from '../../elements/loadingSpinner';
 import { renderTextMsg } from '../../elements/text';
 import { IMessageEvent } from '@src/pages/content/content.types';
@@ -120,7 +120,7 @@ const getNewsletterData = async ({ shouldRefreshData }: { shouldRefreshData?: bo
   }
 };
 
-// render table
+//* render table
 const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
   // get table
   const tableEl = document.getElementById('newsletterTab-table');
@@ -204,6 +204,8 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
       // hide loading spinner
       if (isSuccess) {
         hideLoadingSpinner();
+        // re-render table if action success (removes the email from table)
+        await getNewsletterData({ shouldRefreshData: false });
       } else {
         hideLoadingSpinner(true);
       }
