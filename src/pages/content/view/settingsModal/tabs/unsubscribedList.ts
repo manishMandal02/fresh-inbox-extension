@@ -22,6 +22,54 @@ const unsubscribedListTabContainerInnerHTML = `
 </div>
     `;
 
+const refreshTable = async () => {
+  // const get table container
+  const unsubscribedListTabContainer = document.getElementById('settingsModal-unsubscribedListTab');
+
+  if (!unsubscribedListTabContainer) return;
+
+  // show loading spinner while fetching data
+  const spinner = getLoadingSpinner();
+  const loadingMsg = renderTextMsg('Getting unsubscribed emails list...');
+  try {
+    // append loading spinner and message
+    unsubscribedListTabContainer.append(spinner, loadingMsg);
+
+    // get unsubscribed emails list
+    const unsubscribedEmails = await getUnsubscribedEmails();
+
+    console.log(
+      '🚀 ~ file: unsubscribedList.ts:116 ~ renderUnsubscribedListTab ~ unsubscribedEmails:',
+      unsubscribedEmails
+    );
+    // remove loading spinner
+    spinner.remove();
+    loadingMsg.remove();
+
+    if (!unsubscribedEmails) {
+      // show error message
+      const errorMsg = renderTextMsg('failed to get unsubscribed emails');
+      unsubscribedListTabContainer.appendChild(errorMsg);
+    } else if (unsubscribedEmails.length === 0) {
+      // show error message
+      const noDataMsg = renderTextMsg(
+        'No Unsubscribed emails found, Start unsubscribing to newsletter emails.'
+      );
+      unsubscribedListTabContainer.appendChild(noDataMsg);
+    } else {
+      // found unsubscribed emails
+      // add inner html structure to tab container
+      unsubscribedListTabContainer.innerHTML = unsubscribedListTabContainerInnerHTML;
+      // wait for 100ms
+      await wait(100);
+      // render table with data
+      await renderTable(unsubscribedEmails);
+    }
+  } catch (err) {
+    console.log('🚀 ~ file: unsubscribedList.ts:112 ~ renderUnsubscribedListTab ~ err:', err);
+  }
+};
+
 // render table
 const renderTable = async (unsubscribedEmails: string[]) => {
   // get table
@@ -72,15 +120,15 @@ const renderTable = async (unsubscribedEmails: string[]) => {
       // hide loading spinner
       if (isSuccess) {
         hideLoadingSpinner();
+        // re-render table on success
+        await refreshTable();
       } else {
         hideLoadingSpinner(true);
       }
     });
 
     // add tooltips to buttons
-    addTooltip(reSubscribeBtn, 'Re-Subscribe');
-
-    //TODO: re-render table on success
+    addTooltip(reSubscribeBtn, 're-Subscribe/Whitelist');
 
     // end of for loop
   });
@@ -95,46 +143,7 @@ const renderUnsubscribedListTab = async (parentContainer: HTMLElement) => {
 
   parentContainer.appendChild(unsubscribedListTabContainer);
 
-  // show loading spinner while fetching data
-  const spinner = getLoadingSpinner();
-  const loadingMsg = renderTextMsg('Getting unsubscribed emails list...');
-  try {
-    // append loading spinner and message
-    unsubscribedListTabContainer.append(spinner, loadingMsg);
-
-    // get unsubscribed emails list
-    const unsubscribedEmails = await getUnsubscribedEmails();
-
-    console.log(
-      '🚀 ~ file: unsubscribedList.ts:116 ~ renderUnsubscribedListTab ~ unsubscribedEmails:',
-      unsubscribedEmails
-    );
-    // remove loading spinner
-    spinner.remove();
-    loadingMsg.remove();
-
-    if (!unsubscribedEmails) {
-      // show error message
-      const errorMsg = renderTextMsg('failed to get unsubscribed emails');
-      unsubscribedListTabContainer.appendChild(errorMsg);
-    } else if (unsubscribedEmails.length === 0) {
-      // show error message
-      const noDataMsg = renderTextMsg(
-        'No Unsubscribed emails found, Start unsubscribing to newsletter emails.'
-      );
-      unsubscribedListTabContainer.appendChild(noDataMsg);
-    } else {
-      // found unsubscribed emails
-      // add inner html structure to tab container
-      unsubscribedListTabContainer.innerHTML = unsubscribedListTabContainerInnerHTML;
-      // wait for 100ms
-      await wait(100);
-      // render table with data
-      await renderTable(unsubscribedEmails);
-    }
-  } catch (err) {
-    console.log('🚀 ~ file: unsubscribedList.ts:112 ~ renderUnsubscribedListTab ~ err:', err);
-  }
+  await refreshTable();
 };
 
 // remove the unsubscribed list tab from DOM

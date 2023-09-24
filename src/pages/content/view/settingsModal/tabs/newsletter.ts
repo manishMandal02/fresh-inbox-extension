@@ -37,7 +37,7 @@ const newsletterTabContainerInnerHTML = `
 
     `;
 
-const getNewsletterData = async ({ shouldRefreshData }: { shouldRefreshData?: boolean }) => {
+const refreshTableData = async ({ shouldRefreshData }: { shouldRefreshData?: boolean }) => {
   // get table container
   const newsletterTabContainer = document.getElementById('settingsModal-newsletterTab');
 
@@ -76,7 +76,7 @@ const getNewsletterData = async ({ shouldRefreshData }: { shouldRefreshData?: bo
         // data already exists, use it
         newsletterEmails = storageData;
 
-        console.log('🚀 ~ file: newsletter.ts:78 ~ getNewsletterData ~ storageData:', storageData);
+        console.log('🚀 ~ file: newsletter.ts:78 ~ refreshTableData ~ storageData:', storageData);
       } else {
         // data doesn't exist, fetch from background script
         await getNewsletterEmailsFromBackground();
@@ -184,6 +184,8 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
       // hide loading spinner
       if (isSuccess) {
         hideLoadingSpinner();
+        // re-render table if action success
+        await refreshTableData({ shouldRefreshData: false });
       } else {
         hideLoadingSpinner(true);
       }
@@ -204,8 +206,8 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
       // hide loading spinner
       if (isSuccess) {
         hideLoadingSpinner();
-        // re-render table if action success (removes the email from table)
-        await getNewsletterData({ shouldRefreshData: false });
+        // re-render table if action success
+        await refreshTableData({ shouldRefreshData: false });
       } else {
         hideLoadingSpinner(true);
       }
@@ -260,6 +262,8 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
           // hide loading spinner
           if (isSuccess) {
             hideLoadingSpinner();
+            // re-render table if action success
+            await refreshTableData({ shouldRefreshData: false });
           } else {
             hideLoadingSpinner(true);
           }
@@ -305,7 +309,7 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
   // on click listener
   refreshTableBtn.addEventListener('click', async () => {
     //  handle refresh newsletter emails data
-    await getNewsletterData({ shouldRefreshData: true });
+    await refreshTableData({ shouldRefreshData: true });
   });
 };
 
@@ -318,7 +322,7 @@ const renderNewsletterTab = async (parentContainer: HTMLElement) => {
   parentContainer.appendChild(newsletterTabContainer);
 
   // get newsletters data
-  await getNewsletterData({ shouldRefreshData: false });
+  await refreshTableData({ shouldRefreshData: false });
 };
 
 // remove the newsletter tab from DOM

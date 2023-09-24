@@ -28,6 +28,59 @@ const whitelistedEmailsTabContainerInnerHTML = `
 </div>
     `;
 
+const refreshTable = async () => {
+  // get table container
+  const whitelistedEmailsTabContainer = document.getElementById('settingsModal-whitelistedEmailsTab');
+
+  if (!whitelistedEmailsTabContainer) return;
+
+  // show loading spinner while fetching data
+  const spinner = getLoadingSpinner();
+  const loadingMsg = renderTextMsg('Getting whitelisted emails list...');
+  try {
+    // append loading spinner and message
+    whitelistedEmailsTabContainer.append(spinner, loadingMsg);
+
+    // get whitelisted emails list
+    const whitelistedEmails = await getWhitelistedEmails();
+
+    console.log(
+      '🚀 ~ file: whitelistedEmails.ts:116 ~ renderWhitelistedEmailsTab ~ whitelistedEmails:',
+      whitelistedEmails
+    );
+    // remove loading spinner
+    spinner.remove();
+    loadingMsg.remove();
+
+    if (!whitelistedEmails) {
+      // show error message
+      const errorMsg = renderTextMsg('failed to get whitelisted emails list');
+      whitelistedEmailsTabContainer.appendChild(errorMsg);
+    } else if (whitelistedEmails.length === 0) {
+      // show error message
+      const noDataMsg = renderTextMsg(
+        'No whitelisted emails found, You can whitelist emails to keep them in your Inbox.'
+      );
+      whitelistedEmailsTabContainer.appendChild(noDataMsg);
+    } else {
+      // found whitelisted emails
+      // add inner html structure to tab container
+      whitelistedEmailsTabContainer.innerHTML = whitelistedEmailsTabContainerInnerHTML;
+      // wait for 100ms
+      await wait(100);
+      // render table with data
+      await renderTable(whitelistedEmails);
+    }
+  } catch (err) {
+    spinner.remove();
+    loadingMsg.remove();
+    // show error message
+    const errorMsg = renderTextMsg('failed to get whitelisted emails list');
+    whitelistedEmailsTabContainer.appendChild(errorMsg);
+    console.log('🚀 ~ file: whitelistedEmails.ts:112 ~ renderWhitelistedEmailsTab ~ err:', err);
+  }
+};
+
 // render table
 const renderTable = async (whitelistedEmails: string[]) => {
   // get table
@@ -80,11 +133,11 @@ const renderTable = async (whitelistedEmails: string[]) => {
       // hide loading spinner
       if (isSuccess) {
         hideLoadingSpinner();
+        // re-render table if action success
+        await refreshTable();
       } else {
         hideLoadingSpinner(true);
       }
-
-      // ToDo: re-render table if action success (remove the email from table)
     });
 
     deleteAllMails.addEventListener('click', async ev => {
@@ -134,6 +187,8 @@ const renderTable = async (whitelistedEmails: string[]) => {
           // hide loading spinner
           if (isSuccess) {
             hideLoadingSpinner();
+            // re-render table if action success
+            await refreshTable();
           } else {
             hideLoadingSpinner(true);
           }
@@ -144,8 +199,6 @@ const renderTable = async (whitelistedEmails: string[]) => {
     addTooltip(unsubscribeBtn, 'Unsubscribe');
     addTooltip(deleteAllMails, 'Delete All Mails');
     addTooltip(unsubscribeAndDeleteAllMailsBtn, 'Unsubscribe & \n Delete All Mails');
-
-    //TODO: re-render table on success
 
     // end of for loop
   });
@@ -160,51 +213,7 @@ const renderWhitelistedEmailsTab = async (parentContainer: HTMLElement) => {
 
   parentContainer.appendChild(whitelistedEmailsTabContainer);
 
-  // show loading spinner while fetching data
-  const spinner = getLoadingSpinner();
-  const loadingMsg = renderTextMsg('Getting whitelisted emails list...');
-  try {
-    // append loading spinner and message
-    whitelistedEmailsTabContainer.append(spinner, loadingMsg);
-
-    // get whitelisted emails list
-    const whitelistedEmails = await getWhitelistedEmails();
-
-    console.log(
-      '🚀 ~ file: whitelistedEmails.ts:116 ~ renderWhitelistedEmailsTab ~ whitelistedEmails:',
-      whitelistedEmails
-    );
-    // remove loading spinner
-    spinner.remove();
-    loadingMsg.remove();
-
-    if (!whitelistedEmails) {
-      // show error message
-      const errorMsg = renderTextMsg('failed to get whitelisted emails list');
-      whitelistedEmailsTabContainer.appendChild(errorMsg);
-    } else if (whitelistedEmails.length === 0) {
-      // show error message
-      const noDataMsg = renderTextMsg(
-        'No whitelisted emails found, You can whitelist emails to keep them in your Inbox.'
-      );
-      whitelistedEmailsTabContainer.appendChild(noDataMsg);
-    } else {
-      // found whitelisted emails
-      // add inner html structure to tab container
-      whitelistedEmailsTabContainer.innerHTML = whitelistedEmailsTabContainerInnerHTML;
-      // wait for 100ms
-      await wait(100);
-      // render table with data
-      await renderTable(whitelistedEmails);
-    }
-  } catch (err) {
-    spinner.remove();
-    loadingMsg.remove();
-    // show error message
-    const errorMsg = renderTextMsg('failed to get whitelisted emails list');
-    whitelistedEmailsTabContainer.appendChild(errorMsg);
-    console.log('🚀 ~ file: whitelistedEmails.ts:112 ~ renderWhitelistedEmailsTab ~ err:', err);
-  }
+  await refreshTable();
 };
 
 // remove the whitelisted list tab from DOM
