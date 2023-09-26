@@ -26,8 +26,13 @@ const handleUnsubscribe = async () => {
   }
 };
 
+type HandleUnSubscribeParams = {
+  isWHitelisted?: boolean;
+  shouldRefreshTable?: boolean;
+};
+
 //* handle delete all mails
-const handleDeleteAllMails = async () => {
+const handleDeleteAllMails = async ({ isWHitelisted, shouldRefreshTable }: HandleUnSubscribeParams) => {
   try {
     // get email and name from global variables
     const { email, name } = mailMagicGlobalVariables;
@@ -38,7 +43,12 @@ const handleDeleteAllMails = async () => {
       email,
     });
     // send message/event to background script
-    const res = await chrome.runtime.sendMessage({ event: IMessageEvent.Delete_All_Mails, email, name });
+    const res = await chrome.runtime.sendMessage({
+      event: IMessageEvent.Delete_All_Mails,
+      email,
+      name,
+      shouldRefreshTable,
+    });
     // hide snackbar
     hideLoadingSnackbar();
     return res;
@@ -49,7 +59,10 @@ const handleDeleteAllMails = async () => {
 };
 
 //* handle unsubscribe and delete all mails
-const handleUnsubscribeAndDeleteAllMails = async () => {
+const handleUnsubscribeAndDeleteAllMails = async ({
+  shouldRefreshTable,
+  isWHitelisted,
+}: HandleUnSubscribeParams) => {
   try {
     // get email and name from global variables
     const { email, name } = mailMagicGlobalVariables;
@@ -65,6 +78,7 @@ const handleUnsubscribeAndDeleteAllMails = async () => {
       event: IMessageEvent.Unsubscribe_And_Delete_All_Mails,
       email,
       name,
+      shouldRefreshTable,
     });
 
     // hide snackbar

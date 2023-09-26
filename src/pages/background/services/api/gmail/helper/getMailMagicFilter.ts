@@ -41,7 +41,7 @@ export const getMailMagicFilter = async ({
   token,
   filterAction = FILTER_ACTION.TRASH,
 }: GetMailMagicFilterParams): Promise<FilterEmails | null> => {
-  const fetchOptions = {
+  const fetchOptions: Partial<RequestInit> = {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,

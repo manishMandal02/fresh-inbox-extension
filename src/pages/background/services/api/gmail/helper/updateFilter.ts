@@ -9,7 +9,7 @@ type UpdateFilterParams = {
   filterAction: FILTER_ACTION;
 };
 
-//
+// set storage key based on filter action
 const getStorageKeyByAction = (filterAction: FILTER_ACTION) => {
   if (filterAction === FILTER_ACTION.INBOX) {
     return { sync: storageKeys.WHITELIST_FILTER_ID, local: storageKeys.WHITELISTED_EMAILS };
@@ -20,8 +20,7 @@ const getStorageKeyByAction = (filterAction: FILTER_ACTION) => {
 
 // update filter helper
 export const addEmailToFilter = async ({ token, email, filterId, filterAction }: UpdateFilterParams) => {
-  // set storage key based on filter action
-  // sync storage (store's id)
+  // sync storage (storage id)
   const storageKey = getStorageKeyByAction(filterAction);
 
   const filter = await getFilterById(token, filterId);
@@ -43,8 +42,7 @@ export const addEmailToFilter = async ({ token, email, filterId, filterAction }:
 
 // remove email from filter
 export const removeEmailFromFilter = async ({ token, email, filterId, filterAction }: UpdateFilterParams) => {
-  // set storage key based on filter action
-  // sync storage (store's id)
+  // sync storage (storage id)
   const storageKey = getStorageKeyByAction(filterAction);
 
   // get  filter id
@@ -57,7 +55,7 @@ export const removeEmailFromFilter = async ({ token, email, filterId, filterActi
   // create new one with new emails list
   const newFilterId = await createFilter({
     token,
-    emails: updatedFilterEmails,
+    emails: [...updatedFilterEmails],
     filterAction: FILTER_ACTION.INBOX,
   });
   // save the new whitelist filter id

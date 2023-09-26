@@ -1,5 +1,5 @@
 import { storageKeys } from '@src/pages/background/constants/app.constants';
-import { FILTER_ACTION } from '@src/pages/background/types/background.types';
+import { FILTER_ACTION, NewsletterEmails } from '@src/pages/background/types/background.types';
 import { getFilterId } from '../helper/getFilterId';
 import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';
 import { addEmailToFilter } from '../helper/updateFilter';
@@ -14,11 +14,15 @@ export const whitelistEmail = async (token: string, email: string) => {
       addEmailToFilter({ token, email, filterId, filterAction: FILTER_ACTION.INBOX });
 
       // check if the email exists in the newsletters list (local.storage), if yes remove it
-      const newsletterEmails = await getLocalStorageByKey<string[]>(storageKeys.NEWSLETTER_EMAILS);
+      const newsletterEmails = await getLocalStorageByKey<NewsletterEmails[]>(storageKeys.NEWSLETTER_EMAILS);
 
-      if (newsletterEmails && newsletterEmails.length > 0 && newsletterEmails.includes(email)) {
+      if (
+        newsletterEmails &&
+        newsletterEmails.length > 0 &&
+        !!newsletterEmails.find(e => e.email === email)
+      ) {
         // remove the email from newsletter list
-        const updatedNewsletterEmails = newsletterEmails.filter(e => e !== email);
+        const updatedNewsletterEmails = newsletterEmails.filter(e => e.email !== email);
         // save updated newsletter emails
         await chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: updatedNewsletterEmails });
       }

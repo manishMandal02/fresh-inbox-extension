@@ -37,7 +37,7 @@ ${request.method} ${request.path}
 
   const requestBody = `${batchRequest.join('')}\n--${boundary}--`;
 
-  const fetchOptions = {
+  const fetchOptions: Partial<RequestInit> = {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -100,7 +100,7 @@ ${request.method} ${request.path}
 
 // get newsletters/mailing list emails form Gmail ap
 export const getNewsletterEmails = async (token: string) => {
-  const fetchOptions = {
+  const fetchOptions: Partial<RequestInit> = {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,

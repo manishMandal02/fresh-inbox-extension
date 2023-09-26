@@ -1,9 +1,9 @@
 const handleConfirmActionBtnClick = async (ev: MouseEvent, onConfirmClick: () => Promise<void>) => {
   ev.stopPropagation();
   // execute callback
+  hideConfirmModal();
   await onConfirmClick();
   // hide modal
-  hideConfirmModal();
 };
 const handleCancelActionBtnClick = (ev: MouseEvent) => {
   ev.stopPropagation();
@@ -48,8 +48,7 @@ const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams
   // backdrop click listener
   backdrop.addEventListener('click', handleCancelActionBtnClick);
   //
-  // modalCard.addEventListener('click', handleCancelActionBtnClick);
-  // auth btn
+
   confirmAction.addEventListener('click', async ev => {
     await handleConfirmActionBtnClick(ev, onConfirmClick);
   });

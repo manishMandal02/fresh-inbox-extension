@@ -1,25 +1,27 @@
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
-import {
-  APIHandleParams,
-  GetMsgAPIResponseSuccess,
-  GmailMessage,
-} from '@src/pages/background/types/background.types';
+import { APIHandleParams, GetMsgAPIResponseSuccess } from '@src/pages/background/types/background.types';
 
 // delete all mails in batches for faster processing
 const batchDeleteMails = async (token: string, ids: string[]) => {
-  const fetchOptions = {
+  // added TRASH label, remove INBOX label for all the emails/messages
+  const reqBody = {
+    ids,
+    addLabelIds: ['TRASH'],
+    removeLabelIds: ['INBOX'],
+  };
+
+  const fetchOptions: Partial<RequestInit> = {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ ids }),
+    body: JSON.stringify(reqBody),
   };
 
-  // batch delete emails
   try {
-    await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/batchDelete', fetchOptions);
-    console.log('✅ batch delete successful');
+    // batch delete emails
+    await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/batchModify', fetchOptions);
   } catch (err) {
     console.log('🚀 ~ file: deleteAllMails.ts:23 ~ batchDeleteEmails: Failed to batch delete: ~ err:', err);
   }
@@ -38,8 +40,8 @@ export const deleteAllMails = async ({ token, email }: APIHandleParams) => {
 
     let nextPageToken: string | null = null;
 
-    const queryParams = `from:${email}&maxResults=${API_MAX_RESULT}&${
-      nextPageToken ? `pageToken=${nextPageToken}` : ''
+    const queryParams = `from:${email}&maxResults=${API_MAX_RESULT}${
+      nextPageToken ? `&pageToken=${nextPageToken}` : ''
     }`;
 
     let parsedRes: GetMsgAPIResponseSuccess | null = null;
@@ -58,11 +60,11 @@ export const deleteAllMails = async ({ token, email }: APIHandleParams) => {
       parsedRes = await res.json();
 
       // stop if no messages found
-      if (!parsedRes.messages || (parsedRes.messages && parsedRes.messages.length < 1)) {
-        console.log(
-          '🚀 ~ file: deleteAllMails.ts:64 ~ deleteAllMails ~ ❌ Failed to get gmail message ids: parsedRes:',
-          parsedRes
-        );
+      if (!parsedRes.messages) {
+        throw new Error('❌ Failed to get gmail message ids');
+      }
+
+      if (parsedRes.messages.length < 1) {
         return;
       }
 
@@ -80,8 +82,9 @@ export const deleteAllMails = async ({ token, email }: APIHandleParams) => {
 
       // batch delete messages/emails
       await batchDeleteMails(token, msgIds);
+      console.log(`✅ batch delete successful, deleted ${msgIds.length} mails`);
+      //* end of do...while loop
     } while (nextPageToken !== null);
-    //* end of do...while loop
   } catch (err) {
     console.log('🚀 ~ file: deleteAllMails.ts:86 ~ deleteAllMails ~ err:', err);
   }

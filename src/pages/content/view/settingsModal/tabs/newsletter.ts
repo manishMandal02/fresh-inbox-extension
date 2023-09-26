@@ -230,7 +230,7 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
           // show loading spinner
           const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
 
-          const isSuccess = await handleDeleteAllMails();
+          const isSuccess = await handleDeleteAllMails({});
 
           // hide loading spinner
           if (isSuccess) {
@@ -257,7 +257,7 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
           // show loading spinner
           const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
 
-          const isSuccess = await handleUnsubscribeAndDeleteAllMails();
+          const isSuccess = await handleUnsubscribeAndDeleteAllMails({});
 
           // hide loading spinner
           if (isSuccess) {

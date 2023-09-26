@@ -17,7 +17,7 @@ export const getNewsletterEmailsOnPage = async ({
   dataOnPage: { emails, dateRange, category, folder },
 }: GetNewsletterEmailsOnPageParams) => {
   try {
-    const fetchOptions = {
+    const fetchOptions: Partial<RequestInit> = {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,

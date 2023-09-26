@@ -25,6 +25,5 @@ export const resubscribeEmail = async (token: string, email: string) => {
   } catch (err) {
     console.log('🚀 ~ file: resubscribeEmail.ts:12 ~ resubscribeEmail ~ err:', err);
     //TODO: send to global error handler
-    return false;
   }
 };

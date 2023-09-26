@@ -37,8 +37,8 @@ type GmailFolder = 'all' | 'inbox' | 'spam';
 // for checking newsletter emails on page
 export interface DataOnPage {
   emails: EmailId[];
-  category?: string;
-  folder?: GmailFolder;
+  category?: string; // ex: general, promotions, transactional, etc.
+  folder?: GmailFolder; // ex: 'inbox' |'spam' | 'all'
   dateRange: {
     startDate: string; // yyyy-mm-dd
     endDate: string; // yyyy-mm-dd
@@ -49,8 +49,9 @@ export interface IMessageBody {
   event: IMessageEvent;
   email?: string;
   name?: string;
-  isWhiteListed?: boolean;
-  dataOnPage?: DataOnPage;
+  isWhiteListed?: boolean; // to remove the email from the whitelisted emails after unsubscribing (if true)
+  dataOnPage?: DataOnPage; // for getting the newsletter emails on the page
+  shouldRefreshTable?: boolean; // for refreshing table after deleting mails
 }
 export interface IUserInfo {
   email: string;

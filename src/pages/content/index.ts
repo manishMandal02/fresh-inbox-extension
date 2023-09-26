@@ -233,9 +233,6 @@ setTimeout(async () => {
 
   try {
     await startApp();
-
-    //TODO: testing- delete this later
-    showSettingsModal();
   } catch (err) {
     console.log('🚀 ~ file: index.ts:185 ~ setTimeout ~ err:', err);
   }

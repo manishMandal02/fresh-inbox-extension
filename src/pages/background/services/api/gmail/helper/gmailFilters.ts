@@ -4,7 +4,7 @@ import { MAIL_MAGIC_FILTER_EMAIL } from '@src/pages/background/constants/app.con
 
 // get  filter by Id
 export const getFilterById = async (token: string, id: string): Promise<FilterEmails | null> => {
-  const fetchOptions = {
+  const fetchOptions: Partial<RequestInit> = {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -69,7 +69,7 @@ export const createFilter = async ({
   const dynamicFilterAction =
     filterAction === FILTER_ACTION.TRASH ? { addLabelIds: ['TRASH'] } : { removeLabelIds: ['SPAM'] };
 
-  const fetchOptions = {
+  const fetchOptions: Partial<RequestInit> = {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -101,7 +101,7 @@ export const createFilter = async ({
 // delete previous mail-magic filter with id
 export const deleteFilter = async (token: string, id: string) => {
   //
-  const fetchOptions = {
+  const fetchOptions: Partial<RequestInit> = {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${token}`,

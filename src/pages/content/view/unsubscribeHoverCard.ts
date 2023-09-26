@@ -132,7 +132,9 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
       showConfirmModal({
         msg: 'Are you sure you want to delete all mails and unsubscribe from',
         email,
-        onConfirmClick: handleUnsubscribeAndDeleteAllMails,
+        onConfirmClick: async () => {
+          handleUnsubscribeAndDeleteAllMails({ shouldRefreshTable: true });
+        },
       });
     });
   }
@@ -146,7 +148,9 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
     showConfirmModal({
       msg: 'Are you sure you want to delete all mails  from',
       email,
-      onConfirmClick: handleDeleteAllMails,
+      onConfirmClick: async () => {
+        await handleDeleteAllMails({ shouldRefreshTable: true });
+      },
     });
   });
   hoverCard.style.display = 'flex';

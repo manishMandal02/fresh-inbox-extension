@@ -18,16 +18,13 @@ const showSettingsModal = () => {
   const modalContainer = document.createElement('div');
   const backdrop = document.createElement('div');
   const modalCard = document.createElement('div');
-  const closeModalBtn = document.createElement('button');
 
-  // add content to the elements
-  closeModalBtn.innerHTML = `X`;
-
+  // add inner html body
   modalCard.innerHTML = `
     <div id='settingsModal-topContainer'>
         <div>
             <p class='modalTitle'>Mail Magic</p>
-            <button>X</button>
+            <button id='settingsModal-closeBtn'>X</button>
         </div>
         <div class='tabs'>
             <li class='settingsModal-activeTab' id='settingsTabs-about'>About</li>
@@ -57,6 +54,11 @@ const showSettingsModal = () => {
   modalContainer.append(backdrop, modalCard);
 
   document.body.appendChild(modalContainer);
+
+  // handle close button click
+  const closeBtn = document.getElementById('settingsModal-closeBtn');
+
+  closeBtn.addEventListener('click', handleCloseSettingsModal);
 
   // tab body container
   const tabBodyContainer = document.getElementById('settingsModal-tabBodyContainer');

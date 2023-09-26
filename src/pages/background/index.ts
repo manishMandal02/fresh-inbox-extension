@@ -113,13 +113,15 @@ chrome.runtime.onMessage.addListener(
           try {
             await deleteAllMails({ email: request.email, token });
 
-            // refresh the the table
-            await chrome.tabs.sendMessage(activeTabId, { event: IMessageEvent.REFRESH_TABLE });
-
+            // refresh the the table,
+            // if the delete all mails request was sent from the assistant button in table
+            if (request.shouldRefreshTable) {
+              await chrome.tabs.sendMessage(activeTabId, { event: IMessageEvent.REFRESH_TABLE });
+            }
             return true;
           } catch (err) {
             console.log(
-              '🚀 ~ file: index.ts:100 ~ asyncMessageHandler<IMessageBody,string|boolean> ~ err:',
+              '🚀 ~ file: index.ts:100 ~ asyncMessageHandler<IMessageBody,string|boolean|NewsletterEmails[]> ~ err:',
               err
             );
             return false;
@@ -129,7 +131,17 @@ chrome.runtime.onMessage.addListener(
         case IMessageEvent.Unsubscribe_And_Delete_All_Mails: {
           console.log('Received unsubscribeAndDeleteAllMails request for:', request.email);
           try {
-            await unsubscribeAndDeleteAllMails({ email: request.email, token });
+            await unsubscribeAndDeleteAllMails({
+              email: request.email,
+              token,
+              isWhiteListed: request.isWhiteListed,
+            });
+
+            // refresh the the table,
+            // if the delete all mails request was sent from the assistant button in table
+            if (request.shouldRefreshTable) {
+              await chrome.tabs.sendMessage(activeTabId, { event: IMessageEvent.REFRESH_TABLE });
+            }
             return true;
           } catch (err) {
             console.log(
@@ -192,8 +204,13 @@ chrome.runtime.onMessage.addListener(
         // handle re-subscribe
         case IMessageEvent.RE_SUBSCRIBE: {
           console.log('Received RE_SUBSCRIBE request for ', request.email);
-          const res = await resubscribeEmail(token, request.email);
-          return res;
+          try {
+            await resubscribeEmail(token, request.email);
+            return true;
+          } catch (err) {
+            console.log('🚀 ~ file: index.ts:207 ~ err:', err);
+            return false;
+          }
         }
 
         case IMessageEvent.Disable_MailMagic: {

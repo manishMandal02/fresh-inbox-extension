@@ -155,7 +155,7 @@ const renderTable = async (whitelistedEmails: string[]) => {
           // show loading spinner
           const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
 
-          const isSuccess = await handleDeleteAllMails();
+          const isSuccess = await handleDeleteAllMails({ isWHitelisted: true });
 
           // hide loading spinner
           if (isSuccess) {
@@ -182,7 +182,7 @@ const renderTable = async (whitelistedEmails: string[]) => {
           // show loading spinner
           const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
 
-          const isSuccess = await handleUnsubscribeAndDeleteAllMails();
+          const isSuccess = await handleUnsubscribeAndDeleteAllMails({ isWHitelisted: true });
 
           // hide loading spinner
           if (isSuccess) {
