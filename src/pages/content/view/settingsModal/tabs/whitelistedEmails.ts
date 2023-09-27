@@ -12,6 +12,7 @@ import { addTooltip } from '../../elements/tooltip';
 import { renderTextMsg } from '../../elements/text';
 import wait from '@src/pages/content/utils/wait';
 import { showConfirmModal } from '../../elements/confirmModal';
+import { tableHeader } from '../../elements/tableHeader';
 
 // tab body html structure
 const whitelistedEmailsTabContainerInnerHTML = `
@@ -90,6 +91,10 @@ const renderTable = async (whitelistedEmails: string[]) => {
   // set num of whitelisted emails
   const numOfNewsletterEmails = document.getElementById('whitelistedEmailsTab-numUnsubscribedEmails');
   numOfNewsletterEmails.innerHTML = `${whitelistedEmails.length}`;
+
+  // add header to table
+  const th = tableHeader();
+  tableEl.appendChild(th);
 
   whitelistedEmails.forEach((email, idx) => {
     // unique id for each row

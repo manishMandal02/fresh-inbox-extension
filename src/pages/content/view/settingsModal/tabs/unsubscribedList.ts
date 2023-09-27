@@ -6,6 +6,7 @@ import { renderLoadingSpinnerInsteadOfButtons } from '@src/pages/content/utils/r
 import { addTooltip } from '../../elements/tooltip';
 import { renderTextMsg } from '../../elements/text';
 import wait from '@src/pages/content/utils/wait';
+import { tableHeader } from '../../elements/tableHeader';
 
 // tab body html structure
 const unsubscribedListTabContainerInnerHTML = `
@@ -79,6 +80,10 @@ const renderTable = async (unsubscribedEmails: string[]) => {
   // set num of unsubscribed emails
   const numOfNewsletterEmails = document.getElementById('unsubscribedListTab-numUnsubscribedEmails');
   numOfNewsletterEmails.innerHTML = `${unsubscribedEmails.length}`;
+
+  // add header to table
+  const th = tableHeader();
+  tableEl.appendChild(th);
 
   unsubscribedEmails.forEach((email, idx) => {
     // unique id for each row

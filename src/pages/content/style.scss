@@ -58,6 +58,31 @@ $text-dark: #282828;
     margin: 0;
   }
 }
+// common table header
+.mailMagic-tableHeader {
+  width: 100%;
+  background-color: #e7e9ec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 !important;
+  padding: 0 !important;
+  > td {
+    font-size: 14px !important;
+    color: #262626;
+    font-weight: 500;
+    width: 50%;
+    display: flex;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0 !important;
+  }
+
+  > td:nth-child(2) {
+    margin-left: 6rem;
+  }
+}
 
 // main button shown beside each email
 .mailMagic-assistant-btn {
@@ -444,7 +469,6 @@ $text-dark: #282828;
   #settingsModal-card {
     display: flex;
     flex-direction: column;
-
     padding: 10px;
     border-radius: 12px;
     box-shadow: #64646f33 0px 7px 29px 0px;
@@ -456,6 +480,7 @@ $text-dark: #282828;
     left: 25%;
     overflow: hidden;
     z-index: 10000;
+
     // children
     #settingsModal-topContainer {
       display: flex;
@@ -626,6 +651,8 @@ $text-dark: #282828;
                   > span {
                     margin: 0;
                     font-size: 12.5px;
+                    min-width: 65%;
+
                     // serial number
                     > strong {
                       margin-right: 1px;
@@ -643,6 +670,11 @@ $text-dark: #282828;
                   }
                   > div {
                     min-width: 20%;
+                    width: 35%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
                     > button {
                       margin-right: 5px;
                       cursor: pointer;
@@ -739,6 +771,8 @@ $text-dark: #282828;
                   > span {
                     margin: 0;
                     font-size: 12.5px;
+                    width: 65%;
+
                     // serial number
                     > strong {
                       margin-right: 1px;
@@ -749,10 +783,11 @@ $text-dark: #282828;
                     }
                   }
                   > div {
+                    min-width: 20%;
+                    width: 35%;
                     display: flex;
                     align-items: center;
-                    justify-content: flex-start;
-                    margin-right: 1rem;
+                    justify-content: center;
                     > button {
                       margin-right: 5px;
                       cursor: pointer;
@@ -815,6 +850,8 @@ $text-dark: #282828;
                   > span {
                     margin: 0;
                     font-size: 12.5px;
+                    width: 65%;
+
                     // serial number
                     > strong {
                       margin-right: 1px;
@@ -826,6 +863,11 @@ $text-dark: #282828;
                   }
                   > div {
                     min-width: 20%;
+                    width: 35%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
                     > button {
                       margin-right: 5px;
                       cursor: pointer;

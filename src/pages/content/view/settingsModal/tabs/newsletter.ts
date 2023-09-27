@@ -1,3 +1,4 @@
+import { tableHeader } from './../../elements/tableHeader';
 import {
   handleUnsubscribe,
   handleDeleteAllMails,
@@ -129,6 +130,10 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
   // set num of newsletters (emails) found
   const numOfNewsletterEmails = document.getElementById('newsletterTab-numNewsletterEmails');
   numOfNewsletterEmails.innerHTML = `${newsletterEmailsData.length}`;
+
+  // add header to table
+  const th = tableHeader();
+  tableEl.appendChild(th);
 
   // loop over emails data to render table rows
   newsletterEmailsData.forEach(({ email, name }, idx) => {
