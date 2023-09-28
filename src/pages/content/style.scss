@@ -557,6 +557,7 @@ $text-dark: #282828;
 
       // children (tabs)
       #settingsModal-authTab {
+        display: flex;
       }
       #settingsModal-aboutTab {
         padding: 10px;

@@ -124,7 +124,11 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
   } else {
     // if not, show all three buttons
     // add onClick listener to unsubscribe button
-    unsubscribeBtn.addEventListener('click', handleUnsubscribe);
+    unsubscribeBtn.addEventListener('click', () => {
+      (async () => {
+        await handleUnsubscribe();
+      })();
+    });
 
     // add onClick listener to unsubscribe and delete all mails button
     unsubscribeAndDeleteAllMailsBtn.addEventListener('click', ev => {
@@ -140,7 +144,11 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
   }
 
   // add onClick listener to white list email button
-  whiteListEmailBtn.addEventListener('click', handleWhitelist);
+  whiteListEmailBtn.addEventListener('click', () => {
+    (async () => {
+      await handleWhitelist();
+    })();
+  });
 
   // add onClick listener to delete all mails button
   deleteAllMailsBtn.addEventListener('click', ev => {
@@ -149,7 +157,7 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
       msg: 'Are you sure you want to delete all mails  from',
       email,
       onConfirmClick: async () => {
-        await handleDeleteAllMails({ shouldRefreshTable: true });
+        await handleDeleteAllMails(true);
       },
     });
   });

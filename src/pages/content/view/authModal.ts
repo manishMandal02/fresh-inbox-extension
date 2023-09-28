@@ -2,10 +2,10 @@ import { IMessageEvent } from '../content.types';
 
 type HandleAuthBntClickParams = {
   ev: MouseEvent;
-  embedMailMagicBtn: () => Promise<void>;
+  embedAssistantBtn: () => Promise<void>;
 };
 
-const handleAuthBtnClick = async ({ ev, embedMailMagicBtn }: HandleAuthBntClickParams) => {
+const handleAuthBtnClick = async ({ ev, embedAssistantBtn }: HandleAuthBntClickParams) => {
   ev.stopPropagation();
 
   const res = await chrome.runtime.sendMessage({ event: IMessageEvent.Launch_Auth_Flow });
@@ -13,15 +13,13 @@ const handleAuthBtnClick = async ({ ev, embedMailMagicBtn }: HandleAuthBntClickP
     // success: close the modal
     removeAuthModal();
     // render main mail-magic btn for each mail
-    await embedMailMagicBtn();
+    await embedAssistantBtn();
     // add Mail Magic main buttons
   } else {
     // failed auth: show error message
     const errorMsg = document.getElementById('authModal-errorMsg');
     errorMsg.style.visibility = 'visible';
   }
-
-  console.log('🚀 ~ file: authModal.ts:9 ~ handleAuthBtnClick ~ res:', res);
 };
 
 const handleDisableBtnClick = async (ev: MouseEvent) => {
@@ -35,10 +33,10 @@ const handleDisableBtnClick = async (ev: MouseEvent) => {
 };
 
 type RenderAuthModalParams = {
-  embedMailMagicBtn: () => Promise<void>;
+  embedAssistantBtn: () => Promise<void>;
 };
 
-const renderAuthModal = ({ embedMailMagicBtn }: RenderAuthModalParams) => {
+const renderAuthModal = ({ embedAssistantBtn }: RenderAuthModalParams) => {
   // const create modal
   const modalContainer = document.createElement('div');
   const backdrop = document.createElement('div');
@@ -65,7 +63,7 @@ const renderAuthModal = ({ embedMailMagicBtn }: RenderAuthModalParams) => {
 
   // add on click lister
   // auth btn
-  authBtn.addEventListener('click', ev => handleAuthBtnClick({ ev, embedMailMagicBtn }));
+  authBtn.addEventListener('click', ev => handleAuthBtnClick({ ev, embedAssistantBtn }));
   // disable btn
   disableMailMagic.addEventListener('click', handleDisableBtnClick);
 

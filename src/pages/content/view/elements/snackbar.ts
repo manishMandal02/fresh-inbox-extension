@@ -48,6 +48,7 @@ type SnackbarParams = {
   email: string;
   isError?: boolean;
 };
+
 const showSnackbar = ({ title, email, isError }: SnackbarParams) => {
   const container = document.createElement('div');
   const label = document.createElement('span');
@@ -76,12 +77,16 @@ const showSnackbar = ({ title, email, isError }: SnackbarParams) => {
 
   document.body.appendChild(container);
 
-  // remove snackbar after .35s
-  // setTimeout(async () => {
-  //   container.classList.remove('show');
-  //   await wait(500);
-  //   container.remove();
-  // }, 3500);
+  // remove snackbar after 3.5s
+  setTimeout(
+    () => async () => {
+      container.classList.remove('show');
+      await wait(500);
+      container.remove();
+    },
+    3500
+  );
+  //
 };
 
 export { showLoadingSnackbar, hideLoadingSnackbar, showSnackbar };

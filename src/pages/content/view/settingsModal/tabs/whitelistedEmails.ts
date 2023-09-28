@@ -123,7 +123,7 @@ const renderTable = async (whitelistedEmails: string[]) => {
 
     if (!unsubscribeBtn || !deleteAllMails || !unsubscribeAndDeleteAllMailsBtn) return;
 
-    unsubscribeBtn.addEventListener('click', async ev => {
+    unsubscribeBtn.addEventListener('click', () => async ev => {
       ev.stopPropagation();
 
       // set global variable state
@@ -133,7 +133,7 @@ const renderTable = async (whitelistedEmails: string[]) => {
       // show loading spinner
       const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
 
-      const isSuccess = await handleUnsubscribe();
+      const isSuccess = await handleUnsubscribe(true);
 
       // hide loading spinner
       if (isSuccess) {
@@ -145,7 +145,7 @@ const renderTable = async (whitelistedEmails: string[]) => {
       }
     });
 
-    deleteAllMails.addEventListener('click', async ev => {
+    deleteAllMails.addEventListener('click', () => async ev => {
       ev.stopPropagation();
 
       // set global variable state
@@ -160,7 +160,7 @@ const renderTable = async (whitelistedEmails: string[]) => {
           // show loading spinner
           const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
 
-          const isSuccess = await handleDeleteAllMails({ isWHitelisted: true });
+          const isSuccess = await handleDeleteAllMails();
 
           // hide loading spinner
           if (isSuccess) {
@@ -172,7 +172,7 @@ const renderTable = async (whitelistedEmails: string[]) => {
       });
     });
 
-    unsubscribeAndDeleteAllMailsBtn.addEventListener('click', async ev => {
+    unsubscribeAndDeleteAllMailsBtn.addEventListener('click', () => async ev => {
       ev.stopPropagation();
 
       // set global variable state

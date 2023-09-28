@@ -1,3 +1,6 @@
+// query selector for all mail nodes on the page
+export const MAIL_NODES_SELECTOR = 'tr>td>div:last-child>span>span[email]';
+
 export const storageKeys = {
   NEWSLETTER_EMAILS: 'NEWSLETTER_EMAILS',
   UNSUBSCRIBED_EMAILS: 'UNSUBSCRIBED_EMAILS',

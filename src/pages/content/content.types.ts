@@ -20,6 +20,11 @@ export type EmailId = {
   id: string;
 };
 
+export type DateRange = {
+  startDate: string; // yyyy-mm-dd
+  endDate: string; // yyyy-mm-dd
+};
+
 export type GmailFolder = 'all' | 'inbox' | 'spam';
 
 // for checking newsletter emails on page
@@ -27,10 +32,7 @@ export interface DataOnPage {
   emails: EmailId[];
   category?: string; // ex: general, promotions, transactional, etc.
   folder?: GmailFolder; // ex: 'inbox' |'spam' | 'all'
-  dateRange: {
-    startDate: string; // yyyy-mm-dd
-    endDate: string; // yyyy-mm-dd
-  };
+  dateRange: DateRange;
 }
 
 export interface IMessageBody {

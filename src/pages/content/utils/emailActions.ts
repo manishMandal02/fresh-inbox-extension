@@ -1,8 +1,8 @@
 import { IMessageBody, IMessageEvent } from '../content.types';
-import { hideLoadingSnackbar, showLoadingSnackbar } from '../view/elements/snackbar';
+import { hideLoadingSnackbar, showLoadingSnackbar, showSnackbar } from '../view/elements/snackbar';
 
 //* handle unsubscribe
-const handleUnsubscribe = async () => {
+export const handleUnsubscribe = async (isWhiteListed = false) => {
   try {
     // get email and name from global variables
     const { email, name } = mailMagicGlobalVariables;
@@ -16,23 +16,25 @@ const handleUnsubscribe = async () => {
       event: IMessageEvent.Unsubscribe,
       email,
       name,
+      isWhiteListed: isWhiteListed,
     });
     // hide snackbar
     hideLoadingSnackbar();
+    // show success snackbar
+    showSnackbar({ title: 'Successfully unsubscribed from', email });
+
     return res;
   } catch (err) {
     hideLoadingSnackbar();
     console.log('🚀 ~ file: emailActions.ts: ~ handleUnsubscribe ~ err:', err);
+    // show error snackbar
+    showSnackbar({ title: 'Failed to unsubscribe from', email: '', isError: true });
+    return false;
   }
 };
 
-type HandleUnSubscribeParams = {
-  isWHitelisted?: boolean;
-  shouldRefreshTable?: boolean;
-};
-
 //* handle delete all mails
-const handleDeleteAllMails = async ({ isWHitelisted, shouldRefreshTable }: HandleUnSubscribeParams) => {
+export const handleDeleteAllMails = async (shouldRefreshTable = false) => {
   try {
     // get email and name from global variables
     const { email, name } = mailMagicGlobalVariables;
@@ -51,18 +53,28 @@ const handleDeleteAllMails = async ({ isWHitelisted, shouldRefreshTable }: Handl
     });
     // hide snackbar
     hideLoadingSnackbar();
+    // show success snackbar
+    showSnackbar({ title: 'Successfully deleted all mails from', email });
     return res;
   } catch (err) {
     hideLoadingSnackbar();
     console.log('🚀 ~ file: emailActions.ts: ~ handleDeleteAllMails ~ err:', err);
+    // show error snackbar
+    showSnackbar({ title: 'Failed to delete all mails from', email: '', isError: true });
+    return false;
   }
 };
 
+type HandleUnSubscribeAndDeleteAllMailsParams = {
+  isWHitelisted?: boolean;
+  shouldRefreshTable?: boolean;
+};
+
 //* handle unsubscribe and delete all mails
-const handleUnsubscribeAndDeleteAllMails = async ({
+export const handleUnsubscribeAndDeleteAllMails = async ({
   shouldRefreshTable,
   isWHitelisted,
-}: HandleUnSubscribeParams) => {
+}: HandleUnSubscribeAndDeleteAllMailsParams) => {
   try {
     // get email and name from global variables
     const { email, name } = mailMagicGlobalVariables;
@@ -79,20 +91,26 @@ const handleUnsubscribeAndDeleteAllMails = async ({
       email,
       name,
       shouldRefreshTable,
+      isWHitelisted,
     });
 
     // hide snackbar
     hideLoadingSnackbar();
+    // show success snackbar
+    showSnackbar({ title: 'Successfully unsubscribed & deleted all mails from', email });
     return res;
   } catch (err) {
     hideLoadingSnackbar();
+    // show error snackbar
+    showSnackbar({ title: 'Failed to unsubscribed & delete all mails from', email: '', isError: true });
     console.log('🚀 ~ file: emailActions.ts: ~ handleDeleteAllMails ~ err:', err);
+    return false;
   }
 };
 
 //*handle re-subscribe
 
-const handleReSubscribe = async () => {
+export const handleReSubscribe = async () => {
   try {
     // get email and name from global variables
     const { email, name } = mailMagicGlobalVariables;
@@ -107,15 +125,21 @@ const handleReSubscribe = async () => {
 
     // hide snackbar
     hideLoadingSnackbar();
+    // show success snackbar
+    showSnackbar({ title: 'Successfully reSubscribed to', email });
     return res;
   } catch (err) {
     hideLoadingSnackbar();
+    // show error snackbar
+    showSnackbar({ title: 'Failed to reSubscribe', email: '', isError: true });
+
     console.log('🚀 ~ file: emailActions.ts: ~ handleDeleteAllMails ~ err:', err);
+    return false;
   }
 };
 
 //* handle whitelist
-const handleWhitelist = async () => {
+export const handleWhitelist = async () => {
   try {
     // get email and name from global variables
     const { email, name } = mailMagicGlobalVariables;
@@ -130,17 +154,14 @@ const handleWhitelist = async () => {
 
     // hide snackbar
     hideLoadingSnackbar();
+    // show success snackbar
+    showSnackbar({ title: 'Successfully whitelisted', email });
     return res;
   } catch (err) {
     hideLoadingSnackbar();
+    // show error snackbar
+    showSnackbar({ title: 'Failed to whitelist ', email: '', isError: true });
     console.log('🚀 ~ file: emailActions.ts: ~ handleWhitelist ~ err:', err);
+    return false;
   }
-};
-
-export {
-  handleUnsubscribe,
-  handleDeleteAllMails,
-  handleUnsubscribeAndDeleteAllMails,
-  handleReSubscribe,
-  handleWhitelist,
 };
