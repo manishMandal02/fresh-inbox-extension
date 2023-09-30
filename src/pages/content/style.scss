@@ -3,6 +3,7 @@ $primary-color: #0957d0;
 $light-gray-color: #dde3ea95;
 
 $text-dark: #282828;
+$text-mid-gray: #505050;
 
 // common tooltip
 #mailMagic-tooltip {
@@ -85,7 +86,7 @@ $text-dark: #282828;
 }
 
 // main button shown beside each email
-.mailMagic-assistant-btn {
+.mailMagic-assistantBtn {
   border-radius: 50%;
   background-color: #208dd0;
   height: 16px;
@@ -103,69 +104,76 @@ $text-dark: #282828;
   visibility: hidden;
   border-radius: 10px;
   margin-left: -2.8rem;
-  margin-top: calc(-8rem - 25px);
-  background-color: #f3f1f1;
+  margin-top: calc(-8rem - 12px);
+  background-color: #ffffff;
   box-shadow: #63637033 0px 7px 29px 0px;
   transition: visibility 1s, opacity 0.5s linear;
   justify-content: center;
   align-items: center;
-  padding: 8px 10px;
   flex-direction: column;
   cursor: auto;
   // children
   .hoverCard-label {
-    color: #121313;
-    font-size: 16px;
-    font-weight: 500;
-    margin: 2px 0;
-    margin-bottom: 25px;
+    font-size: 15px;
+    font-weight: 400;
+    margin: 0;
+    color: $text-mid-gray;
+    margin-bottom: 5px;
     position: relative;
+    > strong {
+      font-weight: 500;
+    }
   }
   .hoverCard-btnContainer {
     display: flex;
     width: 100%;
     max-width: 100%;
     justify-content: space-around;
+    align-items: center;
     flex-wrap: wrap;
     position: relative;
     &::before {
       content: ' ';
       height: 1.5px;
-      width: 24rem;
+      width: 100%;
       position: absolute;
-      left: 2.5%;
-      top: -12px;
+      top: -1px;
       border: 25%;
-      background-color: #4544444e;
+      background-color: #a0a0a0;
       opacity: 0.2;
     }
     > button {
-      border-radius: 8px;
-      padding: 6px 8px;
+      width: 40%;
+      border-radius: 6px;
+      padding: 8px 8px;
       outline: none;
-      border: 2px solid #242222;
+      background-color: #ffffff;
+      border: none;
+      box-shadow: #0000001f 0px 1px 3px, #0000003d 0px 1px 2px;
       display: flex;
+      color: $text-mid-gray;
+      font-weight: 500;
+      font-size: 12px;
       justify-content: center;
       align-items: center;
       cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s ease-in-out;
+      &:hover {
+        box-shadow: #0000001a 0px 1px 3px 0px, #0000000f 0px 1px 2px 0px;
+      }
     }
     .hoverCard-whiteListBtn {
       display: flex;
-      width: 35%;
     }
     .hoverCard-unsubscribeBtn {
       display: flex;
-      width: 35%;
     }
     .hoverCard-deleteAllMailsBtn {
       display: flex;
-      width: 35%;
     }
     .hoverCard-unsubscribeAndDeleteAllMailsBtn {
       display: flex;
-      width: 60%;
-      margin-top: 5px;
-      // padding: 8px 0;
     }
   }
 }

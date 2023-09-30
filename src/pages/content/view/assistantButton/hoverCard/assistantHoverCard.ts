@@ -19,13 +19,13 @@ export interface IHoverCardElements {
 // hide button
 const hideButtons = (buttons: HTMLButtonElement[]) => {
   for (const btn of buttons) {
-    // btn.style.display = 'none';
+    btn.style.display = 'none';
   }
 };
 
 const showButtons = (buttons: HTMLButtonElement[]) => {
   for (const btn of buttons) {
-    // btn.style.display = 'block';
+    btn.style.display = 'block';
   }
 };
 
@@ -74,7 +74,7 @@ export const initializeHoverCard = (): IHoverCardElements => {
   whiteListEmailBtn.innerHTML = 'Keep';
   unsubscribeBtn.innerHTML = 'Unsubscribe';
   deleteAllMailsBtn.innerHTML = 'Delete All Mails';
-  unsubscribeAndDeleteAllMailsBtn.innerHTML = 'Unsubscribe + Delete All Mails';
+  unsubscribeAndDeleteAllMailsBtn.innerHTML = 'Unsubscribe + Delete';
 
   // append buttons to the btnContainer
   btnContainer.append(whiteListEmailBtn, unsubscribeBtn, deleteAllMailsBtn, unsubscribeAndDeleteAllMailsBtn);
@@ -119,7 +119,7 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
   mailMagicGlobalVariables.name = name;
 
   // add text to label
-  label.innerText = `MailMagic: Email Actions for ${name}  (${email})`;
+  label.innerHTML = `Email Actions for <strong>${name}</strong>`;
 
   // stop event propagation for card container
   hoverCard.addEventListener('click', ev => {
@@ -135,8 +135,6 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
   // check if the email (currently hovered over) is already unsubscribed or not
   const unsubscribedEmailsList = await getUnsubscribedEmails();
   const isUnsubscribed = unsubscribedEmailsList?.includes(email);
-
-  console.log('🚀 ~ file: assistantHoverCard.ts:125 ~ showHoverCard ~ isUnsubscribed:', isUnsubscribed);
 
   if (isUnsubscribed) {
     // if already unsubscribed, show only deleteAllMails button
@@ -157,8 +155,8 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
     unsubscribeAndDeleteAllMailsBtn.addEventListener('click', ev => {
       ev.stopPropagation();
       showConfirmModal({
-        msg: 'Are you sure you want to delete all mails and unsubscribe from',
         email,
+        msg: 'Are you sure you want to delete all mails and unsubscribe from',
         onConfirmClick: async () => {
           handleUnsubscribeAndDeleteAllMails({ shouldRefreshTable: true });
         },
@@ -203,8 +201,9 @@ type HideHoverCardParams = {
 };
 
 export const hideHoverCard = ({ parentElId, hoverCardElements }: HideHoverCardParams) => {
-  const { hoverCard, whiteListEmailBtn, unsubscribeBtn, deleteAllMailsBtn, unsubscribeAndDeleteAllMailsBtn } =
-    hoverCardElements;
+  //TODO: testing...
+  return;
+  const { hoverCard } = hoverCardElements;
 
   // if mouse is hovered over the card or assistant button then do nothing
   if (

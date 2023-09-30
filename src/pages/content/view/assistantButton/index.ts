@@ -96,7 +96,7 @@ export const embedAssistantBtn = async () => {
     const assistantBtnContainer = email.closest('div');
 
     const assistantBtn = document.createElement('span');
-    assistantBtn.classList.add('mailMagic-assistant-btn');
+    assistantBtn.classList.add('mailMagic-assistantBtn');
 
     // append the button to container
     assistantBtnContainer.appendChild(assistantBtn);
