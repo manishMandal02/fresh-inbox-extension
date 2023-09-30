@@ -1,8 +1,8 @@
 import {
-  handleDeleteAllMails,
-  handleReSubscribe,
-  handleUnsubscribe,
-  handleUnsubscribeAndDeleteAllMails,
+  handleUnsubscribeAction,
+  handleDeleteAllMailsAction,
+  handleWhitelistAction,
+  handleUnsubscribeAndDeleteAction,
 } from '@src/pages/content/utils/emailActions';
 import { getLoadingSpinner } from '../../elements/loadingSpinner';
 import { getWhitelistedEmails } from '@src/pages/content/utils/getEmailsFromStorage';
@@ -13,6 +13,8 @@ import { renderTextMsg } from '../../elements/text';
 import wait from '@src/pages/content/utils/wait';
 import { showConfirmModal } from '../../elements/confirmModal';
 import { tableHeader } from '../../elements/tableHeader';
+
+const WhitelistedEmailsTabActionBtnContainer = 'whitelistedEmailsTab-actionBtn';
 
 // tab body html structure
 const whitelistedEmailsTabContainerInnerHTML = `
@@ -105,98 +107,55 @@ const renderTable = async (whitelistedEmails: string[]) => {
     tableRow.innerHTML = `
     <td>
         <span><strong>${idx + 1}.</strong> ${email}</span>
-        <div id='whitelistedEmailsTab-actionBtn'>
-          <button id='whitelistedEmailsTab-actionBtn-unsubscribe-${rowId}'>❌</button>
-          <button id='whitelistedEmailsTab-actionBtn-deleteAllMails-${rowId}'>🗑️</button>
-          <button id='whitelistedEmailsTab-actionBtn-unsubscribeAndDeleteAllMails-${rowId}'>❌ + 🗑️</button>
+        <div id='${WhitelistedEmailsTabActionBtnContainer}'>
+          <button id='${WhitelistedEmailsTabActionBtnContainer}-unsubscribe-${rowId}'>❌</button>
+          <button id='${WhitelistedEmailsTabActionBtnContainer}-deleteAllMails-${rowId}'>🗑️</button>
+          <button id='${WhitelistedEmailsTabActionBtnContainer}-unsubscribeAndDeleteAllMails-${rowId}'>❌ + 🗑️</button>
         </div>
     </td>
     `;
     tableEl.appendChild(tableRow);
 
     // add event listener to reSubscribe button
-    const unsubscribeBtn = document.getElementById(`whitelistedEmailsTab-actionBtn-unsubscribe-${rowId}`);
-    const deleteAllMails = document.getElementById(`whitelistedEmailsTab-actionBtn-deleteAllMails-${rowId}`);
+    const unsubscribeBtn = document.getElementById(
+      `${WhitelistedEmailsTabActionBtnContainer}-unsubscribe-${rowId}`
+    );
+    const deleteAllMails = document.getElementById(
+      `${WhitelistedEmailsTabActionBtnContainer}-deleteAllMails-${rowId}`
+    );
     const unsubscribeAndDeleteAllMailsBtn = document.getElementById(
-      `whitelistedEmailsTab-actionBtn-unsubscribeAndDeleteAllMails-${rowId}`
+      `${WhitelistedEmailsTabActionBtnContainer}-unsubscribeAndDeleteAllMails-${rowId}`
     );
 
     if (!unsubscribeBtn || !deleteAllMails || !unsubscribeAndDeleteAllMailsBtn) return;
 
     unsubscribeBtn.addEventListener('click', () => async ev => {
       ev.stopPropagation();
-
-      // set global variable state
-      mailMagicGlobalVariables.email = email;
-      mailMagicGlobalVariables.name = '';
-
-      // show loading spinner
-      const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
-
-      const isSuccess = await handleUnsubscribe(true);
-
-      // hide loading spinner
+      const isSuccess = handleUnsubscribeAction({
+        email,
+        btnContainerId: WhitelistedEmailsTabActionBtnContainer,
+      });
+      // refresh table if success
       if (isSuccess) {
-        hideLoadingSpinner();
-        // re-render table if action success
         await refreshTable();
-      } else {
-        hideLoadingSpinner(true);
       }
     });
 
     deleteAllMails.addEventListener('click', () => async ev => {
       ev.stopPropagation();
 
-      // set global variable state
-      mailMagicGlobalVariables.email = email;
-      mailMagicGlobalVariables.name = '';
-
-      //  show confirmation modal before deleting all mails
-      showConfirmModal({
-        msg: 'Are you sure you want to delete all mails  from',
-        email,
-        onConfirmClick: async () => {
-          // show loading spinner
-          const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
-
-          const isSuccess = await handleDeleteAllMails();
-
-          // hide loading spinner
-          if (isSuccess) {
-            hideLoadingSpinner();
-          } else {
-            hideLoadingSpinner(true);
-          }
-        },
-      });
+      handleDeleteAllMailsAction({ email, btnContainerId: WhitelistedEmailsTabActionBtnContainer });
     });
 
     unsubscribeAndDeleteAllMailsBtn.addEventListener('click', () => async ev => {
       ev.stopPropagation();
 
-      // set global variable state
-      mailMagicGlobalVariables.email = email;
-      mailMagicGlobalVariables.name = '';
-
-      //  show confirmation modal before unsubscribing & deleting all mails
-      showConfirmModal({
-        msg: 'Are you sure you want to delete all mails and unsubscribe from',
+      handleUnsubscribeAndDeleteAction({
         email,
-        onConfirmClick: async () => {
-          // show loading spinner
-          const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
-
-          const isSuccess = await handleUnsubscribeAndDeleteAllMails({ isWHitelisted: true });
-
-          // hide loading spinner
-          if (isSuccess) {
-            hideLoadingSpinner();
-            // re-render table if action success
-            await refreshTable();
-          } else {
-            hideLoadingSpinner(true);
-          }
+        btnContainerId: WhitelistedEmailsTabActionBtnContainer,
+        onSuccess: async () => {
+          // refresh table if success
+          await refreshTable();
         },
       });
     });

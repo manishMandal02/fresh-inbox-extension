@@ -1,11 +1,13 @@
 import { showConfirmModal } from '../../elements/confirmModal';
 import {
-  handleDeleteAllMails,
-  handleUnsubscribe,
-  handleUnsubscribeAndDeleteAllMails,
-  handleWhitelist,
+  handleUnsubscribeAction,
+  handleDeleteAllMailsAction,
+  handleWhitelistAction,
+  handleUnsubscribeAndDeleteAction,
 } from '../../../utils/emailActions';
 import { getUnsubscribedEmails } from '../../../utils/getEmailsFromStorage';
+import { addTooltip } from '../../elements/tooltip';
+import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
 
 export interface IHoverCardElements {
   hoverCard: HTMLDivElement;
@@ -82,6 +84,12 @@ export const initializeHoverCard = (): IHoverCardElements => {
   // append  elements to parent el (Card)
   hoverCard.append(label, btnContainer);
 
+  // add tooltip to the buttons
+  addTooltip(whiteListEmailBtn, 'Keep this email in your inbox');
+  addTooltip(unsubscribeBtn, 'Unsubscribe this email');
+  addTooltip(deleteAllMailsBtn, 'Delete all emails from this sender');
+  addTooltip(unsubscribeAndDeleteAllMailsBtn, 'Unsubscribe and delete emails from this sender');
+
   return {
     hoverCard,
     label,
@@ -115,11 +123,11 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
 
   parentEl.appendChild(hoverCard);
 
-  mailMagicGlobalVariables.email = email;
-  mailMagicGlobalVariables.name = name;
-
   // add text to label
-  label.innerHTML = `Email Actions for <strong>${name}</strong>`;
+  label.innerHTML = `Email Actions for <strong>${limitCharLength(name, 20)}</strong>`;
+
+  // add tooltip to the label, show email on hover
+  addTooltip(label.firstElementChild as HTMLElement, email);
 
   // stop event propagation for card container
   hoverCard.addEventListener('click', ev => {
@@ -136,6 +144,8 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
   const unsubscribedEmailsList = await getUnsubscribedEmails();
   const isUnsubscribed = unsubscribedEmailsList?.includes(email);
 
+  //TODO: handle removing of assitant btn based on action
+
   if (isUnsubscribed) {
     // if already unsubscribed, show only deleteAllMails button
     // hide other buttons
@@ -147,19 +157,17 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
     // onClick listener to unsubscribe button
     unsubscribeBtn.addEventListener('click', () => {
       (async () => {
-        await handleUnsubscribe();
+        await handleUnsubscribeAction({ email, btnContainerId: 'hoverCard-btnContainer' });
       })();
     });
 
     // onClick listener to unsubscribe and delete all mails button
-    unsubscribeAndDeleteAllMailsBtn.addEventListener('click', ev => {
+    unsubscribeAndDeleteAllMailsBtn.addEventListener('click', async ev => {
       ev.stopPropagation();
-      showConfirmModal({
+      await handleUnsubscribeAndDeleteAction({
         email,
-        msg: 'Are you sure you want to delete all mails and unsubscribe from',
-        onConfirmClick: async () => {
-          handleUnsubscribeAndDeleteAllMails({ shouldRefreshTable: true });
-        },
+        btnContainerId: 'hoverCard-btnContainer',
+        shouldRefreshTable: true,
       });
     });
   }
@@ -168,26 +176,19 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
   whiteListEmailBtn.addEventListener('click', ev => {
     ev.stopPropagation();
     (async () => {
-      await handleWhitelist();
+      await handleWhitelistAction({ email, btnContainerId: 'hoverCard-btnContainer' });
     })();
   });
 
   // onClick listener to delete all mails button
-  deleteAllMailsBtn.addEventListener('click', ev => {
+  deleteAllMailsBtn.addEventListener('click', async ev => {
     ev.stopPropagation();
-    showConfirmModal({
+    await handleDeleteAllMailsAction({
       email,
-      msg: 'Are you sure you want to delete all mails from',
-      onConfirmClick: async () => {
-        await handleDeleteAllMails(true);
-      },
+      btnContainerId: 'hoverCard-btnContainer',
+      shouldRefreshTable: true,
     });
   });
-
-  console.log(
-    '🔵 ~ file: assistantHoverCard.ts:191 ~ showHoverCard ~ hoverCard.childNodes:',
-    hoverCard.childNodes
-  );
 
   // show card
   hoverCard.style.display = 'flex';
@@ -201,8 +202,6 @@ type HideHoverCardParams = {
 };
 
 export const hideHoverCard = ({ parentElId, hoverCardElements }: HideHoverCardParams) => {
-  //TODO: testing...
-  return;
   const { hoverCard } = hoverCardElements;
 
   // if mouse is hovered over the card or assistant button then do nothing

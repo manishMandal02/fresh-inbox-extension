@@ -1,23 +1,27 @@
+import wait from '../../utils/wait';
+
 const addTooltip = (parentEl: HTMLElement, title: string) => {
   // tooltip message el
   const tooltipMsg = document.createElement('span');
 
   tooltipMsg.innerText = title;
-  tooltipMsg.id = 'mailMagic-tooltip';
+  tooltipMsg.classList.add('mailMagic-tooltip');
 
   // add relative pos to parent el
-  if (parentEl.style.position !== 'absoulte' && parentEl.style.position !== 'relative') {
+  if (parentEl.style.position !== 'absolute' && parentEl.style.position !== 'relative') {
     parentEl.style.position = 'relative';
-    // parentEl.style.display = 'inline-block';
   }
 
-  parentEl.addEventListener('mouseenter', ev => {
-    ev.stopPropagation();
+  // add tooltip
+  parentEl.addEventListener('mouseenter', () => {
     parentEl.appendChild(tooltipMsg);
   });
-  parentEl.addEventListener('mouseleave', ev => {
-    ev.stopPropagation();
-    parentEl.removeChild(tooltipMsg);
+
+  // remove tooltip
+  parentEl.addEventListener('mouseleave', () => {
+    if (parentEl.contains(tooltipMsg)) {
+      parentEl.removeChild(tooltipMsg);
+    }
   });
 };
 

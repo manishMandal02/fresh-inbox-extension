@@ -1,21 +1,21 @@
 import { tableHeader } from './../../elements/tableHeader';
 import {
-  handleUnsubscribe,
-  handleDeleteAllMails,
-  handleUnsubscribeAndDeleteAllMails,
-  handleWhitelist,
+  handleUnsubscribeAction,
+  handleDeleteAllMailsAction,
+  handleWhitelistAction,
+  handleUnsubscribeAndDeleteAction,
 } from '@src/pages/content/utils/emailActions';
 import { storageKeys } from '@src/pages/content/constants/app.constants';
 
 import { randomId } from '@src/pages/content/utils/randomId';
-import { showConfirmModal } from '../../elements/confirmModal';
 import { addTooltip } from '../../elements/tooltip';
 import { getLoadingSpinner } from '../../elements/loadingSpinner';
 import { renderTextMsg } from '../../elements/text';
 import { IMessageEvent } from '@src/pages/content/content.types';
 import wait from '@src/pages/content/utils/wait';
 import { getLocalStorageByKey } from '@src/pages/content/utils/getLocalStorageByKey';
-import { renderLoadingSpinnerInsteadOfButtons } from '@src/pages/content/utils/renderLoadingSpinnerInsteadOfButtons';
+
+const NewsletterTabActionBtnContainer = 'newsletterTab-actionBtn';
 
 type NewsletterData = {
   email: string;
@@ -38,7 +38,7 @@ const newsletterTabContainerInnerHTML = `
 
     `;
 
-const refreshTableData = async ({ shouldRefreshData }: { shouldRefreshData?: boolean }) => {
+const refreshTable = async ({ shouldRefreshData }: { shouldRefreshData?: boolean }) => {
   // get table container
   const newsletterTabContainer = document.getElementById('settingsModal-newsletterTab');
 
@@ -77,7 +77,7 @@ const refreshTableData = async ({ shouldRefreshData }: { shouldRefreshData?: boo
         // data already exists, use it
         newsletterEmails = storageData;
 
-        console.log('🚀 ~ file: newsletter.ts:78 ~ refreshTableData ~ storageData:', storageData);
+        console.log('🚀 ~ file: newsletter.ts:78 ~ refreshTable ~ storageData:', storageData);
       } else {
         // data doesn't exist, fetch from background script
         await getNewsletterEmailsFromBackground();
@@ -121,200 +121,101 @@ const refreshTableData = async ({ shouldRefreshData }: { shouldRefreshData?: boo
   }
 };
 
-//* render table
+// render a single table row
+const renderTableRow = async (emailData, idx) => {
+  const { email, name } = emailData;
+  const rowId = randomId();
+
+  const tableRow = document.createElement('tr');
+  const tableRowData = `
+    <td>
+      <span><strong>${idx + 1}.</strong> <span>${name.replaceAll(`\\`, '').trim()}</span>(${email})</span>
+      <div id='${NewsletterTabActionBtnContainer}'>
+        <button id='${NewsletterTabActionBtnContainer}-whitelist-${rowId}'>✅</button>
+        <button id='${NewsletterTabActionBtnContainer}-unsubscribe-${rowId}'>❌</button>
+        <button id='${NewsletterTabActionBtnContainer}-deleteAllMails-${rowId}'>🗑️</button>
+        <button id='${NewsletterTabActionBtnContainer}-unsubscribeAndDeleteAllMails-${rowId}'>❌ + 🗑️</button>
+      </div>
+    </td>
+  `;
+
+  tableRow.innerHTML = tableRowData;
+  return { tableRow, rowId };
+};
+
+// Render the table
 const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
-  // get table
   const tableEl = document.getElementById('newsletterTab-table');
-  if (!tableEl) return;
-
-  // set num of newsletters (emails) found
   const numOfNewsletterEmails = document.getElementById('newsletterTab-numNewsletterEmails');
-  numOfNewsletterEmails.innerHTML = `${newsletterEmailsData.length}`;
 
-  // add header to table
+  if (!tableEl || !numOfNewsletterEmails) return;
+
+  numOfNewsletterEmails.innerHTML = `${newsletterEmailsData.length}`;
   const th = tableHeader();
   tableEl.appendChild(th);
 
-  // loop over emails data to render table rows
-  newsletterEmailsData.forEach(({ email, name }, idx) => {
-    const tableRow = document.createElement('tr');
-    // unique id for each row
-    const rowId = randomId();
-
-    // table row html
-    let tableRowData = `
-                <td>
-                    
-                    <span><strong>${idx + 1}.</strong> <span>${name
-      .replaceAll(`\\`, '')
-      .trim()}</span>(${email})</span>
-                    <div id='newsletterTab-actionBtn'>
-                      <button id='newsletterTab-actionBtn-whitelist-${rowId}'>✅</button>
-                      <button id='newsletterTab-actionBtn-unsubscribe-${rowId}'>❌</button>
-                      <button id='newsletterTab-actionBtn-deleteAllMails-${rowId}'>🗑️</button>
-                      <button id='newsletterTab-actionBtn-unsubscribeAndDeleteAllMails-${rowId}'>❌ + 🗑️</button>
-                    </div>
-                </td>
-        `;
-
-    // add data to row
-    tableRow.innerHTML = tableRowData;
-
-    // add row to table
+  newsletterEmailsData.forEach(async (emailData, idx) => {
+    const { tableRow, rowId } = await renderTableRow(emailData, idx);
     tableEl.appendChild(tableRow);
 
-    //* add event listener to all the action buttons
-    // get button elements
-    const whitelistBtn = document.getElementById(`newsletterTab-actionBtn-whitelist-${rowId}`);
-    const unsubscribeBtn = document.getElementById(`newsletterTab-actionBtn-unsubscribe-${rowId}`);
-    const deleteAllMails = document.getElementById(`newsletterTab-actionBtn-deleteAllMails-${rowId}`);
+    const whitelistBtn = document.getElementById(`${NewsletterTabActionBtnContainer}-whitelist-${rowId}`);
+    const unsubscribeBtn = document.getElementById(`${NewsletterTabActionBtnContainer}-unsubscribe-${rowId}`);
+    const deleteAllMails = document.getElementById(
+      `${NewsletterTabActionBtnContainer}-deleteAllMails-${rowId}`
+    );
     const unsubscribeAndDeleteAllMailsBtn = document.getElementById(
-      `newsletterTab-actionBtn-unsubscribeAndDeleteAllMails-${rowId}`
+      `${NewsletterTabActionBtnContainer}-unsubscribeAndDeleteAllMails-${rowId}`
     );
 
     if (!whitelistBtn || !unsubscribeBtn || !deleteAllMails || !unsubscribeAndDeleteAllMailsBtn) return;
 
-    whitelistBtn.addEventListener('click', async ev => {
-      ev.stopPropagation();
-      // set global variable state
-      mailMagicGlobalVariables.email = email;
-      mailMagicGlobalVariables.name = name;
-
-      // show loading spinner
-      const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
-
-      // handle whitelist action
-      const isSuccess = await handleWhitelist();
-
-      // hide loading spinner
+    // handle whitelist btn click
+    whitelistBtn.addEventListener('click', async () => {
+      const isSuccess = handleWhitelistAction({
+        email: emailData.email,
+        btnContainerId: NewsletterTabActionBtnContainer,
+      });
+      // refresh table if success
       if (isSuccess) {
-        hideLoadingSpinner();
-        // re-render table if action success
-        await refreshTableData({ shouldRefreshData: false });
-      } else {
-        hideLoadingSpinner(true);
+        await refreshTable({ shouldRefreshData: false });
       }
     });
 
-    unsubscribeBtn.addEventListener('click', async ev => {
-      ev.stopPropagation();
-
-      // set global variable state
-      mailMagicGlobalVariables.email = email;
-      mailMagicGlobalVariables.name = name;
-
-      // show loading spinner
-      const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
-
-      const isSuccess = await handleUnsubscribe();
-
-      // hide loading spinner
+    // handle unsubscribe btn click
+    unsubscribeBtn.addEventListener('click', async () => {
+      const isSuccess = handleUnsubscribeAction({
+        email: emailData.email,
+        btnContainerId: NewsletterTabActionBtnContainer,
+      });
+      // refresh table if success
       if (isSuccess) {
-        hideLoadingSpinner();
-        // re-render table if action success
-        await refreshTableData({ shouldRefreshData: false });
-      } else {
-        hideLoadingSpinner(true);
+        await refreshTable({ shouldRefreshData: false });
       }
-
-      // ToDo: re-render table if action success (remove the email from table)
     });
 
-    deleteAllMails.addEventListener('click', async ev => {
+    // handle delete-all-mail btn click
+    deleteAllMails.addEventListener('click', ev => {
       ev.stopPropagation();
+      handleDeleteAllMailsAction({ email: emailData.email, btnContainerId: NewsletterTabActionBtnContainer });
+    });
 
-      // set global variable state
-      mailMagicGlobalVariables.email = email;
-      mailMagicGlobalVariables.name = name;
-
-      //  show confirmation modal before deleting all mails
-      showConfirmModal({
-        msg: 'Are you sure you want to delete all mails  from',
-        email,
-        onConfirmClick: async () => {
-          // show loading spinner
-          const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
-
-          const isSuccess = await handleDeleteAllMails({});
-
-          // hide loading spinner
-          if (isSuccess) {
-            hideLoadingSpinner();
-          } else {
-            hideLoadingSpinner(true);
-          }
+    // handle unsubscribe-and-delete-all-mails btn click
+    unsubscribeAndDeleteAllMailsBtn.addEventListener('click', ev => {
+      ev.stopPropagation();
+      handleUnsubscribeAndDeleteAction({
+        email: emailData.email,
+        btnContainerId: NewsletterTabActionBtnContainer,
+        onSuccess: async () => {
+          // refresh table if success
+          await refreshTable({ shouldRefreshData: false });
         },
       });
     });
 
-    unsubscribeAndDeleteAllMailsBtn.addEventListener('click', async ev => {
-      ev.stopPropagation();
-
-      // set global variable state
-      mailMagicGlobalVariables.email = email;
-      mailMagicGlobalVariables.name = name;
-
-      //  show confirmation modal before unsubscribing & deleting all mails
-      showConfirmModal({
-        msg: 'Are you sure you want to delete all mails and unsubscribe from',
-        email,
-        onConfirmClick: async () => {
-          // show loading spinner
-          const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
-
-          const isSuccess = await handleUnsubscribeAndDeleteAllMails({});
-
-          // hide loading spinner
-          if (isSuccess) {
-            hideLoadingSpinner();
-            // re-render table if action success
-            await refreshTableData({ shouldRefreshData: false });
-          } else {
-            hideLoadingSpinner(true);
-          }
-        },
-      });
-    });
-
-    // add tooltips to buttons
     addTooltip(whitelistBtn, 'Keep/Whitelist');
     addTooltip(unsubscribeBtn, 'Unsubscribe');
     addTooltip(deleteAllMails, 'Delete All Mails');
     addTooltip(unsubscribeAndDeleteAllMailsBtn, 'Unsubscribe & \n Delete All Mails');
-
-    //TODO: re-render the table after successfully performing the action
-    // end of for loop
-  });
-
-  // show refresh button to reload table data
-  const refreshTableContainer = document.createElement('div');
-
-  refreshTableContainer.id = 'newsletterTab-refresh-table';
-
-  refreshTableContainer.innerHTML = `
-    <q> It is suggested to refresh this list only when you don't have enough emails to take action.
-    <br />
-    As It'll show the same emails again & again unless you take some action on these emails.
-    <br />
-    Mail Magic takes latest 500 emails to search for potential newsletter emails.
-    <br />
-    <strong>You can keep (whitelist) emails which you don't want to unsubscribe from.</strong>
-    </q>
-
-    <button id="refreshTableBtn"><span>🔄</span> Refresh Table</button>
-  `;
-
-  // append refresh button
-  tableEl.appendChild(refreshTableContainer);
-
-  // refresh button click handler
-  // get button
-  const refreshTableBtn = document.getElementById('refreshTableBtn');
-
-  // on click listener
-  refreshTableBtn.addEventListener('click', async () => {
-    //  handle refresh newsletter emails data
-    await refreshTableData({ shouldRefreshData: true });
   });
 };
 
@@ -327,7 +228,7 @@ const renderNewsletterTab = async (parentContainer: HTMLElement) => {
   parentContainer.appendChild(newsletterTabContainer);
 
   // get newsletters data
-  await refreshTableData({ shouldRefreshData: false });
+  await refreshTable({ shouldRefreshData: false });
 };
 
 // remove the newsletter tab from DOM

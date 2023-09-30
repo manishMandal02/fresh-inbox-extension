@@ -1,4 +1,4 @@
-import { handleReSubscribe } from '@src/pages/content/utils/emailActions';
+import { handleReSubscribeAction } from '@src/pages/content/utils/emailActions';
 import { getLoadingSpinner } from '../../elements/loadingSpinner';
 import { getUnsubscribedEmails } from '@src/pages/content/utils/getEmailsFromStorage';
 import { randomId } from '@src/pages/content/utils/randomId';
@@ -7,6 +7,8 @@ import { addTooltip } from '../../elements/tooltip';
 import { renderTextMsg } from '../../elements/text';
 import wait from '@src/pages/content/utils/wait';
 import { tableHeader } from '../../elements/tableHeader';
+
+const UnsubscribedTabContainerId = 'settingsModal-unsubscribedListTab';
 
 // tab body html structure
 const unsubscribedListTabContainerInnerHTML = `
@@ -25,7 +27,7 @@ const unsubscribedListTabContainerInnerHTML = `
 
 const refreshTable = async () => {
   // const get table container
-  const unsubscribedListTabContainer = document.getElementById('settingsModal-unsubscribedListTab');
+  const unsubscribedListTabContainer = document.getElementById(UnsubscribedTabContainerId);
 
   if (!unsubscribedListTabContainer) return;
 
@@ -94,7 +96,7 @@ const renderTable = async (unsubscribedEmails: string[]) => {
     tableRow.innerHTML = `
       <td>
       <span><strong>${idx + 1}.</strong> ${email}</span>
-        <div>
+        <div id='unsubscribedListTab-actionBtn'>
           <button
           id="unsubscribedListTab-reSubscribeBtn-${rowId}">
             ✅
@@ -112,15 +114,13 @@ const renderTable = async (unsubscribedEmails: string[]) => {
 
     reSubscribeBtn.addEventListener('click', async () => {
       // show loading spinner
-      // set global variable state
-      mailMagicGlobalVariables.email = email;
-      mailMagicGlobalVariables.name = '';
-
-      // show loading spinner
-      const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(tableRow);
+      const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons('unsubscribedListTab-actionBtn');
 
       // handle whitelist action
-      const isSuccess = await handleReSubscribe();
+      const isSuccess = await handleReSubscribeAction({
+        email,
+        btnContainerId: 'unsubscribedListTab-actionBtn',
+      });
 
       // hide loading spinner
       if (isSuccess) {
@@ -144,7 +144,7 @@ const renderUnsubscribedListTab = async (parentContainer: HTMLElement) => {
   // about tab container
   const unsubscribedListTabContainer = document.createElement('div');
 
-  unsubscribedListTabContainer.id = 'settingsModal-unsubscribedListTab';
+  unsubscribedListTabContainer.id = UnsubscribedTabContainerId;
 
   parentContainer.appendChild(unsubscribedListTabContainer);
 
@@ -153,7 +153,7 @@ const renderUnsubscribedListTab = async (parentContainer: HTMLElement) => {
 
 // remove the unsubscribed list tab from DOM
 const removeUnsubscribedListTab = () => {
-  const unsubscribedListTabContainer = document.getElementById('settingsModal-unsubscribedListTab');
+  const unsubscribedListTabContainer = document.getElementById(UnsubscribedTabContainerId);
 
   if (!unsubscribedListTabContainer) return;
 
