@@ -1,11 +1,11 @@
-import { showConfirmModal } from './elements/confirmModal';
+import { showConfirmModal } from '../../elements/confirmModal';
 import {
   handleDeleteAllMails,
   handleUnsubscribe,
   handleUnsubscribeAndDeleteAllMails,
   handleWhitelist,
-} from '../utils/emailActions';
-import { getUnsubscribedEmails } from '../utils/getEmailsFromStorage';
+} from '../../../utils/emailActions';
+import { getUnsubscribedEmails } from '../../../utils/getEmailsFromStorage';
 
 export interface IHoverCardElements {
   hoverCard: HTMLDivElement;
@@ -16,13 +16,28 @@ export interface IHoverCardElements {
   unsubscribeAndDeleteAllMailsBtn: HTMLButtonElement;
 }
 
-//* handle mouseover on hoverCard
-const handleMouseOverHoverCard = (ev: MouseEvent) => {
+// hide button
+const hideButtons = (buttons: HTMLButtonElement[]) => {
+  for (const btn of buttons) {
+    // btn.style.display = 'none';
+  }
+};
+
+const showButtons = (buttons: HTMLButtonElement[]) => {
+  for (const btn of buttons) {
+    // btn.style.display = 'block';
+  }
+};
+
+// handle hover
+// mouse over
+const handleMouseOver = (ev: MouseEvent) => {
   ev.stopPropagation();
   mailMagicGlobalVariables.isMouseOverHoverCard = true;
 };
-// handle mouseout on hoverCard
-const handleMouseOutHoverCard = () => {
+
+// mouse out
+const handleMouseOut = () => {
   const { hoverCardElements, assistantBtnContainerId } = mailMagicGlobalVariables;
 
   setTimeout(() => {
@@ -32,13 +47,15 @@ const handleMouseOutHoverCard = () => {
   mailMagicGlobalVariables.isMouseOverHoverCard = false;
 };
 
-const initializeHoverCard = (): IHoverCardElements => {
+// initialize hover card
+export const initializeHoverCard = (): IHoverCardElements => {
   // create hoverCard elements
   // main container
   const hoverCard = document.createElement('div');
   const label = document.createElement('p');
   const btnContainer = document.createElement('div');
-  const whiteListEmailBtn = document.createElement('button'); // white list email button
+  // action buttons
+  const whiteListEmailBtn = document.createElement('button');
   const unsubscribeBtn = document.createElement('button');
   const deleteAllMailsBtn = document.createElement('button');
   const unsubscribeAndDeleteAllMailsBtn = document.createElement('button');
@@ -47,6 +64,7 @@ const initializeHoverCard = (): IHoverCardElements => {
   hoverCard.classList.add('mailMagic-hoverCard');
   label.classList.add('hoverCard-label');
   btnContainer.classList.add('hoverCard-btnContainer');
+
   whiteListEmailBtn.classList.add('hoverCard-whiteListBtn');
   unsubscribeBtn.classList.add('hoverCard-unsubscribeBtn');
   deleteAllMailsBtn.classList.add('hoverCard-deleteAllMailsBtn');
@@ -74,7 +92,7 @@ const initializeHoverCard = (): IHoverCardElements => {
   };
 };
 
-// hide hoverCard
+//* show hover-card
 type ShowHoverCardParams = {
   parentElId: string;
   hoverCardElements: IHoverCardElements;
@@ -82,8 +100,7 @@ type ShowHoverCardParams = {
   name: string;
 };
 
-//* show hover-card
-const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: ShowHoverCardParams) => {
+export const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: ShowHoverCardParams) => {
   const {
     hoverCard,
     label,
@@ -109,28 +126,34 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
     ev.stopPropagation();
   });
 
-  // add mouseover (on hover) event to card container
-  hoverCard.addEventListener('mouseover', handleMouseOverHoverCard);
-  // add mouseout (on hover) event to card container
-  hoverCard.addEventListener('mouseout', handleMouseOutHoverCard);
+  // mouseover (on hover) event to card container
+  hoverCard.addEventListener('mouseover', handleMouseOver);
+
+  // mouseout (on hover) event to card container
+  hoverCard.addEventListener('mouseout', handleMouseOut);
 
   // check if the email (currently hovered over) is already unsubscribed or not
   const unsubscribedEmailsList = await getUnsubscribedEmails();
   const isUnsubscribed = unsubscribedEmailsList?.includes(email);
+
+  console.log('🚀 ~ file: assistantHoverCard.ts:125 ~ showHoverCard ~ isUnsubscribed:', isUnsubscribed);
+
   if (isUnsubscribed) {
     // if already unsubscribed, show only deleteAllMails button
-    unsubscribeBtn.remove();
-    unsubscribeAndDeleteAllMailsBtn.remove();
+    // hide other buttons
+    hideButtons([unsubscribeBtn, unsubscribeAndDeleteAllMailsBtn]);
   } else {
     // if not, show all three buttons
-    // add onClick listener to unsubscribe button
+
+    showButtons([unsubscribeBtn, unsubscribeAndDeleteAllMailsBtn]);
+    // onClick listener to unsubscribe button
     unsubscribeBtn.addEventListener('click', () => {
       (async () => {
         await handleUnsubscribe();
       })();
     });
 
-    // add onClick listener to unsubscribe and delete all mails button
+    // onClick listener to unsubscribe and delete all mails button
     unsubscribeAndDeleteAllMailsBtn.addEventListener('click', ev => {
       ev.stopPropagation();
       showConfirmModal({
@@ -143,55 +166,65 @@ const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: Sho
     });
   }
 
-  // add onClick listener to white list email button
-  whiteListEmailBtn.addEventListener('click', () => {
+  // onClick listener to white list email button
+  whiteListEmailBtn.addEventListener('click', ev => {
+    ev.stopPropagation();
     (async () => {
       await handleWhitelist();
     })();
   });
 
-  // add onClick listener to delete all mails button
+  // onClick listener to delete all mails button
   deleteAllMailsBtn.addEventListener('click', ev => {
     ev.stopPropagation();
     showConfirmModal({
-      msg: 'Are you sure you want to delete all mails  from',
       email,
+      msg: 'Are you sure you want to delete all mails from',
       onConfirmClick: async () => {
         await handleDeleteAllMails(true);
       },
     });
   });
+
+  console.log(
+    '🔵 ~ file: assistantHoverCard.ts:191 ~ showHoverCard ~ hoverCard.childNodes:',
+    hoverCard.childNodes
+  );
+
+  // show card
   hoverCard.style.display = 'flex';
   hoverCard.style.visibility = 'visible';
 };
 
-// hide hoverCard
+//* hide hoverCard
 type HideHoverCardParams = {
   parentElId: string;
   hoverCardElements: IHoverCardElements;
 };
 
-//* show hover-card
-const hideHoverCard = ({ parentElId, hoverCardElements }: HideHoverCardParams) => {
-  const { hoverCard, unsubscribeBtn, deleteAllMailsBtn, unsubscribeAndDeleteAllMailsBtn } = hoverCardElements;
+export const hideHoverCard = ({ parentElId, hoverCardElements }: HideHoverCardParams) => {
+  const { hoverCard, whiteListEmailBtn, unsubscribeBtn, deleteAllMailsBtn, unsubscribeAndDeleteAllMailsBtn } =
+    hoverCardElements;
 
+  // if mouse is hovered over the card or assistant button then do nothing
   if (
     mailMagicGlobalVariables.isMouseOverHoverCard ||
     mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn
   )
     return;
+
+  //
+  // get parent el from id
   const parentEl = document.getElementById(parentElId);
 
-  if (parentEl && parentEl.contains(hoverCard)) {
+  console.log('🚀 ~ file: assistantHoverCard.ts:215 ~ hideHoverCard ~ parentEl:', parentEl);
+
+  if (parentEl?.contains(hoverCard)) {
+    // hide the card
     hoverCard.style.display = 'none';
     hoverCard.style.visibility = 'hidden';
-    // get parent el from id
 
-    unsubscribeBtn.remove();
-    deleteAllMailsBtn.remove();
-    unsubscribeAndDeleteAllMailsBtn.remove();
+    // remove hover card from parentEl
     parentEl.removeChild(hoverCard);
   }
 };
-
-export { initializeHoverCard, showHoverCard, hideHoverCard };

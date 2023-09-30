@@ -1,5 +1,5 @@
-import { embedAssistantBtn } from './view/assistantButton/assistantButton';
-import { IHoverCardElements } from './view/unsubscribeHoverCard';
+import { embedAssistantBtn } from './view/assistantButton';
+import { IHoverCardElements } from './view/assistantButton/hoverCard/assistantHoverCard';
 import { renderAuthModal } from './view/authModal';
 import { IMessageBody, IMessageEvent } from './content.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
@@ -81,6 +81,8 @@ chrome.runtime.onMessage.addListener(
 //TODO: and also when they see a email and come back to the email table
 
 //TODO: check the chrome-sync-storage if app is enabled or not, better to do this in the background script on the very first call
+
+// TODO: create a utility logger for both content & background scripts
 
 // execute this script after 2.5s
 setTimeout(() => {

@@ -2,7 +2,7 @@ import { getAllMailsOnPage } from '@src/pages/content/view/assistantButton/helpe
 import { geCurrentIdFromURL } from '../../utils/geCurrentIdFromURL';
 import { getSelectedCategory } from '../../utils/getSelectedCategory';
 import { IMessageBody, IMessageEvent } from '../../content.types';
-import { hideHoverCard, initializeHoverCard, showHoverCard } from '../unsubscribeHoverCard';
+import { hideHoverCard, initializeHoverCard, showHoverCard } from './hoverCard/assistantHoverCard';
 import { randomId } from '../../utils/randomId';
 
 type HandleMouseOverParams = {
@@ -29,7 +29,7 @@ const handleMouseOver = ({ ev, assistantBtnContainer, name, email }: HandleMouse
         hoverCardElements: mailMagicGlobalVariables.hoverCardElements,
       });
     })();
-  }, 200);
+  }, 400);
 };
 
 //  mouse out
