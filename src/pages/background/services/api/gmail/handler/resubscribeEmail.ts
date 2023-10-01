@@ -2,6 +2,8 @@ import { FILTER_ACTION } from '@src/pages/background/types/background.types';
 import { addEmailToFilter, removeEmailFromFilter } from '../helper/updateFilter';
 import { getFilterId } from '../helper/getFilterId';
 
+// TODO: check if already re-Subscribed, if yes do nothing (update storage)
+
 // handle resubscribe
 export const resubscribeEmail = async (token: string, email: string) => {
   try {

@@ -52,6 +52,9 @@ const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams
   confirmAction.addEventListener('click', async ev => {
     await handleConfirmActionBtnClick(ev, onConfirmClick);
   });
+
+  console.log('🚀 ~ file: confirmModal.ts:56 ~ showConfirmModal ~ confirmAction:', confirmAction);
+
   // disable btn
   cancelAction.addEventListener('click', handleCancelActionBtnClick);
 
@@ -68,14 +71,16 @@ const hideConfirmModal = () => {
   // get elements
   const modalContainer = document.getElementById('mailMagic-confirmModal');
   const backdrop = document.getElementById('confirmModal-backdrop');
+
   const modalCard = document.getElementById('confirmModal-card');
   const buttonContainer = document.getElementById('confirmModal-btnContainer');
 
-  if (!modalContainer || !backdrop || !modalCard || !buttonContainer) return;
+  if (!modalContainer || !backdrop || !modalCard) return;
+  console.log('🚀 ~ file: confirmModal.ts:73 ~ hideConfirmModal ~ backdrop:', backdrop);
   // remove elements
+  backdrop.remove();
   buttonContainer.remove();
   modalCard.remove();
-  backdrop.remove();
   modalContainer.remove();
 };
 

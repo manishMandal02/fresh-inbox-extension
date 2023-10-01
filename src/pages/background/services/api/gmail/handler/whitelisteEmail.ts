@@ -4,6 +4,8 @@ import { getFilterId } from '../helper/getFilterId';
 import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';
 import { addEmailToFilter } from '../helper/updateFilter';
 
+// TODO: check if already whitelisted, if yes do nothing (update storage)
+
 //
 export const whitelistEmail = async (token: string, email: string) => {
   try {

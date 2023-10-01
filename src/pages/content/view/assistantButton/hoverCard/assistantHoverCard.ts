@@ -1,4 +1,3 @@
-import { showConfirmModal } from '../../elements/confirmModal';
 import {
   handleUnsubscribeAction,
   handleDeleteAllMailsAction,
@@ -140,8 +139,8 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
   // add text to label
   label.innerHTML = `<p>Email Actions for <strong>${limitCharLength(name, 20)}</strong></p>`;
 
-  // add tooltip to the label, show email on hover
-  addTooltip(label.firstElementChild as HTMLElement, email);
+  // add tooltip to the label, show email on hover over sender name
+  addTooltip(label.firstElementChild.firstElementChild as HTMLElement, email);
 
   // stop event propagation for card container
   hoverCard.addEventListener('click', ev => {
@@ -172,18 +171,18 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
     actionInfoMsg(label, false);
     showButtons([whiteListEmailBtn, unsubscribeBtn, unsubscribeAndDeleteAllMailsBtn]);
     // onClick listener to unsubscribe button
-    unsubscribeBtn.addEventListener('click', () => {
-      (async () => {
-        await handleUnsubscribeAction({ email, btnContainerId: 'hoverCard-btnContainer' });
-      })();
+    unsubscribeBtn.addEventListener('click', async () => {
+      hideHoverCard({ parentElId, hoverCardElements });
+      await handleUnsubscribeAction({ email });
     });
 
     // onClick listener to unsubscribe and delete all mails button
     unsubscribeAndDeleteAllMailsBtn.addEventListener('click', async ev => {
       ev.stopPropagation();
+      hideHoverCard({ parentElId, hoverCardElements });
       await handleUnsubscribeAndDeleteAction({
         email,
-        btnContainerId: 'hoverCard-btnContainer',
+
         shouldRefreshTable: true,
       });
     });
@@ -191,8 +190,9 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
     // onClick listener to white list email button
     whiteListEmailBtn.addEventListener('click', ev => {
       ev.stopPropagation();
+      hideHoverCard({ parentElId, hoverCardElements });
       (async () => {
-        await handleWhitelistAction({ email, btnContainerId: 'hoverCard-btnContainer' });
+        await handleWhitelistAction({ email });
       })();
     });
   }
@@ -200,9 +200,9 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
   // onClick listener to delete all mails button
   deleteAllMailsBtn.addEventListener('click', async ev => {
     ev.stopPropagation();
+    hideHoverCard({ parentElId, hoverCardElements });
     await handleDeleteAllMailsAction({
       email,
-      btnContainerId: 'hoverCard-btnContainer',
       shouldRefreshTable: true,
     });
   });

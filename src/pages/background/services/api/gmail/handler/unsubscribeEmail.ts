@@ -13,6 +13,8 @@ type UnsubscribeEmailParams = {
   isWhiteListed: boolean;
 } & APIHandleParams;
 
+// TODO: check if already unsubscribed, if yes do nothing (update storage)
+
 // handle unsubscribe/block email
 export const unsubscribeEmail = async ({ token, email, isWhiteListed }: UnsubscribeEmailParams) => {
   try {

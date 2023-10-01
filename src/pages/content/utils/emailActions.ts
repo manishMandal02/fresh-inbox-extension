@@ -158,7 +158,7 @@ const handleWhitelistEmail = async (email: string): Promise<boolean> => {
 interface IEmailActionParams {
   email: string;
   name?: string;
-  btnContainerId: string;
+  btnContainerId?: string;
   onSuccess?: () => Promise<void>;
   shouldRefreshTable?: boolean;
   isWhitelisted?: boolean;
@@ -169,11 +169,17 @@ export const handleWhitelistAction = async ({
   email,
   btnContainerId,
 }: IEmailActionParams): Promise<boolean> => {
-  const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
-  const isSuccess = await handleWhitelistEmail(email);
+  // render loading spinner if btnContainerId is provided
+  if (btnContainerId) {
+    const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
+    const isSuccess = await handleWhitelistEmail(email);
 
-  hideLoadingSpinner(!isSuccess);
-  return isSuccess;
+    hideLoadingSpinner(!isSuccess);
+    return isSuccess;
+  } else {
+    const isSuccess = await handleWhitelistEmail(email);
+    return isSuccess;
+  }
 };
 
 // export handle unsubscribe action handler
@@ -182,15 +188,22 @@ export const handleUnsubscribeAction = async ({
   btnContainerId,
   isWhitelisted,
 }: IEmailActionParams): Promise<boolean> => {
-  const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
+  // render loading spinner if btnContainerId is provided
+  if (btnContainerId) {
+    const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
 
-  console.log('🚀 ~ file: emailActions.ts:187 ~ hideLoadingSpinner:', hideLoadingSpinner);
+    console.log('🚀 ~ file: emailActions.ts:187 ~ hideLoadingSpinner:', hideLoadingSpinner);
 
-  const isSuccess = await handleUnsubscribeEmail(email, isWhitelisted);
+    const isSuccess = await handleUnsubscribeEmail(email, isWhitelisted);
 
-  hideLoadingSpinner(!isSuccess);
+    hideLoadingSpinner(!isSuccess);
 
-  return isSuccess;
+    return isSuccess;
+  } else {
+    const isSuccess = await handleUnsubscribeEmail(email, isWhitelisted);
+
+    return isSuccess;
+  }
 };
 
 // export delete-all-mails-action handler
@@ -200,17 +213,33 @@ export const handleDeleteAllMailsAction = async ({
   onSuccess,
   shouldRefreshTable,
 }: IEmailActionParams) => {
-  showConfirmModal({
-    email,
-    msg: 'Are you sure you want to delete all mails from',
-    onConfirmClick: async () => {
-      const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
-      const isSuccess = await handleDeleteAllMails(email, shouldRefreshTable);
-      hideLoadingSpinner(!isSuccess);
-      // call onSuccess callback fn
-      await onSuccess();
-    },
-  });
+  // render loading spinner if btnContainerId is provided
+
+  if (btnContainerId) {
+    showConfirmModal({
+      email,
+      msg: 'Are you sure you want to delete all mails from',
+      onConfirmClick: async () => {
+        const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
+        const isSuccess = await handleDeleteAllMails(email, shouldRefreshTable);
+        hideLoadingSpinner(!isSuccess);
+        // call onSuccess callback fn
+        await onSuccess();
+      },
+    });
+  } else {
+    showConfirmModal({
+      email,
+      msg: 'Are you sure you want to delete all mails from',
+      onConfirmClick: async () => {
+        const isSuccess = await handleDeleteAllMails(email, shouldRefreshTable);
+        // call onSuccess callback fn
+        if (isSuccess) {
+          await onSuccess();
+        }
+      },
+    });
+  }
 };
 
 // export unsubscribe--and--delete--all--mails action handler
@@ -221,33 +250,59 @@ export const handleUnsubscribeAndDeleteAction = async ({
   shouldRefreshTable,
   isWhitelisted,
 }: IEmailActionParams) => {
-  showConfirmModal({
-    email,
-    msg: 'Are you sure you want to delete all mails and unsubscribe from',
-    onConfirmClick: async () => {
-      const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
-      const isSuccess = await handleUnsubscribeAndDeleteAllMails({
-        email,
-        shouldRefreshTable,
-        isWhitelisted,
-      });
-      hideLoadingSpinner(!isSuccess);
-      // call onSuccess callback fn
-      await onSuccess();
-    },
-  });
+  // render loading spinner if btnContainerId is provided
+  if (btnContainerId) {
+    showConfirmModal({
+      email,
+      msg: 'Are you sure you want to delete all mails and unsubscribe from',
+      onConfirmClick: async () => {
+        const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
+        const isSuccess = await handleUnsubscribeAndDeleteAllMails({
+          email,
+          shouldRefreshTable,
+          isWhitelisted,
+        });
+        hideLoadingSpinner(!isSuccess);
+        // call onSuccess callback fn
+        await onSuccess();
+      },
+    });
+  } else {
+    showConfirmModal({
+      email,
+      msg: 'Are you sure you want to delete all mails and unsubscribe from',
+      onConfirmClick: async () => {
+        const isSuccess = await handleUnsubscribeAndDeleteAllMails({
+          email,
+          shouldRefreshTable,
+          isWhitelisted,
+        });
+        // call onSuccess callback fn
+        if (isSuccess) {
+          await onSuccess();
+        }
+      },
+    });
+  }
 };
 
 export const handleReSubscribeAction = async ({
   email,
   btnContainerId,
 }: IEmailActionParams): Promise<boolean> => {
-  // show loading spinner
-  const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
+  // render loading spinner if btnContainerId is provided
+  if (btnContainerId) {
+    // show loading spinner
+    const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
 
-  // handle whitelist action
-  const isSuccess = await handleReSubscribeEmail(email);
+    // handle whitelist action
+    const isSuccess = await handleReSubscribeEmail(email);
 
-  hideLoadingSpinner(!isSuccess);
-  return isSuccess;
+    hideLoadingSpinner(!isSuccess);
+    return isSuccess;
+  } else {
+    // handle whitelist action
+    const isSuccess = await handleReSubscribeEmail(email);
+    return isSuccess;
+  }
 };
