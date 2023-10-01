@@ -13,9 +13,9 @@ const handleUnsubscribeEmail = async (email: string, isWhiteListed = false): Pro
     });
     // send message/event to background script
     const res = await chrome.runtime.sendMessage<IMessageBody>({
-      event: IMessageEvent.Unsubscribe,
       email,
-      isWhiteListed: isWhiteListed,
+      isWhiteListed,
+      event: IMessageEvent.Unsubscribe,
     });
     // hide snackbar
     hideLoadingSnackbar();
@@ -172,7 +172,7 @@ export const handleWhitelistAction = async ({
   const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
   const isSuccess = await handleWhitelistEmail(email);
 
-  hideLoadingSpinner(isSuccess);
+  hideLoadingSpinner(!isSuccess);
   return isSuccess;
 };
 
@@ -183,9 +183,12 @@ export const handleUnsubscribeAction = async ({
   isWhitelisted,
 }: IEmailActionParams): Promise<boolean> => {
   const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
+
+  console.log('🚀 ~ file: emailActions.ts:187 ~ hideLoadingSpinner:', hideLoadingSpinner);
+
   const isSuccess = await handleUnsubscribeEmail(email, isWhitelisted);
 
-  hideLoadingSpinner(isSuccess);
+  hideLoadingSpinner(!isSuccess);
 
   return isSuccess;
 };
@@ -203,7 +206,7 @@ export const handleDeleteAllMailsAction = async ({
     onConfirmClick: async () => {
       const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
       const isSuccess = await handleDeleteAllMails(email, shouldRefreshTable);
-      hideLoadingSpinner(isSuccess);
+      hideLoadingSpinner(!isSuccess);
       // call onSuccess callback fn
       await onSuccess();
     },
@@ -228,7 +231,7 @@ export const handleUnsubscribeAndDeleteAction = async ({
         shouldRefreshTable,
         isWhitelisted,
       });
-      hideLoadingSpinner(isSuccess);
+      hideLoadingSpinner(!isSuccess);
       // call onSuccess callback fn
       await onSuccess();
     },
@@ -245,6 +248,6 @@ export const handleReSubscribeAction = async ({
   // handle whitelist action
   const isSuccess = await handleReSubscribeEmail(email);
 
-  hideLoadingSpinner(isSuccess);
+  hideLoadingSpinner(!isSuccess);
   return isSuccess;
 };

@@ -1,17 +1,14 @@
 import {
   handleUnsubscribeAction,
   handleDeleteAllMailsAction,
-  handleWhitelistAction,
   handleUnsubscribeAndDeleteAction,
 } from '@src/pages/content/utils/emailActions';
 import { getLoadingSpinner } from '../../elements/loadingSpinner';
 import { getWhitelistedEmails } from '@src/pages/content/utils/getEmailsFromStorage';
 import { randomId } from '@src/pages/content/utils/randomId';
-import { renderLoadingSpinnerInsteadOfButtons } from '@src/pages/content/utils/renderLoadingSpinnerInsteadOfButtons';
 import { addTooltip } from '../../elements/tooltip';
 import { renderTextMsg } from '../../elements/text';
 import wait from '@src/pages/content/utils/wait';
-import { showConfirmModal } from '../../elements/confirmModal';
 import { tableHeader } from '../../elements/tableHeader';
 
 const WhitelistedEmailsTabActionBtnContainer = 'whitelistedEmailsTab-actionBtn';

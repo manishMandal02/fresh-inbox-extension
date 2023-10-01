@@ -31,6 +31,25 @@ const showButtons = (buttons: HTMLButtonElement[]) => {
   }
 };
 
+// shows a message when the email is already unsubscribed
+const actionInfoMsg = (
+  label: HTMLParagraphElement,
+  shouldShow: boolean,
+  msg = 'This email is already unsubscribed'
+) => {
+  if (shouldShow) {
+    // add action info msg
+    const span = document.createElement('span');
+
+    span.innerText = msg;
+
+    label.appendChild(span);
+  } else {
+    // remove action info msg
+    label.getElementsByTagName('span')[0]?.remove();
+  }
+};
+
 // handle hover
 // mouse over
 const handleMouseOver = (ev: MouseEvent) => {
@@ -54,7 +73,7 @@ export const initializeHoverCard = (): IHoverCardElements => {
   // create hoverCard elements
   // main container
   const hoverCard = document.createElement('div');
-  const label = document.createElement('p');
+  const label = document.createElement('div');
   const btnContainer = document.createElement('div');
   // action buttons
   const whiteListEmailBtn = document.createElement('button');
@@ -65,12 +84,7 @@ export const initializeHoverCard = (): IHoverCardElements => {
   /// add classnames
   hoverCard.classList.add('mailMagic-hoverCard');
   label.classList.add('hoverCard-label');
-  btnContainer.classList.add('hoverCard-btnContainer');
-
-  whiteListEmailBtn.classList.add('hoverCard-whiteListBtn');
-  unsubscribeBtn.classList.add('hoverCard-unsubscribeBtn');
-  deleteAllMailsBtn.classList.add('hoverCard-deleteAllMailsBtn');
-  unsubscribeAndDeleteAllMailsBtn.classList.add('hoverCard-unsubscribeAndDeleteAllMailsBtn');
+  btnContainer.id = 'hoverCard-btnContainer';
 
   // add text to buttons
   whiteListEmailBtn.innerHTML = 'Keep';
@@ -124,7 +138,7 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
   parentEl.appendChild(hoverCard);
 
   // add text to label
-  label.innerHTML = `Email Actions for <strong>${limitCharLength(name, 20)}</strong>`;
+  label.innerHTML = `<p>Email Actions for <strong>${limitCharLength(name, 20)}</strong></p>`;
 
   // add tooltip to the label, show email on hover
   addTooltip(label.firstElementChild as HTMLElement, email);
@@ -144,16 +158,19 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
   const unsubscribedEmailsList = await getUnsubscribedEmails();
   const isUnsubscribed = unsubscribedEmailsList?.includes(email);
 
-  //TODO: handle removing of assitant btn based on action
+  //TODO: handle removing of assistant btn based on action
 
   if (isUnsubscribed) {
     // if already unsubscribed, show only deleteAllMails button
     // hide other buttons
-    hideButtons([unsubscribeBtn, unsubscribeAndDeleteAllMailsBtn]);
+    hideButtons([whiteListEmailBtn, unsubscribeBtn, unsubscribeAndDeleteAllMailsBtn]);
+    // show info message
+    actionInfoMsg(label, true);
   } else {
     // if not, show all three buttons
-
-    showButtons([unsubscribeBtn, unsubscribeAndDeleteAllMailsBtn]);
+    // remove action info if present
+    actionInfoMsg(label, false);
+    showButtons([whiteListEmailBtn, unsubscribeBtn, unsubscribeAndDeleteAllMailsBtn]);
     // onClick listener to unsubscribe button
     unsubscribeBtn.addEventListener('click', () => {
       (async () => {
@@ -170,15 +187,15 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
         shouldRefreshTable: true,
       });
     });
-  }
 
-  // onClick listener to white list email button
-  whiteListEmailBtn.addEventListener('click', ev => {
-    ev.stopPropagation();
-    (async () => {
-      await handleWhitelistAction({ email, btnContainerId: 'hoverCard-btnContainer' });
-    })();
-  });
+    // onClick listener to white list email button
+    whiteListEmailBtn.addEventListener('click', ev => {
+      ev.stopPropagation();
+      (async () => {
+        await handleWhitelistAction({ email, btnContainerId: 'hoverCard-btnContainer' });
+      })();
+    });
+  }
 
   // onClick listener to delete all mails button
   deleteAllMailsBtn.addEventListener('click', async ev => {
