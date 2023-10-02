@@ -8,7 +8,6 @@ import { mailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
 
 // content script global variables type
 export interface MailMagicGlobalVariables {
-  hoverCardElements: IHoverCardElements | null;
   assistantBtnContainerId: string;
   isMouseOverHoverCard: boolean;
   isMouseOverMailMagicAssistantBtn: boolean;
@@ -17,7 +16,6 @@ export interface MailMagicGlobalVariables {
 // set  global variable state
 window.mailMagicGlobalVariables = {
   assistantBtnContainerId: '',
-  hoverCardElements: null,
   isMouseOverHoverCard: false,
   isMouseOverMailMagicAssistantBtn: false,
 };

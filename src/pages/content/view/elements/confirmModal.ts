@@ -5,6 +5,7 @@ const handleConfirmActionBtnClick = async (ev: MouseEvent, onConfirmClick: () =>
   await onConfirmClick();
   // hide modal
 };
+
 const handleCancelActionBtnClick = (ev: MouseEvent) => {
   ev.stopPropagation();
   // hide modal
@@ -76,7 +77,6 @@ const hideConfirmModal = () => {
   const buttonContainer = document.getElementById('confirmModal-btnContainer');
 
   if (!modalContainer || !backdrop || !modalCard) return;
-  console.log('🚀 ~ file: confirmModal.ts:73 ~ hideConfirmModal ~ backdrop:', backdrop);
   // remove elements
   backdrop.remove();
   buttonContainer.remove();

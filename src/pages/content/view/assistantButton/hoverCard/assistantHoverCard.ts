@@ -58,17 +58,17 @@ const handleMouseOver = (ev: MouseEvent) => {
 
 // mouse out
 const handleMouseOut = () => {
-  const { hoverCardElements, assistantBtnContainerId } = mailMagicGlobalVariables;
+  const { assistantBtnContainerId } = mailMagicGlobalVariables;
 
   setTimeout(() => {
-    hideHoverCard({ parentElId: assistantBtnContainerId, hoverCardElements });
-  }, 500);
+    hideHoverCard({ parentElId: assistantBtnContainerId });
+  }, 400);
 
   mailMagicGlobalVariables.isMouseOverHoverCard = false;
 };
 
-// initialize hover card
-export const initializeHoverCard = (): IHoverCardElements => {
+// create hover card elements
+const createHoverCardElements = (): IHoverCardElements => {
   // create hoverCard elements
   // main container
   const hoverCard = document.createElement('div');
@@ -81,7 +81,7 @@ export const initializeHoverCard = (): IHoverCardElements => {
   const unsubscribeAndDeleteAllMailsBtn = document.createElement('button');
 
   /// add classnames
-  hoverCard.classList.add('mailMagic-hoverCard');
+  hoverCard.id = 'mailMagic-hoverCard';
   label.classList.add('hoverCard-label');
   btnContainer.id = 'hoverCard-btnContainer';
 
@@ -113,15 +113,14 @@ export const initializeHoverCard = (): IHoverCardElements => {
   };
 };
 
-//* show hover-card
+// show hover-card
 type ShowHoverCardParams = {
   parentElId: string;
-  hoverCardElements: IHoverCardElements;
   email: string;
   name: string;
 };
 
-export const showHoverCard = async ({ parentElId, hoverCardElements, email, name }: ShowHoverCardParams) => {
+export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardParams) => {
   const {
     hoverCard,
     label,
@@ -129,10 +128,12 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
     unsubscribeBtn,
     deleteAllMailsBtn,
     unsubscribeAndDeleteAllMailsBtn,
-  } = hoverCardElements;
+  } = createHoverCardElements();
 
   // get parent el from id
   const parentEl = document.getElementById(parentElId);
+
+  console.log('🚀 ~ file: assistantHoverCard.ts:137 ~ showHoverCard ~ parentEl:', parentEl);
 
   parentEl.appendChild(hoverCard);
 
@@ -172,35 +173,47 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
     showButtons([whiteListEmailBtn, unsubscribeBtn, unsubscribeAndDeleteAllMailsBtn]);
     // onClick listener to unsubscribe button
     unsubscribeBtn.addEventListener('click', async () => {
-      hideHoverCard({ parentElId, hoverCardElements });
+      hideHoverCard({ parentElId });
       await handleUnsubscribeAction({ email });
     });
 
     // onClick listener to unsubscribe and delete all mails button
     unsubscribeAndDeleteAllMailsBtn.addEventListener('click', async ev => {
       ev.stopPropagation();
-      hideHoverCard({ parentElId, hoverCardElements });
+      hideHoverCard({ parentElId });
       await handleUnsubscribeAndDeleteAction({
         email,
-
         shouldRefreshTable: true,
       });
     });
 
     // onClick listener to white list email button
-    whiteListEmailBtn.addEventListener('click', ev => {
+    whiteListEmailBtn.addEventListener('click', async ev => {
       ev.stopPropagation();
-      hideHoverCard({ parentElId, hoverCardElements });
-      (async () => {
-        await handleWhitelistAction({ email });
-      })();
+      hideHoverCard({ parentElId });
+      const isSuccess = await handleWhitelistAction({ email });
+      if (isSuccess) {
+        // if success, remove assistant btn from for this email
+        const assistantBtnContainerId = mailMagicGlobalVariables.assistantBtnContainerId;
+        const assistantBtnContainer = document.getElementById(assistantBtnContainerId);
+        if (!assistantBtnContainer) return;
+        const assistantBtn = assistantBtnContainer.getElementsByClassName('mailMagic-assistantBtn');
+
+        // remove assistant btn for for this email
+        if (assistantBtn.length > 0) {
+          assistantBtn[0].remove();
+        }
+      }
     });
   }
 
   // onClick listener to delete all mails button
   deleteAllMailsBtn.addEventListener('click', async ev => {
     ev.stopPropagation();
-    hideHoverCard({ parentElId, hoverCardElements });
+    hideHoverCard({ parentElId });
+    console.log(
+      '🚀 ~ file: assistantHoverCard.ts:208 ~ showHoverCard ~ handleDeleteAllMailsAction: 🔵 Event Listener'
+    );
     await handleDeleteAllMailsAction({
       email,
       shouldRefreshTable: true,
@@ -212,15 +225,12 @@ export const showHoverCard = async ({ parentElId, hoverCardElements, email, name
   hoverCard.style.visibility = 'visible';
 };
 
-//* hide hoverCard
+// hide hoverCard
 type HideHoverCardParams = {
   parentElId: string;
-  hoverCardElements: IHoverCardElements;
 };
 
-export const hideHoverCard = ({ parentElId, hoverCardElements }: HideHoverCardParams) => {
-  const { hoverCard } = hoverCardElements;
-
+export const hideHoverCard = ({ parentElId }: HideHoverCardParams) => {
   // if mouse is hovered over the card or assistant button then do nothing
   if (
     mailMagicGlobalVariables.isMouseOverHoverCard ||
@@ -228,7 +238,11 @@ export const hideHoverCard = ({ parentElId, hoverCardElements }: HideHoverCardPa
   )
     return;
 
-  //
+  // get hover card el from id
+  const hoverCard = document.getElementById('mailMagic-hoverCard');
+
+  if (!hoverCard) return;
+
   // get parent el from id
   const parentEl = document.getElementById(parentElId);
 

@@ -1,7 +1,8 @@
 // theme
+//colors
 $primary-color: #0957d0;
 $light-gray-color: #dde3ea95;
-
+$danger-color: #f45151;
 $text-dark: #282828;
 $text-mid-gray: #505050;
 
@@ -95,7 +96,7 @@ $text-mid-gray: #505050;
   margin-left: auto;
 }
 
-.mailMagic-hoverCard {
+#mailMagic-hoverCard {
   width: 25rem;
   height: min-content;
   padding: 10px 0;
@@ -103,7 +104,7 @@ $text-mid-gray: #505050;
   position: absolute;
   display: none;
   visibility: hidden;
-  transform: translate(0, -105%);
+  transform: translate(0, -102%);
   border-radius: 10px;
   margin-left: -2.8rem;
   background-color: #ffffff;
@@ -176,7 +177,8 @@ $text-mid-gray: #505050;
       align-items: center;
       cursor: pointer;
       margin-top: 8px;
-      transition: all 0.1s ease-in-out;
+      transition: all ease-in-out;
+      animation-duration: 200ms;
       &:hover {
         box-shadow: #0000001a 0px 1px 3px 0px, #0000000f 0px 1px 2px 0px;
       }
@@ -392,12 +394,11 @@ $text-mid-gray: #505050;
     width: 100vw;
     height: 100vw;
     background-color: #242222;
-    opacity: 0.4;
+    opacity: 0.35;
   }
   #confirmModal-card {
     display: flex;
     flex-direction: column;
-
     padding: 22px;
     border-radius: 16px;
     box-shadow: #64646f33 0px 7px 29px 0px;
@@ -414,7 +415,7 @@ $text-mid-gray: #505050;
       font-size: 1.4rem;
       font-weight: 400;
       margin: 0;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.75rem;
     }
     #confirmModal-modalMessage {
       color: #434242;
@@ -442,7 +443,7 @@ $text-mid-gray: #505050;
         align-items: center;
         font-size: 16px;
         font-weight: 400;
-        background-color: #1d86d6;
+        background-color: $danger-color;
         color: #f3f1f1;
         border-radius: 6px;
         outline: none;

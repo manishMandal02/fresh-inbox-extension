@@ -2,7 +2,7 @@ import { getAllMailsOnPage } from '@src/pages/content/view/assistantButton/helpe
 import { geCurrentIdFromURL } from '../../utils/geCurrentIdFromURL';
 import { getSelectedCategory } from '../../utils/getSelectedCategory';
 import { IMessageBody, IMessageEvent } from '../../content.types';
-import { hideHoverCard, initializeHoverCard, showHoverCard } from './hoverCard/assistantHoverCard';
+import { hideHoverCard, showHoverCard } from './hoverCard/assistantHoverCard';
 import { randomId } from '../../utils/randomId';
 
 type HandleMouseOverParams = {
@@ -16,6 +16,10 @@ type HandleMouseOverParams = {
 // mouse over
 const handleMouseOver = ({ ev, assistantBtnContainer, name, email }: HandleMouseOverParams) => {
   ev.stopPropagation();
+
+  // if hover card is already shown, do nothing
+  if (assistantBtnContainer.contains(document.getElementById('mailMagic-hoverCard'))) return;
+
   mailMagicGlobalVariables.assistantBtnContainerId = randomId();
   assistantBtnContainer.id = mailMagicGlobalVariables.assistantBtnContainerId;
   //
@@ -26,20 +30,22 @@ const handleMouseOver = ({ ev, assistantBtnContainer, name, email }: HandleMouse
         name,
         email,
         parentElId: mailMagicGlobalVariables.assistantBtnContainerId,
-        hoverCardElements: mailMagicGlobalVariables.hoverCardElements,
       });
     })();
-  }, 400);
+  }, 300);
 };
 
 //  mouse out
 const handleMouseOut = () => {
+  const { assistantBtnContainerId } = mailMagicGlobalVariables;
+
+  console.log('🚀 ~ file: index.ts:38 ~ handleMouseOut ~ assistantBtnContainerId:', assistantBtnContainerId);
+
   setTimeout(() => {
     hideHoverCard({
-      parentElId: mailMagicGlobalVariables.assistantBtnContainerId,
-      hoverCardElements: mailMagicGlobalVariables.hoverCardElements,
+      parentElId: assistantBtnContainerId,
     });
-  }, 500);
+  }, 400);
   mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn = false;
 };
 
@@ -111,9 +117,6 @@ export const embedAssistantBtn = async () => {
     assistantBtn.addEventListener('mouseover', ev => {
       handleMouseOver({ ev, assistantBtnContainer, name, email: emailAttr });
     });
-
-    // initialize hover card elements
-    window.mailMagicGlobalVariables.hoverCardElements = initializeHoverCard();
 
     // on hover out listener
     assistantBtn.addEventListener('mouseout', handleMouseOut);

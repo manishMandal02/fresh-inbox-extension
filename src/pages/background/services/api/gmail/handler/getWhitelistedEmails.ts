@@ -9,7 +9,7 @@ export const getWhitelistedEmails = async (token: string): Promise<string[]> => 
   try {
     // get whitelisted emails from local.storage
     const whitelistedEmails = await getLocalStorageByKey<string[]>(storageKeys.WHITELISTED_EMAILS);
-    if (whitelistedEmails && whitelistedEmails.length > 0) {
+    if (whitelistedEmails) {
       filterEmails = whitelistedEmails;
     } else {
       // if emails not present in local.storage get it from user's filter (gmail-api)
