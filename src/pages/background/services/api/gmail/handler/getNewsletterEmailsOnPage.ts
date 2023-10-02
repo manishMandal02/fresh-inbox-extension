@@ -1,17 +1,13 @@
-// check for newsletter emails on page
-
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
-import {
-  DataOnPage,
-  GetMsgAPIResponseSuccess,
-  GmailMessage,
-} from '@src/pages/background/types/background.types';
+import { DataOnPage, GetMsgAPIResponseSuccess } from '@src/pages/background/types/background.types';
+import { getWhitelistedEmails } from './getWhitelistedEmails';
 
 type GetNewsletterEmailsOnPageParams = {
   token: string;
   dataOnPage: DataOnPage;
 };
 
+// check for newsletter emails on page
 export const getNewsletterEmailsOnPage = async ({
   token,
   dataOnPage: { emails, dateRange, category, folder },
@@ -50,11 +46,11 @@ export const getNewsletterEmailsOnPage = async ({
       return [];
     }
 
+    // newsletter emails based on search query filter
     const messages = parsedRes.messages;
 
-    // check for newsletter emails based on search query filter
     // check if the ids of messages received from api match the messages ids on page
-    const newsletterEmails = emails
+    let newsletterEmails = emails
       .filter(email => {
         if (messages.find(message => message.id === email.id)) {
           return true;
@@ -63,6 +59,13 @@ export const getNewsletterEmailsOnPage = async ({
       .map(email => email.email);
 
     console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:67 ~ newsletterEmails:', newsletterEmails);
+
+    // remove whitelisted emails from newsletter emails
+    const whitelistedEmails = await getWhitelistedEmails(token);
+
+    if (whitelistedEmails.length > 0) {
+      newsletterEmails = newsletterEmails.filter(email => !whitelistedEmails.includes(email));
+    }
 
     return newsletterEmails;
   } catch (err) {

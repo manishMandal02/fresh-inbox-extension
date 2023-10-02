@@ -74,14 +74,16 @@ export const embedAssistantBtn = async () => {
       folder: currentFolder,
     },
   });
+
+  if (res) {
+    // store the  emails from response
+    newsletterEmails = res;
+  }
+
   // do nothing if no newsletter emails found
   if (newsletterEmails.length < 1) {
     console.log('🙌 No newsletter emails found on this page.');
     return;
-  }
-
-  if (res) {
-    newsletterEmails = res;
   }
 
   // loop through all mail nodes to embed assistant button

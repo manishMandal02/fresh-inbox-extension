@@ -158,8 +158,6 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
   const unsubscribedEmailsList = await getUnsubscribedEmails();
   const isUnsubscribed = unsubscribedEmailsList?.includes(email);
 
-  //TODO: handle removing of assistant btn based on action
-
   if (isUnsubscribed) {
     // if already unsubscribed, show only deleteAllMails button
     // hide other buttons
@@ -171,16 +169,17 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
     // remove action info if present
     actionInfoMsg(label, false);
     showButtons([whiteListEmailBtn, unsubscribeBtn, unsubscribeAndDeleteAllMailsBtn]);
+
     // onClick listener to unsubscribe button
     unsubscribeBtn.addEventListener('click', async () => {
-      hideHoverCard({ parentElId });
+      hideHoverCard({ parentElId, forceClose: true });
       await handleUnsubscribeAction({ email });
     });
 
     // onClick listener to unsubscribe and delete all mails button
     unsubscribeAndDeleteAllMailsBtn.addEventListener('click', async ev => {
       ev.stopPropagation();
-      hideHoverCard({ parentElId });
+      hideHoverCard({ parentElId, forceClose: true });
       await handleUnsubscribeAndDeleteAction({
         email,
         shouldRefreshTable: true,
@@ -190,7 +189,7 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
     // onClick listener to white list email button
     whiteListEmailBtn.addEventListener('click', async ev => {
       ev.stopPropagation();
-      hideHoverCard({ parentElId });
+      hideHoverCard({ parentElId, forceClose: true });
       const isSuccess = await handleWhitelistAction({ email });
       if (isSuccess) {
         // if success, remove assistant btn from for this email
@@ -210,7 +209,7 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
   // onClick listener to delete all mails button
   deleteAllMailsBtn.addEventListener('click', async ev => {
     ev.stopPropagation();
-    hideHoverCard({ parentElId });
+    hideHoverCard({ parentElId, forceClose: true });
     console.log(
       '🚀 ~ file: assistantHoverCard.ts:208 ~ showHoverCard ~ handleDeleteAllMailsAction: 🔵 Event Listener'
     );
@@ -228,15 +227,19 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
 // hide hoverCard
 type HideHoverCardParams = {
   parentElId: string;
+  forceClose?: boolean;
 };
 
-export const hideHoverCard = ({ parentElId }: HideHoverCardParams) => {
-  // if mouse is hovered over the card or assistant button then do nothing
-  if (
-    mailMagicGlobalVariables.isMouseOverHoverCard ||
-    mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn
-  )
-    return;
+export const hideHoverCard = ({ parentElId, forceClose }: HideHoverCardParams) => {
+  // if forceClose is true, then close the hover card
+  if (!forceClose) {
+    // if mouse is hovered over the card or assistant button then do nothing
+    if (
+      mailMagicGlobalVariables.isMouseOverHoverCard ||
+      mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn
+    )
+      return;
+  }
 
   // get hover card el from id
   const hoverCard = document.getElementById('mailMagic-hoverCard');
