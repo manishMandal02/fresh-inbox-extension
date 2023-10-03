@@ -13,6 +13,7 @@ import { getWhitelistedEmails } from './services/api/gmail/handler/getWhiteliste
 import { whitelistEmail } from './services/api/gmail/handler/whitelisteEmail';
 import { resubscribeEmail } from './services/api/gmail/handler/resubscribeEmail';
 import { getNewsletterEmailsOnPage } from './services/api/gmail/handler/getNewsletterEmailsOnPage';
+import { logger } from './utils/logger';
 
 reloadOnUpdate('pages/background');
 
@@ -22,7 +23,7 @@ reloadOnUpdate('pages/background');
  */
 reloadOnUpdate('pages/content/style.scss');
 
-console.log('🔥 background loaded');
+logger.info('🏁 background script loaded');
 
 // background service global variable
 let userInfo: IUserInfo = null;
@@ -33,11 +34,9 @@ const isAuthTokenValid = async () => {
   try {
     userInfo = await getUserInfo();
     if (userInfo.userId) {
-      console.log('🚀 ~ file: index.ts:35 ~ isAuthTokenValid ~ userInfo:', userInfo);
+      logger.info(`userID: ${userInfo.userId}`);
 
       const res = await getAuthToken(userInfo.userId);
-
-      console.log('🚀 ~ file: index.ts:35 ~ isAuthTokenValid ~ res:', res);
 
       if (res.token) {
         token = res.token;
@@ -47,10 +46,15 @@ const isAuthTokenValid = async () => {
         return false;
       }
     }
-  } catch (err) {
-    console.log('🚀 ~ file: index.ts:42 ~ failed to auth: err:', err);
+  } catch (error) {
+    logger.error({
+      error,
+      msg: `Failed to validate get user info & user token `,
+      fileTrace: 'background/index.ts:53 ~ isAuthTokenValid()',
+    });
     return false;
   }
+  return false;
 };
 
 // get current tab id
@@ -60,8 +64,12 @@ const setActiveTabId = async () => {
     if (!tab.id) throw new Error('No active tab found');
 
     activeTabId = tab.id;
-  } catch (err) {
-    console.log('❌ ~ file: index.ts:64 ~ setActiveTabId ~ err:', err);
+  } catch (error) {
+    logger.error({
+      error,
+      msg: `Failed to get active tab id`,
+      fileTrace: 'background/index.ts:71 ~ setActiveTabId()',
+    });
   }
 };
 
@@ -74,164 +82,148 @@ const setActiveTabId = async () => {
 
 // listen for messages from content script - email action events
 chrome.runtime.onMessage.addListener(
-  asyncMessageHandler<IMessageBody, string | boolean | NewsletterEmails[] | string[]>(
-    async (request, sender) => {
-      switch (request.event) {
-        case IMessageEvent.Check_Auth_Token: {
-          await setActiveTabId();
-          return isAuthTokenValid();
-        }
+  asyncMessageHandler<IMessageBody, string | boolean | NewsletterEmails[] | string[]>(async request => {
+    logger.info(`received event: ${request.event}`);
+    switch (request.event) {
+      case IMessageEvent.Check_Auth_Token: {
+        await setActiveTabId();
+        return isAuthTokenValid();
+      }
 
-        case IMessageEvent.Launch_Auth_Flow: {
-          const res = await launchGoogleAuthFlow(userInfo.userId);
+      case IMessageEvent.Launch_Auth_Flow: {
+        const res = await launchGoogleAuthFlow(userInfo.userId);
 
-          if (res.token) {
-            token = res.token;
-            return true;
-          } else {
-            return false;
-          }
-        }
-
-        case IMessageEvent.Unsubscribe: {
-          console.log('Received unsubscribe request for:', request.email);
-          try {
-            await unsubscribeEmail({ token, email: request.email, isWhiteListed: request.isWhiteListed });
-            return true;
-          } catch (err) {
-            console.log(
-              '🚀 ~ file: index.ts:104 ~ asyncMessageHandler<IMessageBody,string|boolean|NewsletterEmails[]> ~ err:',
-              err
-            );
-            return false;
-          }
-        }
-
-        case IMessageEvent.Delete_All_Mails: {
-          console.log('Received deleteAllMails request for:', request.email);
-
-          try {
-            await deleteAllMails({ email: request.email, token });
-
-            // refresh the the table,
-            // if the delete all mails request was sent from the assistant button in table
-            if (request.shouldRefreshTable) {
-              await chrome.tabs.sendMessage(activeTabId, { event: IMessageEvent.REFRESH_TABLE });
-            }
-            return true;
-          } catch (err) {
-            console.log(
-              '🚀 ~ file: index.ts:100 ~ asyncMessageHandler<IMessageBody,string|boolean|NewsletterEmails[]> ~ err:',
-              err
-            );
-            return false;
-          }
-        }
-
-        case IMessageEvent.Unsubscribe_And_Delete_All_Mails: {
-          console.log('Received unsubscribeAndDeleteAllMails request for:', request.email);
-          try {
-            await unsubscribeAndDeleteAllMails({
-              email: request.email,
-              token,
-              isWhiteListed: request.isWhiteListed,
-            });
-
-            // refresh the the table,
-            // if the delete all mails request was sent from the assistant button in table
-            if (request.shouldRefreshTable) {
-              await chrome.tabs.sendMessage(activeTabId, { event: IMessageEvent.REFRESH_TABLE });
-            }
-            return true;
-          } catch (err) {
-            console.log(
-              '🚀 ~ file: index.ts:142 ~ asyncMessageHandler<IMessageBody,string|boolean|NewsletterEmails[]> ~ err:',
-              err
-            );
-            return false;
-          }
-        }
-
-        case IMessageEvent.GET_NEWSLETTER_EMAILS: {
-          console.log('Received getNewsletterEmails request');
-
-          try {
-            const newsletterEmails = await getNewsletterEmails(token);
-
-            console.log(
-              '🚀 ~ file: index.ts:130 ~ asyncMessageHandler<IMessageBody,string|boolean|string[]> ~ newsletterEmails:',
-              newsletterEmails
-            );
-
-            if (newsletterEmails.length > 0) {
-              return newsletterEmails;
-            } else {
-              throw new Error('No newsletter emails found');
-            }
-          } catch (err) {
-            console.log('Error getting newsletter emails', err);
-            return [];
-          }
-        }
-
-        // handle whitelist email
-        case IMessageEvent.WHITELIST_EMAIL: {
-          console.log('Received WHITELIST_EMAIL request for:', request.email);
-          return await whitelistEmail(token, request.email);
-        }
-
-        // handle check for newsletter emails on page
-        case IMessageEvent.GET_NEWSLETTER_EMAILS_ON_PAGE: {
-          console.log('Received CHECK_NEWSLETTER_EMAILS_ON_PAGE request');
-          const res = await getNewsletterEmailsOnPage({ token, dataOnPage: request.dataOnPage });
-          return res;
-        }
-
-        case IMessageEvent.GET_UNSUBSCRIBED_EMAILS: {
-          console.log('Received GET_UNSUBSCRIBED_EMAILS request');
-          const unsubscribedEmails = await getUnsubscribedEmails(token);
-          return unsubscribedEmails;
-        }
-
-        // handle get whitelisted emails
-        case IMessageEvent.GET_WHITELISTED_EMAILS: {
-          console.log('Received GET_WHITELISTED_EMAILS request');
-
-          const whitelistedEmails = await getWhitelistedEmails(token);
-          return whitelistedEmails;
-        }
-
-        // handle re-subscribe
-        case IMessageEvent.RE_SUBSCRIBE: {
-          console.log('Received RE_SUBSCRIBE request for ', request.email);
-          try {
-            await resubscribeEmail(token, request.email);
-            return true;
-          } catch (err) {
-            console.log('🚀 ~ file: index.ts:207 ~ err:', err);
-            return false;
-          }
-        }
-
-        case IMessageEvent.Disable_MailMagic: {
-          //TODO: disable mail magic
-          try {
-            await clearToken(token);
-
-            return true;
-          } catch (err) {
-            console.log('❌ Failed to disable Mail Magic, err:', err);
-          }
+        if (res.token) {
+          token = res.token;
+          return true;
+        } else {
           return false;
         }
+      }
 
-        default: {
-          console.log('Received unknown message:', request);
-          return 'Unknown event.';
+      case IMessageEvent.Unsubscribe: {
+        const res = await unsubscribeEmail({
+          token,
+          email: request.email,
+          isWhiteListed: request.isWhiteListed,
+        });
+        return res;
+      }
+
+      case IMessageEvent.Delete_All_Mails: {
+        const res = await deleteAllMails({ email: request.email, token });
+
+        // refresh the the table,
+        // if the delete all mails request was sent from the assistant button in table
+        if (request.shouldRefreshTable) {
+          await chrome.tabs.sendMessage(activeTabId, { event: IMessageEvent.REFRESH_TABLE });
+        }
+        return res;
+      }
+
+      case IMessageEvent.Unsubscribe_And_Delete_All_Mails: {
+        console.log('Received unsubscribeAndDeleteAllMails request for:', request.email);
+        try {
+          await unsubscribeAndDeleteAllMails({
+            email: request.email,
+            token,
+            isWhiteListed: request.isWhiteListed,
+          });
+
+          // refresh the the table,
+          // if the delete all mails request was sent from the assistant button in table
+          if (request.shouldRefreshTable) {
+            await chrome.tabs.sendMessage(activeTabId, { event: IMessageEvent.REFRESH_TABLE });
+          }
+          return true;
+        } catch (err) {
+          console.log(
+            '🚀 ~ file: index.ts:142 ~ asyncMessageHandler<IMessageBody,string|boolean|NewsletterEmails[]> ~ err:',
+            err
+          );
+          return false;
         }
       }
+
+      case IMessageEvent.GET_NEWSLETTER_EMAILS: {
+        console.log('Received getNewsletterEmails request');
+
+        try {
+          const newsletterEmails = await getNewsletterEmails(token);
+
+          console.log(
+            '🚀 ~ file: index.ts:130 ~ asyncMessageHandler<IMessageBody,string|boolean|string[]> ~ newsletterEmails:',
+            newsletterEmails
+          );
+
+          if (newsletterEmails.length > 0) {
+            return newsletterEmails;
+          } else {
+            throw new Error('No newsletter emails found');
+          }
+        } catch (err) {
+          console.log('Error getting newsletter emails', err);
+          return [];
+        }
+      }
+
+      // handle whitelist email
+      case IMessageEvent.WHITELIST_EMAIL: {
+        console.log('Received WHITELIST_EMAIL request for:', request.email);
+        return await whitelistEmail(token, request.email);
+      }
+
+      // handle check for newsletter emails on page
+      case IMessageEvent.GET_NEWSLETTER_EMAILS_ON_PAGE: {
+        console.log('Received CHECK_NEWSLETTER_EMAILS_ON_PAGE request');
+        const res = await getNewsletterEmailsOnPage({ token, dataOnPage: request.dataOnPage });
+        return res;
+      }
+
+      case IMessageEvent.GET_UNSUBSCRIBED_EMAILS: {
+        console.log('Received GET_UNSUBSCRIBED_EMAILS request');
+        const unsubscribedEmails = await getUnsubscribedEmails(token);
+        return unsubscribedEmails;
+      }
+
+      // handle get whitelisted emails
+      case IMessageEvent.GET_WHITELISTED_EMAILS: {
+        console.log('Received GET_WHITELISTED_EMAILS request');
+
+        const whitelistedEmails = await getWhitelistedEmails(token);
+        return whitelistedEmails;
+      }
+
+      // handle re-subscribe
+      case IMessageEvent.RE_SUBSCRIBE: {
+        console.log('Received RE_SUBSCRIBE request for ', request.email);
+        try {
+          await resubscribeEmail(token, request.email);
+          return true;
+        } catch (err) {
+          console.log('🚀 ~ file: index.ts:207 ~ err:', err);
+          return false;
+        }
+      }
+
+      case IMessageEvent.Disable_MailMagic: {
+        //TODO: disable mail magic
+        try {
+          await clearToken(token);
+
+          return true;
+        } catch (err) {
+          console.log('❌ Failed to disable Mail Magic, err:', err);
+        }
+        return false;
+      }
+
+      default: {
+        console.log('Received unknown message:', request);
+        return 'Unknown event.';
+      }
     }
-  )
+  })
 );
 
 // check for dev/prod env

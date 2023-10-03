@@ -8,6 +8,9 @@ export const getAllMailsOnPage = (): {
   dateRange?: DateRange;
   allMailNodes?: Element[];
 } => {
+
+  // TODO: check for url, only run for selected labels/folder 
+
   //
   // get all mail nodes on current page in the table by email attribute
   const allMailNodes = Array.from(document.querySelectorAll(MAIL_NODES_SELECTOR));

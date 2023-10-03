@@ -85,7 +85,9 @@ export const deleteAllMails = async ({ token, email }: APIHandleParams) => {
       console.log(`✅ batch delete successful, deleted ${msgIds.length} mails`);
       //* end of do...while loop
     } while (nextPageToken !== null);
+    return true;
   } catch (err) {
     console.log('🚀 ~ file: deleteAllMails.ts:86 ~ deleteAllMails ~ err:', err);
+    return false;
   }
 };
