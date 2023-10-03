@@ -4,6 +4,7 @@ import { getSelectedCategory } from '../../utils/getSelectedCategory';
 import { IMessageBody, IMessageEvent } from '../../content.types';
 import { hideHoverCard, showHoverCard } from './hoverCard/assistantHoverCard';
 import { randomId } from '../../utils/randomId';
+import { retryAtIntervals } from '../../utils/retryAtIntervals';
 
 type HandleMouseOverParams = {
   ev: MouseEvent;
@@ -12,7 +13,7 @@ type HandleMouseOverParams = {
   email: string;
 };
 
-// handle on hover
+// handle hover
 // mouse over
 const handleMouseOver = ({ ev, assistantBtnContainer, name, email }: HandleMouseOverParams) => {
   ev.stopPropagation();
@@ -50,11 +51,14 @@ const handleMouseOut = () => {
 };
 
 // mail magic assistant button
-export const embedAssistantBtn = async () => {
+const embedAssistantBtnLogic = async (): Promise<boolean> => {
+  //TODO: run a while loop to check if the emails are found on page or not
+  // if not, then retry it for 3 times with 2 seconds interval
+
   // get all the mails with ids on the page
   const { emails, dateRange, allMailNodes } = getAllMailsOnPage();
 
-  if (emails.length < 1) return;
+  if (emails.length < 1) return false;
 
   // get current folder (anchor ids in url like inbox, spam, all, etc.)
   const currentFolder = geCurrentIdFromURL();
@@ -123,4 +127,10 @@ export const embedAssistantBtn = async () => {
     // on hover out listener
     assistantBtn.addEventListener('mouseout', handleMouseOut);
   }
+  return true;
+};
+
+// embed assistant button with retry logic
+export const embedAssistantBtn = async () => {
+  await retryAtIntervals({ retries: 3, interval: 2000, callback: embedAssistantBtnLogic });
 };

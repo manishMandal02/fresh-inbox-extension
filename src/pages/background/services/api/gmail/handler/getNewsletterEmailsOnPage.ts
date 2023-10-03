@@ -28,8 +28,6 @@ export const getNewsletterEmailsOnPage = async ({
     ${folder === 'all' ? '' : `in:${folder}`}
     `;
 
-    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:35 ~ searchQuery:', searchQuery);
-
     // call to gmail api
     const res = await fetch(
       `https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${searchQuery}&maxResults=${API_MAX_RESULT}`,
@@ -38,8 +36,6 @@ export const getNewsletterEmailsOnPage = async ({
 
     // parse response
     const parsedRes: GetMsgAPIResponseSuccess = await res.json();
-
-    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:41 ~ parsedRes:', parsedRes);
 
     if (!parsedRes.messages) {
       console.log('🙌 No newsletter emails found.');
@@ -58,14 +54,13 @@ export const getNewsletterEmailsOnPage = async ({
       })
       .map(email => email.email);
 
-    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:67 ~ newsletterEmails:', newsletterEmails);
-
     // remove whitelisted emails from newsletter emails
     const whitelistedEmails = await getWhitelistedEmails(token);
 
     if (whitelistedEmails.length > 0) {
       newsletterEmails = newsletterEmails.filter(email => !whitelistedEmails.includes(email));
     }
+    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:66 ~ newsletterEmails:', newsletterEmails);
 
     return newsletterEmails;
   } catch (err) {

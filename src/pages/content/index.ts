@@ -31,17 +31,17 @@ const startApp = async () => {
   if (!isTokenValid) {
     // show auth modal to allow users to give access to gmail
 
-    renderAuthModal({ embedAssistantBtn });
+    renderAuthModal({
+      embedAssistantBtn: async () => {
+        await embedAssistantBtn();
+      },
+    });
   } else {
     embedAssistantBtn();
   }
 };
 
 // TODO: a global error handler to catch any errors, (also add the chrome runtime error method)
-
-//TODO: check if emails were loaded
-// if-not: then wait for 500ms then check again (keep repeating)
-// if-yes: then show the unsubscribe button
 
 chrome.runtime.onMessage.addListener(
   asyncMessageHandler<IMessageBody, string | boolean>(async (request, sender) => {
