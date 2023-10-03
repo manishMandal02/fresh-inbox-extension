@@ -6,7 +6,6 @@ export enum IMessageEvent {
   Render_Auth_Modal = 'renderAuthModal',
   Launch_Auth_Flow = 'launchAuthFLow',
   Disable_MailMagic = 'disableMailMagic',
-  REFRESH_TABLE = 'refreshTable',
   GET_NEWSLETTER_EMAILS = 'getNewsletterEmails',
   GET_UNSUBSCRIBED_EMAILS = 'getUnsubscribedEmails',
   GET_WHITELISTED_EMAILS = 'getWhitelistedEmails',
@@ -30,15 +29,18 @@ export type GmailFolder = 'all' | 'inbox' | 'spam';
 // for checking newsletter emails on page
 export interface DataOnPage {
   emails: EmailId[];
-  category?: string; // ex: general, promotions, transactional, etc.
-  folder?: GmailFolder; // ex: 'inbox' |'spam' | 'all'
+  // ex: general, promotions, transactional, etc.
+  category?: string;
+  // ex: 'inbox' |'spam' | 'all'
+  folder?: GmailFolder;
   dateRange: DateRange;
 }
 
 export interface IMessageBody {
   event: IMessageEvent;
   email?: string;
-  isWhiteListed?: boolean; // to remove the email from the whitelisted emails after unsubscribing (if true)
-  dataOnPage?: DataOnPage; // for getting the newsletter emails on the page
-  shouldRefreshTable?: boolean; // for refreshing table after deleting mails
+  // to remove the email from the whitelisted emails after unsubscribing (if true)
+  isWhiteListed?: boolean;
+  // for getting the newsletter emails on the page
+  dataOnPage?: DataOnPage;
 }

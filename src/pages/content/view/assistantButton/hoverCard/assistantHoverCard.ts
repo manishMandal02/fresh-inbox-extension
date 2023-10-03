@@ -1,3 +1,4 @@
+import { refreshEmailsTable } from '@src/pages/content/utils/refreshEmailsTable';
 import {
   handleUnsubscribeAction,
   handleDeleteAllMailsAction,
@@ -7,6 +8,7 @@ import {
 import { getUnsubscribedEmails } from '../../../utils/getEmailsFromStorage';
 import { addTooltip } from '../../elements/tooltip';
 import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
+import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 
 export interface IHoverCardElements {
   hoverCard: HTMLDivElement;
@@ -133,8 +135,6 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
   // get parent el from id
   const parentEl = document.getElementById(parentElId);
 
-  console.log('🚀 ~ file: assistantHoverCard.ts:137 ~ showHoverCard ~ parentEl:', parentEl);
-
   parentEl.appendChild(hoverCard);
 
   // add text to label
@@ -171,53 +171,68 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
     showButtons([whiteListEmailBtn, unsubscribeBtn, unsubscribeAndDeleteAllMailsBtn]);
 
     // onClick listener to unsubscribe button
-    unsubscribeBtn.addEventListener('click', async () => {
-      hideHoverCard({ parentElId, forceClose: true });
-      await handleUnsubscribeAction({ email });
-    });
+    unsubscribeBtn.addEventListener(
+      'click',
+      asyncHandler(async () => {
+        hideHoverCard({ parentElId, forceClose: true });
+        await handleUnsubscribeAction({ email });
+      })
+    );
 
     // onClick listener to unsubscribe and delete all mails button
-    unsubscribeAndDeleteAllMailsBtn.addEventListener('click', async ev => {
-      ev.stopPropagation();
-      hideHoverCard({ parentElId, forceClose: true });
-      await handleUnsubscribeAndDeleteAction({
-        email,
-        shouldRefreshTable: true,
-      });
-    });
+    unsubscribeAndDeleteAllMailsBtn.addEventListener(
+      'click',
+      asyncHandler(async ev => {
+        ev.stopPropagation();
+        hideHoverCard({ parentElId, forceClose: true });
+        await handleUnsubscribeAndDeleteAction({
+          email,
+          onSuccess: async () => {
+            // refresh the the table
+            await refreshEmailsTable();
+          },
+        });
+      })
+    );
 
     // onClick listener to white list email button
-    whiteListEmailBtn.addEventListener('click', async ev => {
-      ev.stopPropagation();
-      hideHoverCard({ parentElId, forceClose: true });
-      const isSuccess = await handleWhitelistAction({ email });
-      if (isSuccess) {
-        // if success, remove assistant btn from for this email
-        const assistantBtnContainerId = mailMagicGlobalVariables.assistantBtnContainerId;
-        const assistantBtnContainer = document.getElementById(assistantBtnContainerId);
-        if (!assistantBtnContainer) return;
-        const assistantBtn = assistantBtnContainer.getElementsByClassName('mailMagic-assistantBtn');
+    whiteListEmailBtn.addEventListener(
+      'click',
+      asyncHandler(async ev => {
+        ev.stopPropagation();
+        hideHoverCard({ parentElId, forceClose: true });
+        const isSuccess = await handleWhitelistAction({ email });
+        if (isSuccess) {
+          // if success, remove assistant btn from for this email
+          const assistantBtnContainerId = mailMagicGlobalVariables.assistantBtnContainerId;
+          const assistantBtnContainer = document.getElementById(assistantBtnContainerId);
+          if (!assistantBtnContainer) return;
+          const assistantBtn = assistantBtnContainer.getElementsByClassName('mailMagic-assistantBtn');
 
-        // remove assistant btn for for this email
-        if (assistantBtn.length > 0) {
-          assistantBtn[0].remove();
+          // remove assistant btn for for this email
+          if (assistantBtn.length > 0) {
+            assistantBtn[0].remove();
+          }
         }
-      }
-    });
+      })
+    );
   }
 
   // onClick listener to delete all mails button
-  deleteAllMailsBtn.addEventListener('click', async ev => {
-    ev.stopPropagation();
-    hideHoverCard({ parentElId, forceClose: true });
-    console.log(
-      '🚀 ~ file: assistantHoverCard.ts:208 ~ showHoverCard ~ handleDeleteAllMailsAction: 🔵 Event Listener'
-    );
-    await handleDeleteAllMailsAction({
-      email,
-      shouldRefreshTable: true,
-    });
-  });
+  deleteAllMailsBtn.addEventListener(
+    'click',
+    asyncHandler(async ev => {
+      ev.stopPropagation();
+      hideHoverCard({ parentElId, forceClose: true });
+      await handleDeleteAllMailsAction({
+        email,
+        onSuccess: async () => {
+          // refresh the the table
+          await refreshEmailsTable();
+        },
+      });
+    })
+  );
 
   // show card
   hoverCard.style.display = 'flex';
@@ -232,14 +247,14 @@ type HideHoverCardParams = {
 
 export const hideHoverCard = ({ parentElId, forceClose }: HideHoverCardParams) => {
   // if forceClose is true, then close the hover card
-  if (!forceClose) {
-    // if mouse is hovered over the card or assistant button then do nothing
-    if (
-      mailMagicGlobalVariables.isMouseOverHoverCard ||
-      mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn
-    )
-      return;
-  }
+
+  // if mouse is hovered over the card or assistant button then do nothing
+  if (
+    !forceClose &&
+    (mailMagicGlobalVariables.isMouseOverHoverCard ||
+      mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn)
+  )
+    return;
 
   // get hover card el from id
   const hoverCard = document.getElementById('mailMagic-hoverCard');
@@ -248,8 +263,6 @@ export const hideHoverCard = ({ parentElId, forceClose }: HideHoverCardParams) =
 
   // get parent el from id
   const parentEl = document.getElementById(parentElId);
-
-  console.log('🚀 ~ file: assistantHoverCard.ts:215 ~ hideHoverCard ~ parentEl:', parentEl);
 
   if (parentEl?.contains(hoverCard)) {
     // hide the card

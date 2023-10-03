@@ -102,134 +102,73 @@ chrome.runtime.onMessage.addListener(
       }
 
       case IMessageEvent.Unsubscribe: {
-        const res = await unsubscribeEmail({
+        return await unsubscribeEmail({
           token,
           email: request.email,
           isWhiteListed: request.isWhiteListed,
         });
-        return res;
       }
 
       case IMessageEvent.Delete_All_Mails: {
-        const res = await deleteAllMails({ email: request.email, token });
-
-        // refresh the the table,
-        // if the delete all mails request was sent from the assistant button in table
-        if (request.shouldRefreshTable) {
-          await chrome.tabs.sendMessage(activeTabId, { event: IMessageEvent.REFRESH_TABLE });
-        }
-        return res;
+        return await deleteAllMails({ token, email: request.email });
       }
 
       case IMessageEvent.Unsubscribe_And_Delete_All_Mails: {
-        console.log('Received unsubscribeAndDeleteAllMails request for:', request.email);
-        try {
-          await unsubscribeAndDeleteAllMails({
-            email: request.email,
-            token,
-            isWhiteListed: request.isWhiteListed,
-          });
-
-          // refresh the the table,
-          // if the delete all mails request was sent from the assistant button in table
-          if (request.shouldRefreshTable) {
-            await chrome.tabs.sendMessage(activeTabId, { event: IMessageEvent.REFRESH_TABLE });
-          }
-          return true;
-        } catch (err) {
-          console.log(
-            '🚀 ~ file: index.ts:142 ~ asyncMessageHandler<IMessageBody,string|boolean|NewsletterEmails[]> ~ err:',
-            err
-          );
-          return false;
-        }
+        return await unsubscribeAndDeleteAllMails({
+          token,
+          email: request.email,
+          isWhiteListed: request.isWhiteListed,
+        });
       }
 
       case IMessageEvent.GET_NEWSLETTER_EMAILS: {
-        console.log('Received getNewsletterEmails request');
+        const newsletterEmails = await getNewsletterEmails(token);
 
-        try {
-          const newsletterEmails = await getNewsletterEmails(token);
-
-          console.log(
-            '🚀 ~ file: index.ts:130 ~ asyncMessageHandler<IMessageBody,string|boolean|string[]> ~ newsletterEmails:',
-            newsletterEmails
-          );
-
-          if (newsletterEmails.length > 0) {
-            return newsletterEmails;
-          } else {
-            throw new Error('No newsletter emails found');
-          }
-        } catch (err) {
-          console.log('Error getting newsletter emails', err);
+        if (newsletterEmails.length > 0) {
+          return newsletterEmails;
+        } else {
           return [];
         }
       }
-
       // handle whitelist email
       case IMessageEvent.WHITELIST_EMAIL: {
-        console.log('Received WHITELIST_EMAIL request for:', request.email);
         return await whitelistEmail(token, request.email);
       }
 
       // handle check for newsletter emails on page
       case IMessageEvent.GET_NEWSLETTER_EMAILS_ON_PAGE: {
-        console.log('Received CHECK_NEWSLETTER_EMAILS_ON_PAGE request');
-        const res = await getNewsletterEmailsOnPage({ token, dataOnPage: request.dataOnPage });
-        return res;
+        return await getNewsletterEmailsOnPage({ token, dataOnPage: request.dataOnPage });
       }
 
       case IMessageEvent.GET_UNSUBSCRIBED_EMAILS: {
-        console.log('Received GET_UNSUBSCRIBED_EMAILS request');
-        const unsubscribedEmails = await getUnsubscribedEmails(token);
-        return unsubscribedEmails;
+        return await getUnsubscribedEmails(token);
       }
 
       // handle get whitelisted emails
       case IMessageEvent.GET_WHITELISTED_EMAILS: {
-        console.log('Received GET_WHITELISTED_EMAILS request');
-
-        const whitelistedEmails = await getWhitelistedEmails(token);
-        return whitelistedEmails;
+        return await getWhitelistedEmails(token);
       }
 
       // handle re-subscribe
       case IMessageEvent.RE_SUBSCRIBE: {
-        console.log('Received RE_SUBSCRIBE request for ', request.email);
-        try {
-          await resubscribeEmail(token, request.email);
-          return true;
-        } catch (err) {
-          console.log('🚀 ~ file: index.ts:207 ~ err:', err);
-          return false;
-        }
+        return await resubscribeEmail(token, request.email);
       }
 
       case IMessageEvent.Disable_MailMagic: {
         //TODO: disable mail magic
+        // update storage accordingly, think...
         try {
           await clearToken(token);
 
           return true;
-        } catch (err) {
-          console.log('❌ Failed to disable Mail Magic, err:', err);
-        }
+        } catch (err) {}
         return false;
       }
 
       default: {
-        console.log('Received unknown message:', request);
+        logger.info(`Received unknown event in background script: ${request.event}`);
         return 'Unknown event.';
       }
     }
   })
 );
-
-// check for dev/prod env
-
-// chrome.management.get(chrome.runtime.id, function (extensionInfo) {
-//     if (extensionInfo.installType === 'development') {
-//       // perform dev mode action here
-//     }
-// });

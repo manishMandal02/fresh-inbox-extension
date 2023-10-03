@@ -6,10 +6,10 @@
  * @returns a an async fn that calls the callback, wrapped inside a IIFE sync fn
  */
 
-export const asyncHandler = (callback: () => Promise<void>) => {
+export const asyncHandler = <T = MouseEvent>(callback: (ev: T) => Promise<void>) => {
   return () => {
-    (async () => {
-      await callback();
+    (async ev => {
+      await callback(ev);
     })();
   };
 };

@@ -10,7 +10,7 @@ export const logger = {
    * @param msg log message
    * @param fileTrace file trace of the log
    */
-  dev: ({ msg, fileTrace }: Pick<LoggerParams, 'msg' | 'fileTrace'>) => {
+  dev: (msg: string, fileTrace: string) => {
     // no logging if running in prod
     if (mailMagicGlobalVariables.loggerLevel === 'prod') return;
     console.log(`MailMagic:LOGGER:DEV 🛜 ~ ${msg}  \n  ${fileTrace ? `📁 File: ${fileTrace}` : ''}`);

@@ -12,8 +12,14 @@ export const unsubscribeAndDeleteAllMails = async ({
   isWhiteListed,
 }: UnsubscribeAndDeleteAllMailsParams) => {
   // unsubscribe
-  await unsubscribeEmail({ token, email, isWhiteListed });
+  const res1 = await unsubscribeEmail({ token, email, isWhiteListed });
 
   //delete all mails
-  await deleteAllMails({ token, email });
+  const res2 = await deleteAllMails({ token, email });
+
+  if (res1 && res2) {
+    return true;
+  } else {
+    return false;
+  }
 };

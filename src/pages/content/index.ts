@@ -92,27 +92,5 @@ const startApp = async () => {
 
 // TODO: a global error handler to catch any errors, (also add the chrome runtime error method)
 
-chrome.runtime.onMessage.addListener(
-  asyncMessageHandler<IMessageBody, string | boolean>(async (request, sender) => {
-    console.log(
-      '🚀 ~ file: index.ts:130 ~ asyncMessageHandler<IMessageBody,string|boolean> ~ request:',
-      request
-    );
 
-    switch (request.event) {
-      case IMessageEvent.REFRESH_TABLE: {
-        const isRefreshed = await refreshEmailsTable();
 
-        console.log(
-          '🚀 ~ file: index.ts:142 ~ asyncMessageHandler<IMessageBody,string|boolean> ~ isRefreshed:',
-          isRefreshed
-        );
-
-        return isRefreshed;
-      }
-      default: {
-        return 'Unknown Event';
-      }
-    }
-  })
-);

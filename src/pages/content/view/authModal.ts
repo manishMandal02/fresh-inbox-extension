@@ -1,4 +1,6 @@
 import { IMessageEvent } from '../content.types';
+import { asyncHandler } from '../utils/asyncHandler';
+import { logger } from '../utils/logger';
 
 type HandleAuthBntClickParams = {
   ev: MouseEvent;
@@ -26,9 +28,9 @@ const handleDisableBtnClick = async (ev: MouseEvent) => {
   ev.stopPropagation();
   const res = await chrome.runtime.sendMessage({ event: IMessageEvent.Disable_MailMagic });
   if (res) {
-    console.log('✅ Mail Magic has been disabled.');
+    logger.dev('✅ Mail Magic has been disabled', 'authModal.ts:31 ~ handleDisableBtnClick()');
   } else {
-    console.log('❌ Failed to disabled Mail Magic.');
+    logger.dev('❌ Failed to disable Mail Magic', 'authModal.ts:33 ~ handleDisableBtnClick()');
   }
 };
 
@@ -63,9 +65,12 @@ const renderAuthModal = ({ embedAssistantBtn }: RenderAuthModalParams) => {
 
   // add on click lister
   // auth btn
-  authBtn.addEventListener('click', ev => handleAuthBtnClick({ ev, embedAssistantBtn }));
+  authBtn.addEventListener(
+    'click',
+    asyncHandler(ev => handleAuthBtnClick({ ev, embedAssistantBtn }))
+  );
   // disable btn
-  disableMailMagic.addEventListener('click', handleDisableBtnClick);
+  disableMailMagic.addEventListener('click', asyncHandler(handleDisableBtnClick));
 
   modalCard.append(title, errorMsg, authBtn, disableMailMagic);
 
