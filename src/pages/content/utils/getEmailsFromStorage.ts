@@ -1,4 +1,5 @@
 import { IMessageEvent } from '../content.types';
+import { logger } from './logger';
 
 // get list of unsubscribed emails
 export const getUnsubscribedEmails = async (): Promise<string[]> => {
@@ -10,8 +11,12 @@ export const getUnsubscribedEmails = async (): Promise<string[]> => {
     } else {
       throw new Error('❌ Failed to get unsubscribed emails.');
     }
-  } catch (err) {
-    console.log('🚀 ~ file: getEmailsFromStorage.ts:12 ~ getUnsubscribedEmails ~ err:', err);
+  } catch (error) {
+    logger.error({
+      error,
+      msg: 'Failed to get unsubscribe emails',
+      fileTrace: 'content/utils/getEmailsFromStorage.ts:19 ~ getUnsubscribedEmails()',
+    });
     return [];
   }
 };
@@ -26,8 +31,12 @@ export const getWhitelistedEmails = async (): Promise<string[]> => {
     } else {
       throw new Error('❌ Failed to get whitelisted emails.');
     }
-  } catch (err) {
-    console.log('🚀 ~ file: getEmailsFromStorage.ts:41 ~ getWhitelistedEmails ~ err:', err);
+  } catch (error) {
+    logger.error({
+      error,
+      msg: 'Failed to get whitelisted emails',
+      fileTrace: 'content/utils/getEmailsFromStorage.ts:38 ~ getWhitelistedEmails()',
+    });
     return [];
   }
 };

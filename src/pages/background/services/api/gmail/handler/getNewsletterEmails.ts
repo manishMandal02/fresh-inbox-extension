@@ -3,6 +3,7 @@ import { NewsletterEmails } from '@src/pages/background/types/background.types';
 import { removeDuplicateEmails } from '@src/pages/background/utils/removeDuplicateEmails';
 import { getUnsubscribedEmails } from './getUnsubscribedEmails';
 import { getWhitelistedEmails } from './getWhitelistedEmails';
+import { logger } from '@src/pages/background/utils/logger';
 
 type GetSendEmailFromIdsParams = {
   messageIds: string[];
@@ -49,8 +50,6 @@ ${request.method} ${request.path}
   try {
     const res = await fetch(`https://gmail.googleapis.com/batch/gmail/v1`, fetchOptions);
 
-    // console.log('🚀 ~ file: getNewsletterEmails.ts:55 ~ getSenderEmailsFromIds ~ res:', res);
-
     if (res.ok) {
       // Read the response text as multipart/mixed
       const responseText = (await res.text()).toString();
@@ -94,7 +93,12 @@ ${request.method} ${request.path}
       throw new Error(`Batch request failed: err: ${await res.text()}`);
     }
   } catch (error) {
-    console.error('Error making batch request:', error);
+    logger.error({
+      error,
+      msg: 'Error making batch request',
+      fileTrace:
+        'background/services/api/gmail/handler/getNewsletterEmails.ts:102 getSenderEmailsFromIds() catch block',
+    });
   }
 };
 
@@ -118,11 +122,6 @@ export const getNewsletterEmails = async (token: string) => {
   try {
     // do while loop to handle pagination (gmail api has a response limit of 500)
     do {
-      console.log(
-        '🚀 ~ file: getNewsletterEmails.ts:125 ~ getNewsletterEmails ~ nextPageToken: 🏁🏁',
-        nextPageToken
-      );
-
       const queryParams = `maxResults=${API_MAX_RESULT}&q={"unsubscribe" "newsletter"} in:anywhere${
         nextPageToken ? `&pageToken=${nextPageToken}` : ''
       }`;
@@ -134,8 +133,6 @@ export const getNewsletterEmails = async (token: string) => {
 
       const parsedRes = await res.json();
 
-      console.log('🚀 ~ file: getNewsletterEmails.ts:125 ~ getNewsletterEmails ~ parsedRes:', parsedRes);
-
       if (parsedRes.messages && parsedRes.messages.length < 1) throw new Error('No emails found');
 
       // save next page token if present to fetch next batch of messages
@@ -144,11 +141,6 @@ export const getNewsletterEmails = async (token: string) => {
       } else {
         nextPageToken = null;
       }
-
-      console.log(
-        '🚀 ~ file: getNewsletterEmails.ts:145 ~ getNewsletterEmails ~ nextPageToken:',
-        nextPageToken
-      );
 
       // dividing the messageIds into batches ~
       // so we can use the gmail batch api to group multiple requests into on
@@ -159,9 +151,10 @@ export const getNewsletterEmails = async (token: string) => {
         // if last batch is not more than half of batch size then add to previous batch
         batches.push(parsedRes.messages.slice(i, i + BATCH_SIZE).map(msg => msg.id));
       }
-      console.log(
-        '🚀 ~ file: getNewsletterEmails.ts:158 ~ getNewsletterEmails ~ batches.length:',
-        batches.length
+
+      logger.info(
+        `Number of batches to process: ${batches.length}`,
+        'background/services/api/gmail/handler/getNewsletterEmails.ts:170 ~ getNewsletterEmails()'
       );
 
       // process batches to get newsletter emails
@@ -195,19 +188,9 @@ export const getNewsletterEmails = async (token: string) => {
         }
 
         if (filterEmails.length > 0) {
-          console.log(
-            '🚀 ~ file: getNewsletterEmails.ts:207 ~ getNewsletterEmails ~ filterEmails:',
-            filterEmails
-          );
-
           // filter emails already unsubscribed or whitelisted
           const filteredNewsletterEmails = newsletterEmails.filter(
             email => !filterEmails.includes(email.email)
-          );
-
-          console.log(
-            '🚀 ~ file: getNewsletterEmails.ts:221 ~ getNewsletterEmails ~ filteredNewsletterEmails:',
-            filteredNewsletterEmails
           );
 
           // store the filtered emails
@@ -223,15 +206,15 @@ export const getNewsletterEmails = async (token: string) => {
       //end of do-while loop
     } while (nextPageToken !== null && newsletterEmails.length < 100);
 
-    console.log('🚀 ~ file: gmail.ts:404 ~ getNewsletterEmails ~ newsletterEmails:', newsletterEmails);
-
     return newsletterEmails;
 
     //
-  } catch (err) {
-    console.log(
-      '🚀 ~ file: gmail.ts:307 ~ getNewsletterEmails ❌ Failed to get newsletter emails ~ err:',
-      err
-    );
+  } catch (error) {
+    logger.error({
+      error,
+      msg: 'Error while getting newsletter emails',
+      fileTrace:
+        'background/services/api/gmail/handler/getNewsletterEmails.ts:230 getNewsletterEmails() catch block',
+    });
   }
 };

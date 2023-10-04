@@ -1,6 +1,7 @@
 import { FILTER_ACTION, FilterEmails, GmailFilter } from '@src/pages/background/types/background.types';
 import { getEmailsFromFilterQuery } from './getEmailsFromFilterQuery';
 import { MAIL_MAGIC_FILTER_EMAIL } from '@src/pages/background/constants/app.constants';
+import { logger } from '@src/pages/background/utils/logger';
 
 // get  filter by Id
 export const getFilterById = async (token: string, id: string): Promise<FilterEmails | null> => {
@@ -32,8 +33,12 @@ export const getFilterById = async (token: string, id: string): Promise<FilterEm
     emails = emails.filter(email => email !== MAIL_MAGIC_FILTER_EMAIL);
 
     return { emails, filterId: parsedRes.id };
-  } catch (err) {
-    console.log('🚀 ~ file: gmail.ts:25 ~ checkForTrashFilter: ❌ Failed get filters ~ err:', err);
+  } catch (error) {
+    logger.error({
+      error,
+      msg: 'Error getting filter by id',
+      fileTrace: 'background/services/api/gmail/helper/gmailFilters.ts:40 ~ getFilterById() catch block',
+    });
     return null;
   }
 };
@@ -88,12 +93,18 @@ export const createFilter = async ({
 
     const newFilter: GmailFilter = await res.json();
 
-    console.log('🚀 ~ file: gmailFilters.ts:74 ~ newFilter:', newFilter);
+    logger.info(
+      '✅ Successfully created filter',
+      'background/services/api/gmail/helper/gmailFilters.ts:98 ~ createFilter()'
+    );
 
-    console.log(`✅ Successfully created filter`);
     return newFilter.id;
-  } catch (err) {
-    console.log('🚀 ~ file: gmail.ts:126 ~ createFilter ❌ Failed to create filter ~ err:', err);
+  } catch (error) {
+    logger.error({
+      error,
+      msg: 'Error creating filter',
+      fileTrace: 'background/services/api/gmail/helper/gmailFilters.ts:106 ~ createFilter() catch block',
+    });
     return null;
   }
 };
@@ -109,8 +120,16 @@ export const deleteFilter = async (token: string, id: string) => {
   };
   try {
     await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/settings/filters/${id}`, fetchOptions);
-    console.log(`✅ Successfully deleted filter`);
-  } catch (err) {
-    console.log(`❌ ~ file: gmail.ts:110 ~ deleteFilter:Failed to delete filter id:${id} ~ err:`, err);
+
+    logger.info(
+      '✅ Successfully deleted filter',
+      'background/services/api/gmail/helper/gmailFilters.ts:127 ~ deleteFilter()'
+    );
+  } catch (error) {
+    logger.error({
+      error,
+      msg: 'Error deleting filter',
+      fileTrace: 'background/services/api/gmail/helper/gmailFilters.ts:133 ~ deleteFilter() catch block',
+    });
   }
 };

@@ -54,8 +54,6 @@ const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams
     await handleConfirmActionBtnClick(ev, onConfirmClick);
   });
 
-  console.log('🚀 ~ file: confirmModal.ts:56 ~ showConfirmModal ~ confirmAction:', confirmAction);
-
   // disable btn
   cancelAction.addEventListener('click', handleCancelActionBtnClick);
 

@@ -1,6 +1,7 @@
 import { MAIL_NODES_SELECTOR } from '@src/pages/content/constants/app.constants';
 import { DateRange, EmailId } from '../../../content.types';
 import { getDateRangeFromNodes } from '@src/pages/content/view/assistantButton/helper/getDateRangeFromNodes';
+import { logger } from '@src/pages/content/utils/logger';
 
 // get all the mails with ids on the page
 export const getAllMailsOnPage = (): {
@@ -8,15 +9,18 @@ export const getAllMailsOnPage = (): {
   dateRange?: DateRange;
   allMailNodes?: Element[];
 } => {
-
-  // TODO: check for url, only run for selected labels/folder 
+  // TODO: check for url, only run for selected labels/folder
 
   //
   // get all mail nodes on current page in the table by email attribute
   const allMailNodes = Array.from(document.querySelectorAll(MAIL_NODES_SELECTOR));
 
   if (allMailNodes.length < 1) {
-    console.log('❌ No emails (nodes) found on this page.');
+    logger.error({
+      error: new Error('❌ No emails (nodes) found on this page.'),
+      msg: 'No emails (nodes) found on this page.',
+      fileTrace: 'content/view/assistantButton/helper/getAllMailsOnPage.ts:22 ~ getAllMailsOnPage()',
+    });
     return { emails: [] };
   }
 

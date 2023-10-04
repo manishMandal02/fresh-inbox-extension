@@ -5,6 +5,8 @@ import { IMessageBody, IMessageEvent } from '../../content.types';
 import { hideHoverCard, showHoverCard } from './hoverCard/assistantHoverCard';
 import { randomId } from '../../utils/randomId';
 import { retryAtIntervals } from '../../utils/retryAtIntervals';
+import { asyncHandler } from '../../utils/asyncHandler';
+import { logger } from '../../utils/logger';
 
 type HandleMouseOverParams = {
   ev: MouseEvent;
@@ -25,22 +27,21 @@ const handleMouseOver = ({ ev, assistantBtnContainer, name, email }: HandleMouse
   assistantBtnContainer.id = mailMagicGlobalVariables.assistantBtnContainerId;
   //
   mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn = true;
-  setTimeout(() => {
-    (async () => {
+  setTimeout(
+    asyncHandler(async () => {
       await showHoverCard({
         name,
         email,
         parentElId: mailMagicGlobalVariables.assistantBtnContainerId,
       });
-    })();
-  }, 300);
+    }),
+    300
+  );
 };
 
 //  mouse out
 const handleMouseOut = () => {
   const { assistantBtnContainerId } = mailMagicGlobalVariables;
-
-  console.log('🚀 ~ file: index.ts:38 ~ handleMouseOut ~ assistantBtnContainerId:', assistantBtnContainerId);
 
   setTimeout(() => {
     hideHoverCard({
@@ -52,9 +53,6 @@ const handleMouseOut = () => {
 
 // mail magic assistant button
 const embedAssistantBtnLogic = async (): Promise<boolean> => {
-  //TODO: run a while loop to check if the emails are found on page or not
-  // if not, then retry it for 3 times with 2 seconds interval
-
   // get all the mails with ids on the page
   const { emails, dateRange, allMailNodes } = getAllMailsOnPage();
 
@@ -86,7 +84,10 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
 
   // do nothing if no newsletter emails found
   if (newsletterEmails.length < 1) {
-    console.log('🙌 No newsletter emails found on this page.');
+    logger.info(
+      '🙌 No newsletter emails found on this page.',
+      'content/view/assistantButton/index.ts:90 ~ embedAssistantBtnLogic()'
+    );
     return;
   }
 
@@ -99,7 +100,6 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
     //* skips the iteration if the current email is not a newsletter email
     // assistant button won't be rendered
     if (!newsletterEmails.includes(emailAttr)) {
-      console.log('🚀 ~ file: index.ts:112 ~ getAllMails ~ SKIP ⏩:', emailAttr);
       continue;
     }
 
@@ -132,5 +132,7 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
 
 // embed assistant button with retry logic
 export const embedAssistantBtn = async () => {
+  // retry to check if the emails are found on page or not
+  // if not, then retry it for 3 times with 2 seconds interval
   await retryAtIntervals({ retries: 3, interval: 2000, callback: embedAssistantBtnLogic });
 };

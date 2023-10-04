@@ -1,3 +1,4 @@
+import { asyncHandler } from '../../utils/asyncHandler';
 import { limitCharLength } from '../../utils/limitCharLength';
 import wait from '../../utils/wait';
 import { getLoadingSpinner } from './loadingSpinner';
@@ -78,12 +79,13 @@ const showSnackbar = ({ title, email, isError }: SnackbarParams) => {
   document.body.appendChild(container);
 
   // remove snackbar after 3.5s
-  setTimeout(() => {
-    (async () => {
+  setTimeout(
+    asyncHandler(async () => {
       container.classList.remove('show');
       await wait(500);
       container.remove();
-    })();
-  }, 3500);
+    }),
+    3500
+  );
 };
 export { showLoadingSnackbar, hideLoadingSnackbar, showSnackbar };

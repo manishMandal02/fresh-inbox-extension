@@ -3,6 +3,7 @@ import { MAIL_MAGIC_FILTER_EMAIL, storageKeys } from '@src/pages/background/cons
 import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';
 import { getFilterById } from '../helper/gmailFilters';
 import { getFilterId } from '../helper/getFilterId';
+import { logger } from '@src/pages/background/utils/logger';
 
 export const getWhitelistedEmails = async (token: string): Promise<string[]> => {
   let filterEmails = [];
@@ -31,9 +32,14 @@ export const getWhitelistedEmails = async (token: string): Promise<string[]> => 
       }
     }
     return filterEmails;
-  } catch (err) {
-    console.log('🚀 ~ file: getWhitelistedEmails.ts:26 ~ getWhitelistedEmails ~ err:', err);
+  } catch (error) {
+    logger.error({
+      error,
+      msg: 'Error getting whitelisted emails',
+      fileTrace:
+        'background/services/api/gmail/handler/getWhitelistedEmails.ts:74 ~ getWhitelistedEmails() catch block',
+    });
     return filterEmails;
-    //TODO: send to global error handler
+
   }
 };

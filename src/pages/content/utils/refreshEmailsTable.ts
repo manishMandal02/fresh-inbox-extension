@@ -1,5 +1,7 @@
 //* the refresh button doesn't have a consistent selector to target it
 
+import { logger } from './logger';
+
 export const refreshEmailsTable = () => {
   const refreshBtnSelectors = ['div[title="Refresh"]', '[aria-label="Refresh"]', '[data-tooltip="Refresh"]'];
   return new Promise<string>((resolve, reject) => {
@@ -8,13 +10,16 @@ export const refreshEmailsTable = () => {
     for (const selector of refreshBtnSelectors) {
       if (document.querySelector(selector)) {
         refreshBtn = document.querySelector(selector) as HTMLDivElement;
-        console.log('🚀 ~ file: refreshEmailsTable.ts:10 ~ refreshEmailsTable ~ selector:', selector);
         break;
       }
     }
 
     if (!refreshBtn) {
-      console.log('❌ refresh button not found');
+      logger.error({
+        error: new Error('❌ refresh button not found'),
+        msg: 'Refresh button not found',
+        fileTrace: 'content/utils/refreshEmailsTable.ts:19 ~ refreshEmailsTable()',
+      });
       reject(' refresh button not found');
     }
     //* simulate a click event on refresh table button

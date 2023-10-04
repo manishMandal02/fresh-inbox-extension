@@ -4,6 +4,7 @@ import { createFilter } from './gmailFilters';
 import { getMailMagicFilter } from './getMailMagicFilter';
 import { getSyncStorageByKey } from '@src/pages/background/utils/getStorageByKey';
 import { checkFilterIdExists } from './checkFilterIdExists';
+import { logger } from '@src/pages/background/utils/logger';
 
 type GetFilterIdParams = {
   token: string;
@@ -22,12 +23,9 @@ export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): P
 
     // check if filter exists in gmail filters
     if (filterId && (await checkFilterIdExists(token, filterId))) {
-      console.log('🚀 ~  Filter found in storage: 🔵');
-
       return filterId;
     } else {
       // search for whitelist/inbox filter in users filter (gmail-api)
-      console.log('🚀 ~  Filter not found in storage: 🔵');
 
       const res = await getMailMagicFilter({ token, filterAction });
       if (res?.filterId) {
@@ -50,8 +48,11 @@ export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): P
         throw new Error('❌ Failed to create new filter');
       }
     }
-  } catch (err) {
-    console.log('🚀 ~ file: getFilterId.ts:21 ~ getFilterId ~ err:', err);
-    //TODO: send global error handler
+  } catch (error) {
+    logger.error({
+      error,
+      msg: 'Error getting filter id',
+      fileTrace: 'background/services/api/gmail/helper/getFilterId.ts:55 ~ getFilterId() catch block',
+    });
   }
 };

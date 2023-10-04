@@ -1,3 +1,4 @@
+import { logger } from './../../../../utils/logger';
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
 import { APIHandleParams, GetMsgAPIResponseSuccess } from '@src/pages/background/types/background.types';
 
@@ -22,8 +23,12 @@ const batchDeleteMails = async (token: string, ids: string[]) => {
   try {
     // batch delete emails
     await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/batchModify', fetchOptions);
-  } catch (err) {
-    console.log('🚀 ~ file: deleteAllMails.ts:23 ~ batchDeleteEmails: Failed to batch delete: ~ err:', err);
+  } catch (error) {
+    logger.error({
+      error,
+      msg: 'Error while batch deleting emails',
+      fileTrace: 'background/services/api/gmail/handler/deeAllMails.ts:30 batchDeleteMails() catch block',
+    });
   }
 };
 
@@ -65,10 +70,11 @@ export const deleteAllMails = async ({ token, email }: APIHandleParams) => {
       }
 
       if (parsedRes.messages.length < 1) {
-        return;
+        logger.info(
+          'No messages found',
+          'background/services/api/gmail/handler/deleteAllMails.ts:73 ~ deleteAllMails()'
+        );
       }
-
-      console.log('🚀 ~ file: deleteAllMails.ts:23 ~ deleteAllMails ~ messages:', parsedRes);
 
       // save next page token if present to fetch next batch of messages
       if (parsedRes.nextPageToken) {
@@ -82,12 +88,19 @@ export const deleteAllMails = async ({ token, email }: APIHandleParams) => {
 
       // batch delete messages/emails
       await batchDeleteMails(token, msgIds);
-      console.log(`✅ batch delete successful, deleted ${msgIds.length} mails`);
+      logger.info(
+        '✅ Batch delete successful, deleted ${msgIds.length} mails',
+        'background/services/api/gmail/handler/deleteAllMails.ts:93 ~ deleteAllMails()'
+      );
       //* end of do...while loop
     } while (nextPageToken !== null);
     return true;
-  } catch (err) {
-    console.log('🚀 ~ file: deleteAllMails.ts:86 ~ deleteAllMails ~ err:', err);
+  } catch (error) {
+    logger.error({
+      error,
+      msg: 'Error while batch deleting emails',
+      fileTrace: 'background/services/api/gmail/handler/deeAllMails.ts:30 batchDeleteMails() catch block',
+    });
     return false;
   }
 };

@@ -1,3 +1,4 @@
+import { error } from 'console';
 import {
   handleUnsubscribeAction,
   handleDeleteAllMailsAction,
@@ -10,6 +11,7 @@ import { addTooltip } from '../../elements/tooltip';
 import { renderTextMsg } from '../../elements/text';
 import wait from '@src/pages/content/utils/wait';
 import { tableHeader } from '../../elements/tableHeader';
+import { logger } from '@src/pages/content/utils/logger';
 
 const WhitelistedEmailsTabActionBtnContainer = 'whitelistedEmailsTab-actionBtn';
 
@@ -44,10 +46,6 @@ const refreshTable = async () => {
     // get whitelisted emails list
     const whitelistedEmails = await getWhitelistedEmails();
 
-    console.log(
-      '🚀 ~ file: whitelistedEmails.ts:116 ~ renderWhitelistedEmailsTab ~ whitelistedEmails:',
-      whitelistedEmails
-    );
     // remove loading spinner
     spinner.remove();
     loadingMsg.remove();
@@ -71,13 +69,17 @@ const refreshTable = async () => {
       // render table with data
       await renderTable(whitelistedEmails);
     }
-  } catch (err) {
+  } catch (error) {
     spinner.remove();
     loadingMsg.remove();
     // show error message
     const errorMsg = renderTextMsg('failed to get whitelisted emails list');
     whitelistedEmailsTabContainer.appendChild(errorMsg);
-    console.log('🚀 ~ file: whitelistedEmails.ts:112 ~ renderWhitelistedEmailsTab ~ err:', err);
+    logger.error({
+      error: error,
+      msg: 'Failed to get whitelisted emails',
+      fileTrace: 'content/view/settingsModal/tabs/whitelistedEmail.ts:81 ~ refreshTable()',
+    });
   }
 };
 

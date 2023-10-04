@@ -14,6 +14,7 @@ import { renderTextMsg } from '../../elements/text';
 import { IMessageEvent } from '@src/pages/content/content.types';
 import wait from '@src/pages/content/utils/wait';
 import { getLocalStorageByKey } from '@src/pages/content/utils/getLocalStorageByKey';
+import { logger } from '@src/pages/content/utils/logger';
 
 const NewsletterTabActionBtnContainer = 'newsletterTab-actionBtn';
 
@@ -62,7 +63,6 @@ const refreshTable = async ({ shouldRefreshData }: { shouldRefreshData?: boolean
 
       // save newsletter data to chrome local storage
       await chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: newsletterEmails });
-      console.log('✅ saved to chrome local storage');
     };
 
     if (shouldRefreshData) {
@@ -76,15 +76,11 @@ const refreshTable = async ({ shouldRefreshData }: { shouldRefreshData?: boolean
       if (storageData) {
         // data already exists, use it
         newsletterEmails = storageData;
-
-        console.log('🚀 ~ file: newsletter.ts:78 ~ refreshTable ~ storageData:', storageData);
       } else {
         // data doesn't exist, fetch from background script
         await getNewsletterEmailsFromBackground();
       }
     }
-
-    console.log('🚀 ~ file: newsletter.ts:216 ~ renderNewsletterTab ~ newsletterEmails:', newsletterEmails);
 
     // remove loading spinner
     spinner.remove();
@@ -111,13 +107,17 @@ const refreshTable = async ({ shouldRefreshData }: { shouldRefreshData?: boolean
   } catch (err) {
     // remove loading spinner
     spinner.remove();
-    console.log('🚀 ~ file: newsletter.ts:51 ~ renderNewsletterTab ~ err):', err);
     // show a error message: saying something went wrong
-    const msg = renderTextMsg('❌ Something went wrong, Failed to get newsletter');
+    const msg = renderTextMsg('❌ Something went wrong, Failed to get newsletter emails');
     // append msg to table
     const tableContainer = document.getElementById('newsletterTab-table');
     if (!tableContainer) return;
     tableContainer.appendChild(msg);
+    logger.error({
+      error: new Error('Failed to get newsletter emails'),
+      msg: 'Failed to get newsletter emails',
+      fileTrace: 'content/view/settingsModal/tabs/newsletter.ts:119 ~ refreshTable()',
+    });
   }
 };
 

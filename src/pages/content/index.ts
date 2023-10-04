@@ -1,8 +1,7 @@
 import { embedAssistantBtn } from './view/assistantButton';
 import { renderAuthModal } from './view/authModal';
-import { IMessageBody, IMessageEvent } from './content.types';
-import { asyncMessageHandler } from './utils/asyncMessageHandler';
-import { refreshEmailsTable } from './utils/refreshEmailsTable';
+import { IMessageEvent } from './content.types';
+
 import { mailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
 import { asyncHandler } from './utils/asyncHandler';
 import { logger } from './utils/logger';
@@ -26,8 +25,6 @@ window.mailMagicGlobalVariables = {
 
 //🔥 User flow
 
-//TODO: wait 1s
-
 // execute this script after 2.5s
 setTimeout(
   asyncHandler(async () => {
@@ -38,6 +35,8 @@ setTimeout(
   // run the app
   1000
 );
+
+//TODO: wait 1s
 
 //TODO: check if Mail Magic is enabled or not?, if not then show nothing (the setting btn can represent status icon/color)
 
@@ -60,10 +59,7 @@ const startApp = async () => {
   // check for auth token (user access)
   const isTokenValid = await chrome.runtime.sendMessage({ event: IMessageEvent.Check_Auth_Token });
 
-  logger.dev({
-    msg: `Is auth token present: ${isTokenValid}`,
-    fileTrace: `contend/index.ts:60 ~ startApp()`,
-  });
+  logger.dev(`Is auth token present: ${isTokenValid}`, `contend/index.ts:60 ~ startApp()`);
 
   // render mail magic status button (top button)
   mailMagicSettingsBtn();
@@ -91,6 +87,3 @@ const startApp = async () => {
 // TODO: create a utility logger for background scripts
 
 // TODO: a global error handler to catch any errors, (also add the chrome runtime error method)
-
-
-

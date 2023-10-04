@@ -3,9 +3,9 @@ import { FILTER_ACTION, NewsletterEmails } from '@src/pages/background/types/bac
 import { getFilterId } from '../helper/getFilterId';
 import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';
 import { addEmailToFilter } from '../helper/updateFilter';
+import { logger } from '@src/pages/background/utils/logger';
 
 // TODO: check if already whitelisted, if yes do nothing (update storage)
-
 //
 export const whitelistEmail = async (token: string, email: string) => {
   try {
@@ -32,9 +32,12 @@ export const whitelistEmail = async (token: string, email: string) => {
     } else {
       throw new Error('❌ Failed to get whitelist filter');
     }
-  } catch (err) {
-    console.log('🚀 ~ file: whitelistEmail.ts:12 ~ ❌ Failed to whitelist email ~ err:', err);
-    //TODO: send to global error handler
+  } catch (error) {
+    logger.error({
+      error,
+      msg: 'Error whitelisting email',
+      fileTrace: 'background/services/api/gmail/handler/whitelistEmail.ts:40 ~ whitelistEmail() catch block',
+    });
     return false;
   }
 };

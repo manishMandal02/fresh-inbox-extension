@@ -11,8 +11,6 @@ export const retryAtIntervals = async ({ retries, interval, callback }: RetryAtI
   let retry = 0;
 
   while (retry < retries) {
-    console.log('🚀 ~ file: retryAtIntervals.ts:15 ~ retryAtIntervals ~ 🔵 retrying for: ', retry);
-
     const isSuccess = await callback();
     if (isSuccess) {
       break;
@@ -20,5 +18,4 @@ export const retryAtIntervals = async ({ retries, interval, callback }: RetryAtI
     await wait(interval);
     retry++;
   }
-  console.log(`✅ Retried for ${retry} times`);
 };

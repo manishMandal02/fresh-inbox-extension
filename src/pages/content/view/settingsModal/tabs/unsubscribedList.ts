@@ -7,6 +7,7 @@ import { addTooltip } from '../../elements/tooltip';
 import { renderTextMsg } from '../../elements/text';
 import wait from '@src/pages/content/utils/wait';
 import { tableHeader } from '../../elements/tableHeader';
+import { logger } from '@src/pages/content/utils/logger';
 
 const UnsubscribedTabContainerId = 'settingsModal-unsubscribedListTab';
 
@@ -41,10 +42,6 @@ const refreshTable = async () => {
     // get unsubscribed emails list
     const unsubscribedEmails = await getUnsubscribedEmails();
 
-    console.log(
-      '🚀 ~ file: unsubscribedList.ts:116 ~ renderUnsubscribedListTab ~ unsubscribedEmails:',
-      unsubscribedEmails
-    );
     // remove loading spinner
     spinner.remove();
     loadingMsg.remove();
@@ -68,8 +65,12 @@ const refreshTable = async () => {
       // render table with data
       await renderTable(unsubscribedEmails);
     }
-  } catch (err) {
-    console.log('🚀 ~ file: unsubscribedList.ts:112 ~ renderUnsubscribedListTab ~ err:', err);
+  } catch (error) {
+    logger.error({
+      error: new Error('Failed to get unsubscribed emails'),
+      msg: 'Failed to get unsubscribed emails',
+      fileTrace: 'content/view/settingsModal/tabs/unsubscribedList.ts:72 ~ refreshTable()',
+    });
   }
 };
 

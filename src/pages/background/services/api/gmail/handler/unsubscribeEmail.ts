@@ -8,6 +8,7 @@ import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKe
 import { getFilterId } from '../helper/getFilterId';
 import { getWhitelistedEmails } from './getWhitelistedEmails';
 import { addEmailToFilter, removeEmailFromFilter } from '../helper/updateFilter';
+import { logger } from '@src/pages/content/utils/logger';
 
 type UnsubscribeEmailParams = {
   isWhiteListed: boolean;
@@ -60,9 +61,13 @@ export const unsubscribeEmail = async ({ token, email, isWhiteListed }: Unsubscr
     } else {
       throw new Error('❌ Failed to get unsubscribe filter id');
     }
-  } catch (err) {
-    console.log('🚀 ~ file: gmail.ts:152 ~ unsubscribe ❌ Failed to unsubscribe ~ err:', err);
-    //TODO: send to global error handler
+  } catch (error) {
+    logger.error({
+      error,
+      msg: `Error unsubscribing email: ${email}`,
+      fileTrace:
+        'background/services/api/gmail/handler/unsubscribeEmail.ts:69 ~ unsubscribeEmail() catch block',
+    });
     return false;
   }
 };

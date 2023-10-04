@@ -1,6 +1,7 @@
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
 import { DataOnPage, GetMsgAPIResponseSuccess } from '@src/pages/background/types/background.types';
 import { getWhitelistedEmails } from './getWhitelistedEmails';
+import { logger } from '@src/pages/background/utils/logger';
 
 type GetNewsletterEmailsOnPageParams = {
   token: string;
@@ -38,7 +39,10 @@ export const getNewsletterEmailsOnPage = async ({
     const parsedRes: GetMsgAPIResponseSuccess = await res.json();
 
     if (!parsedRes.messages) {
-      console.log('🙌 No newsletter emails found.');
+      logger.info(
+        '🙌 No newsletter emails found.',
+        'background/services/api/gmail/handler/getNewsletterEmailsOnPage.ts:44 ~ getNewsletterEmailsOnPage()'
+      );
       return [];
     }
 
@@ -60,12 +64,15 @@ export const getNewsletterEmailsOnPage = async ({
     if (whitelistedEmails.length > 0) {
       newsletterEmails = newsletterEmails.filter(email => !whitelistedEmails.includes(email));
     }
-    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:66 ~ newsletterEmails:', newsletterEmails);
 
     return newsletterEmails;
-  } catch (err) {
-    console.log('🚀 ~ file: checkIfNewsletterEmails.ts:14 ~ getNewsletterEmailsOnPage ~ err:', err);
-    //TODO: send to global error handler
+  } catch (error) {
+    logger.error({
+      error,
+      msg: 'Error getting newsletter emails on page',
+      fileTrace:
+        'background/services/api/gmail/handler/getNewsletterEmailsOnPage.ts:74 ~ getNewsletterEmailsOnPage() catch block',
+    });
     return [];
   }
 };

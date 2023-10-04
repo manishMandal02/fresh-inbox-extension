@@ -18,23 +18,24 @@ const handleUnsubscribeEmail = async (email: string, isWhiteListed = false): Pro
       isWhiteListed,
       event: IMessageEvent.Unsubscribe,
     });
+    if (!res) {
+      throw new Error('Failed to unsubscribe');
+    }
     // hide snackbar
     hideLoadingSnackbar();
     // show success snackbar
     showSnackbar({ title: 'Successfully unsubscribed from', email });
-    if (!res) {
-      throw new Error('Failed to resubscribe');
-    }
+
     return res;
   } catch (error) {
     hideLoadingSnackbar();
+    // show error snackbar
+    showSnackbar({ title: 'Failed to unsubscribe from', email: '', isError: true });
     logger.error({
       error,
       msg: 'Failed to unsubscribe email',
-      fileTrace: 'emailActions.ts:34 ~ handleUnsubscribeEmail()',
+      fileTrace: 'content/utils/emailActions.ts:37 ~ handleUnsubscribeEmail()',
     });
-    // show error snackbar
-    showSnackbar({ title: 'Failed to unsubscribe from', email: '', isError: true });
     return false;
   }
 };
@@ -52,16 +53,24 @@ const handleDeleteAllMails = async (email: string): Promise<boolean> => {
       event: IMessageEvent.Delete_All_Mails,
       email,
     });
+    if (!res) {
+      throw new Error('Failed to delete mails');
+    }
     // hide snackbar
     hideLoadingSnackbar();
     // show success snackbar
     showSnackbar({ title: 'Successfully deleted all mails from', email });
+
     return res;
-  } catch (err) {
+  } catch (error) {
     hideLoadingSnackbar();
-    console.log('🚀 ~ file: emailActions.ts: ~ handleDeleteAllMails ~ err:', err);
     // show error snackbar
     showSnackbar({ title: 'Failed to delete all mails from', email: '', isError: true });
+    logger.error({
+      error,
+      msg: 'Failed to delete all mails',
+      fileTrace: 'content/utils/emailActions.ts:72 ~ handleDeleteAllMails()',
+    });
     return false;
   }
 };
@@ -90,16 +99,24 @@ const handleUnsubscribeAndDeleteAllMails = async ({
       isWhitelisted,
     });
 
+    if (!res) {
+      throw new Error('Failed to unsubscribe & delete mails');
+    }
+
     // hide snackbar
     hideLoadingSnackbar();
     // show success snackbar
     showSnackbar({ title: 'Successfully unsubscribed & deleted all mails from', email });
     return res;
-  } catch (err) {
+  } catch (error) {
     hideLoadingSnackbar();
     // show error snackbar
     showSnackbar({ title: 'Failed to unsubscribed & delete all mails from', email: '', isError: true });
-    console.log('🚀 ~ file: emailActions.ts: ~ handleDeleteAllMails ~ err:', err);
+    logger.error({
+      error,
+      msg: 'Failed to unsubscribed & delete mails',
+      fileTrace: 'content/utils/emailActions.ts:118 ~ handleUnsubscribeAndDeleteAllMails()',
+    });
     return false;
   }
 };
@@ -116,20 +133,25 @@ const handleReSubscribeEmail = async (email: string): Promise<boolean> => {
     // send message/event to background script
     const res = await chrome.runtime.sendMessage({ event: IMessageEvent.RE_SUBSCRIBE, email });
 
+    if (!res) {
+      throw new Error('Failed to resubscribe');
+    }
     // hide snackbar
     hideLoadingSnackbar();
     // show success snackbar
     showSnackbar({ title: 'Successfully reSubscribed to', email });
-    if (!res) {
-      throw new Error('Failed to resubscribe');
-    }
+
     return res;
-  } catch (err) {
+  } catch (error) {
     hideLoadingSnackbar();
     // show error snackbar
     showSnackbar({ title: 'Failed to reSubscribe', email: '', isError: true });
 
-    console.log('🚀 ~ file: emailActions.ts: ~ handleDeleteAllMails ~ err:', err);
+    logger.error({
+      error,
+      msg: 'Failed to reSubscribe',
+      fileTrace: 'content/utils/emailActions.ts:153 ~ handleReSubscribeEmail()',
+    });
     return false;
   }
 };
@@ -145,17 +167,23 @@ const handleWhitelistEmail = async (email: string): Promise<boolean> => {
 
     // send message/event to background script
     const res = await chrome.runtime.sendMessage({ event: IMessageEvent.WHITELIST_EMAIL, email });
-
+    if (!res) {
+      throw new Error('Failed to whitelist email');
+    }
     // hide snackbar
     hideLoadingSnackbar();
     // show success snackbar
     showSnackbar({ title: 'Successfully whitelisted', email });
     return res;
-  } catch (err) {
+  } catch (error) {
     hideLoadingSnackbar();
     // show error snackbar
     showSnackbar({ title: 'Failed to whitelist ', email: '', isError: true });
-    console.log('🚀 ~ file: emailActions.ts: ~ handleWhitelist ~ err:', err);
+    logger.error({
+      error,
+      msg: 'Failed to whitelist',
+      fileTrace: 'content/utils/emailActions.ts:185 ~ handleWhitelistEmail()',
+    });
     return false;
   }
 };
@@ -196,8 +224,6 @@ export const handleUnsubscribeAction = async ({
   // render loading spinner if btnContainerId is provided
   if (btnContainerId) {
     const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
-
-    console.log('🚀 ~ file: emailActions.ts:187 ~ hideLoadingSpinner:', hideLoadingSpinner);
 
     const isSuccess = await handleUnsubscribeEmail(email, isWhitelisted);
 
