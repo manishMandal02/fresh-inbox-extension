@@ -29,6 +29,8 @@ logger.info('🏁 background script loaded');
 let userInfo: IUserInfo = null;
 let token = '';
 
+// TODO: update auth flow to handle multiple users
+
 const isAuthTokenValid = async () => {
   try {
     userInfo = await getUserInfo();
@@ -39,6 +41,8 @@ const isAuthTokenValid = async () => {
 
       if (res.token) {
         token = res.token;
+        logger.info(`Is auth token present: ✅ true`, `background/index.ts:42 ~ isAuthTokenValid()`);
+
         return true;
       } else {
         token = '';
@@ -60,8 +64,6 @@ const isAuthTokenValid = async () => {
 // initialize sync storage items
 // create a custom trash filter for mail-magic to add unsubscribed emails
 // create whitelist filter as well
-
-//TODO: handle errors globally for each switch case at the handler level not in the (switch) case statement
 
 // listen for messages from content script - email action events
 chrome.runtime.onMessage.addListener(

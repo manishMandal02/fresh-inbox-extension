@@ -1,13 +1,15 @@
 import { asyncHandler } from '../utils/asyncHandler';
 import { showSettingsModal } from './settingsModal';
 
-export const mailMagicSettingsBtn = () => {
+export const embedMailMagicSettingsBtn = () => {
   //main button
   const btn = document.createElement('button');
 
   btn.id = 'mailMagicSettingsBtn';
 
   btn.innerText = 'Mail Magic';
+
+  console.log('🚀 ~ file: mailMagicSettingsBtn.ts:12 ~ embedMailMagicSettingsBtn ~ btn:', btn);
 
   btn.addEventListener(
     'click',
