@@ -1,20 +1,29 @@
-import { IMessageEvent } from '../content.types';
-import { refreshEmailsTable } from '../utils/refreshEmailsTable';
+import { asyncHandler } from '../utils/asyncHandler';
 import { showSettingsModal } from './settingsModal';
 
 export const mailMagicSettingsBtn = () => {
   //main button
   const btn = document.createElement('button');
 
-  btn.classList.add('mailMagicSettingsBtn');
+  btn.id = 'mailMagicSettingsBtn';
 
   btn.innerText = 'Mail Magic';
 
-  btn.addEventListener('click', async () => {
-    // await chrome.runtime.sendMessage({ event: IMessageEvent.Disable_MailMagic });
-    // await refreshEmailsTable();
-    showSettingsModal();
-  });
+  btn.addEventListener(
+    'click',
+    asyncHandler(async () => {
+      showSettingsModal();
+    })
+  );
 
   document.body.appendChild(btn);
+};
+
+//TODO: finish this function
+export const updateMailMagicSettingsBtn = () => {
+  //main button
+  const settingsBtn = document.getElementById('.mailMagicSettingsBtn');
+  if (!settingsBtn) return;
+
+  settingsBtn.classList.add('inactive');
 };

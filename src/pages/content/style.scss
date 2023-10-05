@@ -495,7 +495,6 @@ $text-mid-gray: #505050;
     left: 25%;
     overflow: hidden;
     z-index: 10000;
-
     // children
     #settingsModal-topContainer {
       display: flex;
@@ -558,7 +557,6 @@ $text-mid-gray: #505050;
         }
       }
     }
-
     #settingsModal-tabBodyContainer {
       display: flex;
       width: 96%;
@@ -569,11 +567,11 @@ $text-mid-gray: #505050;
       padding: 3px 3px;
       background-color: $light-gray-color;
       overflow: hidden;
-
       // children (tabs)
       #settingsModal-authTab {
         display: flex;
       }
+
       #settingsModal-aboutTab {
         padding: 10px;
         display: flex;
@@ -620,6 +618,7 @@ $text-mid-gray: #505050;
           cursor: pointer;
         }
       }
+
       #settingsModal-newsletterTab {
         width: 100%;
         display: flex;
@@ -743,6 +742,7 @@ $text-mid-gray: #505050;
           }
         }
       }
+
       #settingsModal-unsubscribedListTab {
         width: 100%;
         display: flex;
@@ -819,6 +819,7 @@ $text-mid-gray: #505050;
           }
         }
       }
+
       #settingsModal-whitelistedEmailsTab {
         width: 100%;
         display: flex;

@@ -1,4 +1,4 @@
-import { IMessageBody, IMessageEvent } from '../content.types';
+import { IMessageBody, IMessageEvent } from '../types/content.types';
 import { showConfirmModal } from '../view/elements/confirmModal';
 import { hideLoadingSnackbar, showLoadingSnackbar, showSnackbar } from '../view/elements/snackbar';
 import { logger } from './logger';

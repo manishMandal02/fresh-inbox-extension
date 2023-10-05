@@ -1,10 +1,13 @@
 import { embedAssistantBtn } from './view/assistantButton';
 import { renderAuthModal } from './view/authModal';
-import { IMessageEvent } from './content.types';
+import { IMessageEvent } from './types/content.types';
 
-import { mailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
 import { asyncHandler } from './utils/asyncHandler';
 import { logger } from './utils/logger';
+import wait from './utils/wait';
+import { getEmailIdFromPage } from './utils/getEmailIdFromPage';
+import { getSyncStorageByKey } from './utils/getStorageByKey';
+import { mailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
 
 // content script global variables type
 export interface MailMagicGlobalVariables {
@@ -25,24 +28,31 @@ window.mailMagicGlobalVariables = {
 
 //🔥 User flow
 
-// execute this script after 2.5s
-setTimeout(
-  asyncHandler(async () => {
-    await startApp();
-  }),
-  // check if mail magic is enabled or not
-  // const isEnabled = await chrome.storage.sync.get('isMailMagicEnabled');
-  // run the app
-  1000
-);
+let userEmailId = null;
 
-//TODO: wait 1s
+// main fn (starting point)
+(async () => {
+  // wait 2s
+  await wait(2000);
+  // query for user email id on page
+  userEmailId = await getEmailIdFromPage();
 
-//TODO: check if Mail Magic is enabled or not?, if not then show nothing (the setting btn can represent status icon/color)
+  console.log('🚀 ~ file: index.ts:51 ~ userEmailId:', userEmailId);
 
-//TODO: wait 2s
+  //TODO: check if Mail Magic is enabled or not
+  const appStatus = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
+  if (!appStatus) {
+    //wait for 1s
+    await wait(1000);
+    //TODO: if not then show nothing (the setting btn can represent status icon/color)
+    mailMagicSettingsBtn();
+    return;
+  }
+  // wait 2s
+  await wait(2000);
 
-//TODO: check if the Gmail web app is loaded fully, (check for logo or some important btn) with retry mechanism
+  // check if the Gmail web app is loaded fully, (check for logo or some important btn) with retry mechanism
+})();
 
 //TODO: Is user Authed or not? (handle multiple user) send email id from the content script
 // save multiple auth token associated with the user based on the email id
@@ -62,7 +72,6 @@ const startApp = async () => {
   logger.dev(`Is auth token present: ${isTokenValid}`, `contend/index.ts:60 ~ startApp()`);
 
   // render mail magic status button (top button)
-  mailMagicSettingsBtn();
   if (!isTokenValid) {
     // show auth modal to allow users to give access to gmail
 

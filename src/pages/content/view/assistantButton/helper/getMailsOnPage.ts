@@ -1,5 +1,5 @@
 import { MAIL_NODES_SELECTOR } from '@src/pages/content/constants/app.constants';
-import { DateRange, EmailId } from '../../../content.types';
+import { DateRange, EmailId } from '../../../types/content.types';
 import { getDateRangeFromNodes } from '@src/pages/content/view/assistantButton/helper/getDateRangeFromNodes';
 import { logger } from '@src/pages/content/utils/logger';
 

@@ -1,7 +1,7 @@
 import { getAllMailsOnPage } from '@src/pages/content/view/assistantButton/helper/getMailsOnPage';
 import { geCurrentIdFromURL } from '../../utils/geCurrentIdFromURL';
 import { getSelectedCategory } from '../../utils/getSelectedCategory';
-import { IMessageBody, IMessageEvent } from '../../content.types';
+import { IMessageBody, IMessageEvent } from '../../types/content.types';
 import { hideHoverCard, showHoverCard } from './hoverCard/assistantHoverCard';
 import { randomId } from '../../utils/randomId';
 import { retryAtIntervals } from '../../utils/retryAtIntervals';
@@ -88,7 +88,7 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
       '🙌 No newsletter emails found on this page.',
       'content/view/assistantButton/index.ts:90 ~ embedAssistantBtnLogic()'
     );
-    return;
+    return false;
   }
 
   // loop through all mail nodes to embed assistant button
@@ -134,5 +134,5 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
 export const embedAssistantBtn = async () => {
   // retry to check if the emails are found on page or not
   // if not, then retry it for 3 times with 2 seconds interval
-  await retryAtIntervals({ retries: 3, interval: 2000, callback: embedAssistantBtnLogic });
+  await retryAtIntervals<boolean>({ retries: 3, interval: 2000, callback: embedAssistantBtnLogic });
 };

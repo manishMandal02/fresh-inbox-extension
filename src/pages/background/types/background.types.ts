@@ -3,15 +3,15 @@ export enum IMessageEvent {
   Delete_All_Mails = 'deleteAllMails',
   Unsubscribe_And_Delete_All_Mails = 'unsubscribeAndDeleteAllMails',
   Check_Auth_Token = 'checkAuthToken',
-  Render_Auth_Modal = 'renderAuthModal',
   Launch_Auth_Flow = 'launchAuthFLow',
-  Disable_MailMagic = 'disableMailMagic',
+  DISABLE_MAIL_MAGIC = 'disableMailMagic',
   GET_NEWSLETTER_EMAILS = 'getNewsletterEmails',
   GET_UNSUBSCRIBED_EMAILS = 'getUnsubscribedEmails',
   GET_WHITELISTED_EMAILS = 'getWhitelistedEmails',
   GET_NEWSLETTER_EMAILS_ON_PAGE = 'getNewsletterEmailsOnPage',
   RE_SUBSCRIBE = 'reSubscribe',
   WHITELIST_EMAIL = 'whitelistEmail',
+  GET_APP_STATUS = 'getAppStatus',
 }
 
 export enum FILTER_ACTION {

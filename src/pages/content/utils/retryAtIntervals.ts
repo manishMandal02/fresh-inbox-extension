@@ -1,21 +1,33 @@
+import { logger } from './logger';
 import wait from './wait';
 
-type RetryAtIntervalParams = {
+interface RetryAtIntervalParams<T> {
   retries: number;
   interval: number;
-  callback: () => Promise<boolean>;
-};
+  callback: () => Promise<T>;
+}
 
 // retry a logic for certain interval with certain number of retries until it succeeds
-export const retryAtIntervals = async ({ retries, interval, callback }: RetryAtIntervalParams) => {
+export const retryAtIntervals = async <T>({ retries, interval, callback }: RetryAtIntervalParams<T>) => {
   let retry = 0;
+  try {
+    while (retry < retries) {
+      const success = await callback();
 
-  while (retry < retries) {
-    const isSuccess = await callback();
-    if (isSuccess) {
-      break;
+      console.log('🚀 ~ file: retryAtIntervals.ts:17 ~ retryAtIntervals ~ success:', success);
+
+      if (success) {
+        return success;
+      }
+      await wait(interval);
+      retry++;
     }
-    await wait(interval);
-    retry++;
+  } catch (error) {
+    logger.error({
+      error,
+      msg: `error in retryAtIntervals for ${callback}`,
+      fileTrace: 'content/utils/retryAtIntervals.ts:18 ~ retryAtIntervals()',
+    });
+    return null;
   }
 };

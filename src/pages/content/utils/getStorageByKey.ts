@@ -11,3 +11,12 @@ export const getLocalStorageByKey = async <T>(key: StorageKey): Promise<T> => {
     return null;
   }
 };
+export const getSyncStorageByKey = async <T>(key: StorageKey): Promise<T> => {
+  const syncStorage = await chrome.storage.sync.get(key);
+
+  if (syncStorage && syncStorage[key]) {
+    return syncStorage[key];
+  } else {
+    return null;
+  }
+};

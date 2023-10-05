@@ -8,7 +8,7 @@ import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKe
 import { getFilterId } from '../helper/getFilterId';
 import { getWhitelistedEmails } from './getWhitelistedEmails';
 import { addEmailToFilter, removeEmailFromFilter } from '../helper/updateFilter';
-import { logger } from '@src/pages/content/utils/logger';
+import { logger } from '@src/pages/background/utils/logger';
 
 type UnsubscribeEmailParams = {
   isWhiteListed: boolean;

@@ -1,4 +1,4 @@
-import { logger } from '@src/pages/content/utils/logger';
+import { logger } from '@src/pages/background/utils/logger';
 import { getFilterById } from './gmailFilters';
 
 // check if filter id exists of not

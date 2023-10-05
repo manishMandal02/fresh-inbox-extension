@@ -1,4 +1,4 @@
-import { IMessageEvent } from '../content.types';
+import { IMessageEvent } from '../types/content.types';
 import { asyncHandler } from '../utils/asyncHandler';
 import { logger } from '../utils/logger';
 
@@ -26,7 +26,7 @@ const handleAuthBtnClick = async ({ ev, embedAssistantBtn }: HandleAuthBntClickP
 
 const handleDisableBtnClick = async (ev: MouseEvent) => {
   ev.stopPropagation();
-  const res = await chrome.runtime.sendMessage({ event: IMessageEvent.Disable_MailMagic });
+  const res = await chrome.runtime.sendMessage({ event: IMessageEvent.DISABLE_MAIL_MAGIC });
   if (res) {
     logger.dev('✅ Mail Magic has been disabled', 'authModal.ts:31 ~ handleDisableBtnClick()');
   } else {

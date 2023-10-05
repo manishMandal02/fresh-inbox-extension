@@ -28,7 +28,6 @@ logger.info('🏁 background script loaded');
 // background service global variable
 let userInfo: IUserInfo = null;
 let token = '';
-let activeTabId = 0;
 
 const isAuthTokenValid = async () => {
   try {
@@ -57,22 +56,6 @@ const isAuthTokenValid = async () => {
   return false;
 };
 
-// get current tab id
-const setActiveTabId = async () => {
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-    if (!tab.id) throw new Error('No active tab found');
-
-    activeTabId = tab.id;
-  } catch (error) {
-    logger.error({
-      error,
-      msg: `Failed to get active tab id`,
-      fileTrace: 'background/index.ts:71 ~ setActiveTabId()',
-    });
-  }
-};
-
 //TODO: on app install
 // initialize sync storage items
 // create a custom trash filter for mail-magic to add unsubscribed emails
@@ -84,9 +67,9 @@ const setActiveTabId = async () => {
 chrome.runtime.onMessage.addListener(
   asyncMessageHandler<IMessageBody, string | boolean | NewsletterEmails[] | string[]>(async request => {
     logger.info(`received event: ${request.event}`);
+    // switch case
     switch (request.event) {
       case IMessageEvent.Check_Auth_Token: {
-        await setActiveTabId();
         return isAuthTokenValid();
       }
 
@@ -130,6 +113,7 @@ chrome.runtime.onMessage.addListener(
           return [];
         }
       }
+
       // handle whitelist email
       case IMessageEvent.WHITELIST_EMAIL: {
         return await whitelistEmail(token, request.email);
@@ -154,7 +138,7 @@ chrome.runtime.onMessage.addListener(
         return await resubscribeEmail(token, request.email);
       }
 
-      case IMessageEvent.Disable_MailMagic: {
+      case IMessageEvent.DISABLE_MAIL_MAGIC: {
         //TODO: disable mail magic
         // update storage accordingly, think...
         try {

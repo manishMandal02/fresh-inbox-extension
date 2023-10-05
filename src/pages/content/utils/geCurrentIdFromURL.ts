@@ -1,6 +1,6 @@
 // get active id (#inbox or #spam) from url
 
-import { GmailFolder } from '../content.types';
+import { GmailFolder } from '../types/content.types';
 
 export const geCurrentIdFromURL = (): GmailFolder => {
   let currentId = location.href.split('#')[1];

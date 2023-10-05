@@ -11,9 +11,9 @@ import { randomId } from '@src/pages/content/utils/randomId';
 import { addTooltip } from '../../elements/tooltip';
 import { getLoadingSpinner } from '../../elements/loadingSpinner';
 import { renderTextMsg } from '../../elements/text';
-import { IMessageEvent } from '@src/pages/content/content.types';
+import { IMessageEvent } from '@src/pages/content/types/content.types';
 import wait from '@src/pages/content/utils/wait';
-import { getLocalStorageByKey } from '@src/pages/content/utils/getLocalStorageByKey';
+import { getLocalStorageByKey } from '@src/pages/content/utils/getStorageByKey';
 import { logger } from '@src/pages/content/utils/logger';
 
 const NewsletterTabActionBtnContainer = 'newsletterTab-actionBtn';
