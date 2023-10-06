@@ -34,10 +34,15 @@ let token = '';
 const isAuthTokenValid = async () => {
   try {
     userInfo = await getUserInfo();
+
+    console.log('🚀 ~ file: index.ts:38 ~ isAuthTokenValid ~ userInfo:', userInfo);
+
     if (userInfo.userId) {
       logger.info(`userID: ${userInfo.userId}`);
 
       const res = await getAuthToken(userInfo.userId);
+
+      console.log('🚀 ~ file: index.ts:45 ~ isAuthTokenValid ~ res:', res);
 
       if (res.token) {
         token = res.token;
@@ -72,7 +77,8 @@ chrome.runtime.onMessage.addListener(
     // switch case
     switch (request.event) {
       case IMessageEvent.Check_Auth_Token: {
-        return isAuthTokenValid();
+        await launchGoogleAuthFlow('12');
+        return false;
       }
 
       case IMessageEvent.Launch_Auth_Flow: {

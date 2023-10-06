@@ -35,18 +35,18 @@ let userEmailId = null;
   // query for user email id on page
   userEmailId = await getEmailIdFromPage();
 
+  console.log('🚀 ~ file: index.ts:38 ~ userEmailId:', userEmailId);
+
   // check if Mail Magic is enabled or not
   const appStatus = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
 
-  console.log('🚀 ~ file: index.ts:43 ~ appStatus:', appStatus);
-
-  if (!appStatus) {
-    //wait for 1s
-    await wait(1000);
-    //TODO: if not then show nothing (the setting btn can represent status icon/color)
-    embedMailMagicSettingsBtn();
-    return;
-  }
+  // if (!appStatus) {
+  //   //wait for 1s
+  //   await wait(1000);
+  //   //TODO: if not then show nothing (the setting btn can represent status icon/color)
+  //   embedMailMagicSettingsBtn();
+  //   return;
+  // }
 
   // TODO: update auth flow to handle multiple users
 
