@@ -11,6 +11,7 @@ import { embedMailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
 export interface MailMagicGlobalVariables {
   assistantBtnContainerId: string;
   isMouseOverHoverCard: boolean;
+  userEmail: string;
   isMouseOverMailMagicAssistantBtn: boolean;
   loggerLevel: 'dev' | 'prod';
 }
@@ -20,6 +21,7 @@ window.mailMagicGlobalVariables = {
   assistantBtnContainerId: '',
   isMouseOverHoverCard: false,
   isMouseOverMailMagicAssistantBtn: false,
+  userEmail: '',
   //TODO: change it back to prod during deployment
   loggerLevel: 'dev',
 };
@@ -33,25 +35,26 @@ let userEmailId = null;
   // wait 2s
   await wait(2000);
   // query for user email id on page
-  userEmailId = await getEmailIdFromPage();
-
-  console.log('🚀 ~ file: index.ts:38 ~ userEmailId:', userEmailId);
+  mailMagicGlobalVariables.userEmail = await getEmailIdFromPage();
 
   // check if Mail Magic is enabled or not
   const appStatus = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
 
-  // if (!appStatus) {
-  //   //wait for 1s
-  //   await wait(1000);
-  //   //TODO: if not then show nothing (the setting btn can represent status icon/color)
-  //   embedMailMagicSettingsBtn();
-  //   return;
-  // }
-
-  // TODO: update auth flow to handle multiple users
+  if (!appStatus) {
+    //wait for 1s
+    await wait(1000);
+    //TODO: if not then show nothing (the setting btn can represent status icon/color)
+    embedMailMagicSettingsBtn();
+    return;
+  }
 
   // is user Authed or not? (handle multiple user) send email id from the content script
-  const isTokenValid = await chrome.runtime.sendMessage({ event: IMessageEvent.Check_Auth_Token });
+  const isTokenValid = await chrome.runtime.sendMessage({
+    event: IMessageEvent.Check_Auth_Token,
+    email: mailMagicGlobalVariables.userEmail,
+  });
+
+  console.log('🚀 ~ file: index.ts:62 ~ isTokenValid:', isTokenValid);
 
   if (!isTokenValid) {
     // if auth token is not present

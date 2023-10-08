@@ -1,7 +1,7 @@
 import reloadOnUpdate from 'virtual:reload-on-update-in-background-script';
 import { IMessageBody, IMessageEvent, IUserInfo, NewsletterEmails } from './types/background.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
-import { clearToken, getAuthToken, getUserInfo, launchGoogleAuthFlow } from './services/auth';
+import { logoutUser, getAuthToken, getUserInfo, launchGoogleAuthFlow } from './services/auth';
 import {
   deleteAllMails,
   getNewsletterEmails,
@@ -26,44 +26,9 @@ reloadOnUpdate('pages/content/style.scss');
 logger.info('🏁 background script loaded');
 
 // background service global variable
-let userInfo: IUserInfo = null;
 let token = '';
 
 // TODO: update auth flow to handle multiple users
-
-const isAuthTokenValid = async () => {
-  try {
-    userInfo = await getUserInfo();
-
-    console.log('🚀 ~ file: index.ts:38 ~ isAuthTokenValid ~ userInfo:', userInfo);
-
-    if (userInfo.userId) {
-      logger.info(`userID: ${userInfo.userId}`);
-
-      const res = await getAuthToken(userInfo.userId);
-
-      console.log('🚀 ~ file: index.ts:45 ~ isAuthTokenValid ~ res:', res);
-
-      if (res.token) {
-        token = res.token;
-        logger.info(`Is auth token present: ✅ true`, `background/index.ts:42 ~ isAuthTokenValid()`);
-
-        return true;
-      } else {
-        token = '';
-        return false;
-      }
-    }
-  } catch (error) {
-    logger.error({
-      error,
-      msg: `Failed to validate get user info & user token `,
-      fileTrace: 'background/index.ts:53 ~ isAuthTokenValid()',
-    });
-    return false;
-  }
-  return false;
-};
 
 //TODO: on app install
 // initialize sync storage items
@@ -77,15 +42,23 @@ chrome.runtime.onMessage.addListener(
     // switch case
     switch (request.event) {
       case IMessageEvent.Check_Auth_Token: {
-        await launchGoogleAuthFlow('12');
-        return false;
+        const res = await getAuthToken(request.email);
+
+        console.log('🚀 ~ file: index.ts:47 ~ res:', res);
+
+        if (res) {
+          token = res;
+          return true;
+        } else {
+          return false;
+        }
       }
 
       case IMessageEvent.Launch_Auth_Flow: {
-        const res = await launchGoogleAuthFlow(userInfo.userId);
+        const res = await launchGoogleAuthFlow(request.email);
 
-        if (res.token) {
-          token = res.token;
+        if (res) {
+          token = res;
           return true;
         } else {
           return false;
@@ -150,7 +123,7 @@ chrome.runtime.onMessage.addListener(
         //TODO: disable mail magic
         // update storage accordingly, think...
         try {
-          await clearToken(token);
+          await logoutUser(token);
 
           return true;
         } catch (err) {}

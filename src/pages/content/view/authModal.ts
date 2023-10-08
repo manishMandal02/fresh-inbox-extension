@@ -6,7 +6,10 @@ import { embedAssistantBtn } from './assistantButton';
 const handleAuthBtnClick = async ev => {
   ev.stopPropagation();
 
-  const res = await chrome.runtime.sendMessage({ event: IMessageEvent.Launch_Auth_Flow });
+  const res = await chrome.runtime.sendMessage({
+    event: IMessageEvent.Launch_Auth_Flow,
+    email: mailMagicGlobalVariables.userEmail,
+  });
   if (res) {
     // success: close the modal
     removeAuthModal();

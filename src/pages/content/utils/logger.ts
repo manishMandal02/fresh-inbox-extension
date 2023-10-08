@@ -21,8 +21,8 @@ export const logger = {
    * @param msg log message
    * @param fileTrace file trace of the log
    */
-  info: (msg: string, fileTrace: string) => {
-    console.log(`MailMagic:LOGGER:INFO ℹ️ ~ ${msg}  \n  ${fileTrace ? `📁 File: ${fileTrace}` : ''}`);
+  info: (msg: string, _fileTrace: string) => {
+    console.log(`MailMagic:LOGGER:INFO ℹ️ ~ ${msg}`);
   },
 
   /**
