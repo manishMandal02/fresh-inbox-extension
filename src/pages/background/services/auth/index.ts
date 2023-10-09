@@ -10,7 +10,12 @@ const googleAuth = async (email: string, interactive: boolean): Promise<string |
   // let nonce = Math.random().toString(36).substring(2, 15);
   const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
 
-  authUrl.searchParams.set('client_id', CLIENT_ID);
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+
+  //TODO: testing env variables
+  console.log('🚀 ~ file: index.ts:15 ~ googleAuth ~ clientId:', clientId);
+
+  authUrl.searchParams.set('client_id', clientId);
   authUrl.searchParams.set('redirect_uri', redirectUri);
   authUrl.searchParams.set('response_type', 'token');
   authUrl.searchParams.set('scope', AUTH_SCOPE);

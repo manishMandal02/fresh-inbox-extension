@@ -1,9 +1,9 @@
 export enum IMessageEvent {
-  Unsubscribe = 'unsubscribe',
-  Delete_All_Mails = 'deleteAllMails',
-  Unsubscribe_And_Delete_All_Mails = 'unsubscribeAndDeleteAllMails',
-  Check_Auth_Token = 'checkAuthToken',
-  Launch_Auth_Flow = 'launchAuthFLow',
+  UNSUBSCRIBE = 'unsubscribe',
+  DELETE_ALL_MAILS = 'deleteAllMails',
+  UNSUBSCRIBE_AND_DELETE_MAILS = 'unsubscribeAndDeleteAllMails',
+  CHECK_AUTH_TOKEN = 'checkAuthToken',
+  LAUNCH_AUTH_FLOW = 'launchAuthFLow',
   DISABLE_MAIL_MAGIC = 'disableMailMagic',
   GET_NEWSLETTER_EMAILS = 'getNewsletterEmails',
   GET_UNSUBSCRIBED_EMAILS = 'getUnsubscribedEmails',
@@ -12,6 +12,7 @@ export enum IMessageEvent {
   RE_SUBSCRIBE = 'reSubscribe',
   WHITELIST_EMAIL = 'whitelistEmail',
   GET_APP_STATUS = 'getAppStatus',
+  CHECKS_AFTER_AUTH = 'checksAfterAuth',
 }
 
 export enum FILTER_ACTION {

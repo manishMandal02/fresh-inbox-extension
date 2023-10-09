@@ -16,7 +16,7 @@ const handleUnsubscribeEmail = async (email: string, isWhiteListed = false): Pro
     const res = await chrome.runtime.sendMessage<IMessageBody>({
       email,
       isWhiteListed,
-      event: IMessageEvent.Unsubscribe,
+      event: IMessageEvent.UNSUBSCRIBE,
     });
     if (!res) {
       throw new Error('Failed to unsubscribe');
@@ -50,7 +50,7 @@ const handleDeleteAllMails = async (email: string): Promise<boolean> => {
     });
     // send message/event to background script
     const res = await chrome.runtime.sendMessage({
-      event: IMessageEvent.Delete_All_Mails,
+      event: IMessageEvent.DELETE_ALL_MAILS,
       email,
     });
     if (!res) {
@@ -94,7 +94,7 @@ const handleUnsubscribeAndDeleteAllMails = async ({
 
     // send message/event to background script
     const res = await chrome.runtime.sendMessage({
-      event: IMessageEvent.Unsubscribe_And_Delete_All_Mails,
+      event: IMessageEvent.UNSUBSCRIBE_AND_DELETE_MAILS,
       email,
       isWhitelisted,
     });

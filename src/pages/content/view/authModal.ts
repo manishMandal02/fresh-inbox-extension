@@ -7,7 +7,7 @@ const handleAuthBtnClick = async ev => {
   ev.stopPropagation();
 
   const res = await chrome.runtime.sendMessage({
-    event: IMessageEvent.Launch_Auth_Flow,
+    event: IMessageEvent.LAUNCH_AUTH_FLOW,
     email: mailMagicGlobalVariables.userEmail,
   });
   if (res) {
@@ -15,7 +15,10 @@ const handleAuthBtnClick = async ev => {
     removeAuthModal();
     // embed assistant button
     await embedAssistantBtn();
-    // add Mail Magic main buttons
+    // checks after auth success
+    await chrome.runtime.sendMessage({
+      event: IMessageEvent.CHECKS_AFTER_AUTH,
+    });
   } else {
     // failed auth: show error message
     const errorMsg = document.getElementById('authModal-errorMsg');

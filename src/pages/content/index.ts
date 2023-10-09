@@ -26,10 +26,6 @@ window.mailMagicGlobalVariables = {
   loggerLevel: 'dev',
 };
 
-//🔥 User flow
-
-let userEmailId = null;
-
 // 🏁 main fn (starting point)
 (async () => {
   // wait 2s
@@ -50,7 +46,7 @@ let userEmailId = null;
 
   // is user Authed or not? (handle multiple user) send email id from the content script
   const isTokenValid = await chrome.runtime.sendMessage({
-    event: IMessageEvent.Check_Auth_Token,
+    event: IMessageEvent.CHECK_AUTH_TOKEN,
     email: mailMagicGlobalVariables.userEmail,
   });
 
