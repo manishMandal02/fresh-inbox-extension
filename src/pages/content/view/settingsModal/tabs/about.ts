@@ -1,5 +1,6 @@
 import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 import { disableApp } from '@src/pages/content/utils/disableApp';
+import { hideSettingsModal } from '..';
 
 const renderAboutTab = (parentContainer: HTMLElement) => {
   // about tab container
@@ -39,9 +40,9 @@ const renderAboutTab = (parentContainer: HTMLElement) => {
 
   disableBtn.addEventListener(
     'click',
-    asyncHandler(async ev => {
-      ev.stopPropagation();
+    asyncHandler(async () => {
       await disableApp();
+      hideSettingsModal();
     })
   );
 };

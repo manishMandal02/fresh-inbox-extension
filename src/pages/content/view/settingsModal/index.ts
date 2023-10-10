@@ -13,7 +13,7 @@ type ActiveTab = 'about' | 'newsletter' | 'unsubscribedList' | 'whitelistedEmail
 
 let activeTab: ActiveTab = 'about';
 
-const showSettingsModal = () => {
+const renderSettingsModal = () => {
   // modal elements
   const modalContainer = document.createElement('div');
   const backdrop = document.createElement('div');
@@ -188,4 +188,4 @@ const hideSettingsModal = () => {
   modalCard.remove();
 };
 
-export { showSettingsModal };
+export { renderSettingsModal, hideSettingsModal };

@@ -10,7 +10,7 @@ import {
 } from './services/api/gmail/handler';
 import { getUnsubscribedEmails } from './services/api/gmail/handler/getUnsubscribedEmails';
 import { getWhitelistedEmails } from './services/api/gmail/handler/getWhitelistedEmails';
-import { whitelistEmail } from './services/api/gmail/handler/whitelisteEmail';
+import { whitelistEmail } from './services/api/gmail/handler/whitelistEmail';
 import { resubscribeEmail } from './services/api/gmail/handler/resubscribeEmail';
 import { getNewsletterEmailsOnPage } from './services/api/gmail/handler/getNewsletterEmailsOnPage';
 import { logger } from './utils/logger';
@@ -63,7 +63,7 @@ const initializeStorage = async () => {
   }
 };
 
-// check if fresh inbox custom filter exists, if not create it
+// check if app custom filter exists, if not create it
 const checkFreshInboxFilters = async () => {
   try {
     const promises = [
@@ -72,6 +72,9 @@ const checkFreshInboxFilters = async () => {
       // whitelist filter
       getFilterId({ token, filterAction: FILTER_ACTION.INBOX }),
     ];
+
+    // wait for all promises to resolve
+    // throw error if any of the promises reject to catch in the catch block
     await Promise.all(promises.map(promise => promise.catch(err => err)));
     return true;
   } catch (error) {
@@ -85,10 +88,12 @@ const checkFreshInboxFilters = async () => {
 };
 
 // extension install event listener
-chrome.runtime.onInstalled.addListener(async ({ reason }) => {
-  if (reason === 'install') {
-    await initializeStorage();
-  }
+chrome.runtime.onInstalled.addListener(({ reason }) => {
+  (async () => {
+    if (reason === 'install') {
+      await initializeStorage();
+    }
+  })();
 });
 
 // listen for messages from content script - email action events
@@ -98,7 +103,7 @@ chrome.runtime.onMessage.addListener(
     // switch case
     switch (request.event) {
       case IMessageEvent.CHECK_AUTH_TOKEN: {
-        const res = await getAuthToken(request.email);
+        const res = await getAuthToken(request.email, request.clientId);
 
         if (res) {
           token = res;
@@ -109,7 +114,7 @@ chrome.runtime.onMessage.addListener(
       }
 
       case IMessageEvent.LAUNCH_AUTH_FLOW: {
-        const res = await launchGoogleAuthFlow(request.email);
+        const res = await launchGoogleAuthFlow(request.email, request.clientId);
 
         if (res) {
           token = res;
@@ -120,20 +125,17 @@ chrome.runtime.onMessage.addListener(
       }
 
       case IMessageEvent.CHECKS_AFTER_AUTH: {
-        // enable fresh inbox if disabled (after successful auth)
-
+        // enable app if disabled (after successful auth)
         const isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
         if (!isAppEnabled) {
           // enable app
           await chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: true });
         }
 
-        // check fresh inbox custom filters
-        const res = await checkFreshInboxFilters();
-
-        return res;
+        // check app (fresh inbox) custom filters
+        return await checkFreshInboxFilters();
       }
-
+      // unsubscribe email
       case IMessageEvent.UNSUBSCRIBE: {
         return await unsubscribeEmail({
           token,
@@ -142,10 +144,12 @@ chrome.runtime.onMessage.addListener(
         });
       }
 
+      // delete all mails
       case IMessageEvent.DELETE_ALL_MAILS: {
         return await deleteAllMails({ token, email: request.email });
       }
 
+      // unsubscribe and delete all mails
       case IMessageEvent.UNSUBSCRIBE_AND_DELETE_MAILS: {
         return await unsubscribeAndDeleteAllMails({
           token,
@@ -154,6 +158,7 @@ chrome.runtime.onMessage.addListener(
         });
       }
 
+      // get all newsletter emails
       case IMessageEvent.GET_NEWSLETTER_EMAILS: {
         const newsletterEmails = await getNewsletterEmails(token);
 
@@ -188,13 +193,9 @@ chrome.runtime.onMessage.addListener(
         return await resubscribeEmail(token, request.email);
       }
 
+      // disable app
       case IMessageEvent.DISABLE_FRESH_INBOX: {
-        try {
-          await logoutUser(token);
-
-          return true;
-        } catch (err) {}
-        return false;
+        return await logoutUser(token);
       }
 
       default: {

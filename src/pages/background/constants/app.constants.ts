@@ -1,11 +1,8 @@
-// dummy email used to tag/identify  filters created by fresh inbox
+// dummy email used to tag/identify  filters created by app (fresh inbox
 export const FRESH_INBOX_FILTER_EMAIL = 'filter@getfreshinbox.com';
 
 // max number of results returned from the gmail api
 export const API_MAX_RESULT = 500;
-
-// google client id (for google auth)
-export const CLIENT_ID = '145716100092-ivrvur7d0s0bugdgq4ueinf646q8ih7b.apps.googleusercontent.com';
 
 // scopes for google auth
 // https://mail.google.com :- to get emails/message from users gmail account

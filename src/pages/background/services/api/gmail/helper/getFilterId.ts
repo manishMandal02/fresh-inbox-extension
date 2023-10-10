@@ -28,6 +28,7 @@ export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): P
       // search for whitelist/inbox filter in users filter (gmail-api)
 
       const res = await getFreshInboxFilter({ token, filterAction });
+
       if (res?.filterId) {
         // save to sync storage
         await chrome.storage.sync.set({ [storageKey]: res.filterId });

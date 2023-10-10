@@ -1,4 +1,3 @@
-import { error } from 'console';
 import {
   FILTER_ACTION,
   FilterEmails,
@@ -9,7 +8,7 @@ import { getEmailsFromFilterQuery } from './getEmailsFromFilterQuery';
 import { FRESH_INBOX_FILTER_EMAIL } from '@src/pages/background/constants/app.constants';
 import { logger } from '@src/pages/background/utils/logger';
 
-// check if filter is mail fresh inbox filter (TRASH or INBOX filter created by fresh inbox)
+// check if filter is app filter (TRASH or INBOX filter created by fresh inbox)
 
 const isFreshInboxFilter = (filter: GmailFilter, filterAction: FILTER_ACTION): boolean => {
   const labelId = filterAction === FILTER_ACTION.TRASH ? 'TRASH' : 'SPAM';
@@ -56,16 +55,15 @@ export const getFreshInboxFilter = async ({
     let emails: string[] = [];
 
     for (const filter of parsedRes.filter) {
-      if (isFreshInboxFilter(filter, filterAction)) {
-        // get emails from the filter criteria
-        const queryEmails = getEmailsFromFilterQuery(filter.criteria.query);
+      if (!isFreshInboxFilter(filter, filterAction)) continue;
+      // get emails from the filter criteria
+      const queryEmails = getEmailsFromFilterQuery(filter.criteria.query);
 
-        if (queryEmails.includes(FRESH_INBOX_FILTER_EMAIL)) {
-          filterId = filter.id;
-          emails = queryEmails;
-          // stop the loop
-          break;
-        }
+      if (queryEmails.includes(FRESH_INBOX_FILTER_EMAIL)) {
+        filterId = filter.id;
+        emails = queryEmails;
+        // stop the loop
+        break;
       }
     }
     if (filterId) {
@@ -74,12 +72,12 @@ export const getFreshInboxFilter = async ({
         emails,
       };
     } else {
-      throw new Error('Fresh Inbox filter not found');
+      throw new Error('App filter not found');
     }
   } catch (error) {
     logger.error({
       error,
-      msg: 'Error finding fresh inbox filter',
+      msg: 'Error finding app filter',
       fileTrace:
         'background/services/api/gmail/helper/getFreshInboxFilter.ts:85 ~ getFreshInboxFilter() catch block',
     });

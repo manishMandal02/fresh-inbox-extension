@@ -4,14 +4,9 @@ import { logger } from '../../utils/logger';
 export const USER_ACCESS_DENIED = 'The user did not approve access.';
 
 // custom google OAuth2 flow
-const googleAuth = async (email: string, interactive: boolean): Promise<string | null> => {
+const googleAuth = async (email: string, clientId: string, interactive: boolean): Promise<string | null> => {
   const redirectUri = `https://${chrome.runtime.id}.chromiumapp.org/`;
   const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-
-  //TODO: testing env variables
-  console.log('🚀 ~ file: index.ts:15 ~ googleAuth ~ clientId:', clientId);
 
   authUrl.searchParams.set('client_id', clientId);
   authUrl.searchParams.set('redirect_uri', redirectUri);
@@ -19,9 +14,10 @@ const googleAuth = async (email: string, interactive: boolean): Promise<string |
   authUrl.searchParams.set('scope', AUTH_SCOPE);
   authUrl.searchParams.set('login_hint', email);
   try {
+    if (!clientId) throw new Error('No client id found.');
     const responseURL = (await chrome.identity.launchWebAuthFlow({
-      url: authUrl.href,
       interactive,
+      url: authUrl.href,
       //@ts-ignore
       abortOnLoadForNonInteractive: false,
       timeoutMsForNonInteractive: 3000,
@@ -29,7 +25,7 @@ const googleAuth = async (email: string, interactive: boolean): Promise<string |
 
     if (!responseURL && typeof responseURL !== 'string') throw new Error('Failed to complete auth.');
 
-    const token = (responseURL as string).split('#')[1]?.split('=')[1];
+    const token = (responseURL as string).split('#')[1]?.split('=')[1].split('&')[0];
 
     if (!token) throw new Error('Token not found.');
 
@@ -46,41 +42,46 @@ const googleAuth = async (email: string, interactive: boolean): Promise<string |
 };
 
 // launches google auth flow for user to grant permission to their gmail
-export const launchGoogleAuthFlow = async (email: string): Promise<string | null> => {
-  const token = await googleAuth(email, true);
-  return token;
-};
+export const launchGoogleAuthFlow = async (email: string, clientId: string): Promise<string | null> =>
+  await googleAuth(email, clientId, true);
 
 // get token for already auth'ed user
-export const getAuthToken = async (email: string): Promise<string | null> => {
-  const token = await googleAuth(email, false);
-  return token;
-};
+export const getAuthToken = async (email: string, clientId: string): Promise<string | null> =>
+  await googleAuth(email, clientId, false);
 
 // logout user
 export const logoutUser = async (token: string) => {
   try {
     // revoke token from google OAuth service (token becomes invalid)
     const url = 'https://accounts.google.com/o/oauth2/revoke?token=' + token;
-    const res = await fetch(url);
+    await fetch(url);
 
-    // TODO: testing token revoke
-    // TODO: update storage accordingly, think...
+    //  update storage after app disabled
 
-    console.log('🚀 ~ file: index.ts:86 ~ logoutUser ~ res:', res);
+    const promises = [
+      // disable app
+      chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: false }),
+      // clear local storage
+      // set newsletter emails
+      chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: [] }),
+      // set unsubscribed emails
+      chrome.storage.local.set({ [storageKeys.UNSUBSCRIBED_EMAILS]: [] }),
+      // set whitelisted emails
+      chrome.storage.local.set({ [storageKeys.WHITELISTED_EMAILS]: [] }),
+    ];
 
-    // enable app
-    await chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: false });
-
-    // clear token from browser cache
-    await chrome.identity.clearAllCachedAuthTokens();
+    // wait for all promises to resolve
+    // throw error if any of the promises reject to catch in the catch block
+    await Promise.all(promises.map(promise => promise.catch(err => err)));
 
     logger.info('✅ Removed user auth token', 'background/services/auth/index.ts:63 ~ logoutUser()');
+    return true;
   } catch (error) {
     logger.error({
       error,
       msg: 'Error finding fresh inbox filter',
       fileTrace: 'background/services/auth/index.ts:68 ~ logoutUser() catch block',
     });
+    return false;
   }
 };

@@ -1,5 +1,3 @@
-import wait from '../../utils/wait';
-
 const addTooltip = (parentEl: HTMLElement, title: string) => {
   // tooltip message el
   const tooltipMsg = document.createElement('span');
@@ -8,7 +6,11 @@ const addTooltip = (parentEl: HTMLElement, title: string) => {
   tooltipMsg.classList.add('freshInbox-tooltip');
 
   // add relative pos to parent el
-  if (parentEl.style.position !== 'absolute' && parentEl.style.position !== 'relative') {
+  if (
+    parentEl.style.position !== 'fixed' &&
+    parentEl.style.position !== 'absolute' &&
+    parentEl.style.position !== 'relative'
+  ) {
     parentEl.style.position = 'relative';
   }
 

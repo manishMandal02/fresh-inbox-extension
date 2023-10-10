@@ -265,7 +265,7 @@ $text-mid-gray: #505050;
   right: 200px;
   z-index: 1000;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
   color: #efeff0;
   background-color: $primary-color;
   border-radius: 6px;
@@ -273,6 +273,11 @@ $text-mid-gray: #505050;
   border: none;
   padding: 10px 12px;
   cursor: pointer;
+}
+
+#freshInboxSettingsBtn.inactive {
+  color: #efeff0;
+  background-color: $text-dark;
 }
 
 .freshInbox-snackbar {

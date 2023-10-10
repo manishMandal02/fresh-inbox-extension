@@ -14,6 +14,7 @@ export interface FreshInboxGlobalVariables {
   userEmail: string;
   isMouseOverFreshInboxAssistantBtn: boolean;
   loggerLevel: 'dev' | 'prod';
+  isAppEnabled?: boolean;
 }
 
 // set  global variable state
@@ -30,30 +31,35 @@ window.freshInboxGlobalVariables = {
 (async () => {
   // wait 2s
   await wait(2000);
+
   // query for user email id on page
   freshInboxGlobalVariables.userEmail = await getEmailIdFromPage();
 
-  // check if Fresh Inbox is enabled or not
+  // check if app is enabled or not
   const appStatus = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
 
+  freshInboxGlobalVariables.isAppEnabled = appStatus;
+
   if (!appStatus) {
-    //wait for 1s
-    await wait(1000);
-    //TODO: if not then show nothing (the setting btn can represent status icon/color)
-    embedFreshInboxSettingsBtn();
+    // App is disabled, embed setting btn with disabled state
+    embedFreshInboxSettingsBtn({ isDisabled: true });
     return;
   }
 
+  embedFreshInboxSettingsBtn({ isDisabled: false });
+
+  // get client id from evn variables
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
   // is user Authed or not? (handle multiple user) send email id from the content script
   const isTokenValid = await chrome.runtime.sendMessage({
+    clientId,
     event: IMessageEvent.CHECK_AUTH_TOKEN,
     email: freshInboxGlobalVariables.userEmail,
   });
 
-  console.log('🚀 ~ file: index.ts:62 ~ isTokenValid:', isTokenValid);
-
   if (!isTokenValid) {
-    // if auth token is not present
+    // Auth token is not present
     // show auth modal to allow users to give app access to gmail service
     renderAuthModal();
   } else {

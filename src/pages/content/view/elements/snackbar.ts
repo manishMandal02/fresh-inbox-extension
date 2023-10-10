@@ -8,9 +8,16 @@ type ShowLoadingSnackbarParams = {
   email: string;
 };
 
-//* loading snackbar
+const LoadingSnackbarId = 'freshInbox-loadingSnackbar';
+
+// loading snackbar
 // show
 const showLoadingSnackbar = ({ title, email }: ShowLoadingSnackbarParams) => {
+  // remove previous loading snackbar if any
+  const previousSnackbar = document.getElementById(LoadingSnackbarId);
+
+  if (previousSnackbar) previousSnackbar.remove();
+
   // container
   const container = document.createElement('div');
   const label = document.createElement('span');
@@ -19,7 +26,7 @@ const showLoadingSnackbar = ({ title, email }: ShowLoadingSnackbarParams) => {
   label.innerHTML = `${title} <br/> <strong>${limitCharLength(email)}</strong>`;
 
   // add classes
-  container.id = 'freshInbox-loadingSnackbar';
+  container.id = LoadingSnackbarId;
 
   const spinner = getLoadingSpinner();
 
@@ -32,7 +39,7 @@ const showLoadingSnackbar = ({ title, email }: ShowLoadingSnackbarParams) => {
 // hide
 const hideLoadingSnackbar = () => {
   // find container element
-  const container = document.getElementById('freshInbox-loadingSnackbar');
+  const container = document.getElementById(LoadingSnackbarId);
   if (!container) return;
   container.style.display = 'none';
   // removes all it's child elements
