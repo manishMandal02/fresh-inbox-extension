@@ -1,6 +1,6 @@
 import { FILTER_ACTION, FilterEmails, GmailFilter } from '@src/pages/background/types/background.types';
 import { getEmailsFromFilterQuery } from './getEmailsFromFilterQuery';
-import { MAIL_MAGIC_FILTER_EMAIL } from '@src/pages/background/constants/app.constants';
+import { FRESH_INBOX_FILTER_EMAIL } from '@src/pages/background/constants/app.constants';
 import { logger } from '@src/pages/background/utils/logger';
 
 // get  filter by Id
@@ -28,9 +28,9 @@ export const getFilterById = async (token: string, id: string): Promise<FilterEm
     // get emails from query
     let emails = getEmailsFromFilterQuery(parsedRes.criteria.query);
 
-    // remove mail-magic identity email from  emails
+    // remove fresh-Inbox identity email from  emails
 
-    emails = emails.filter(email => email !== MAIL_MAGIC_FILTER_EMAIL);
+    emails = emails.filter(email => email !== FRESH_INBOX_FILTER_EMAIL);
 
     return { emails, filterId: parsedRes.id };
   } catch (error) {
@@ -49,7 +49,7 @@ type CreateFilterParams = {
   filterAction: FILTER_ACTION;
 };
 
-// create filter with mail-magic email get emails array
+// create filter with fresh-Inbox email get emails array
 export const createFilter = async ({
   token,
   emails,
@@ -58,9 +58,9 @@ export const createFilter = async ({
   //
   const emailsList = emails;
 
-  // if the emails doesn't include mail-magic identity email, add it
-  if (emailsList.indexOf(MAIL_MAGIC_FILTER_EMAIL) === -1) {
-    emailsList.unshift(MAIL_MAGIC_FILTER_EMAIL);
+  // if the emails doesn't include fresh-Inbox identity email, add it
+  if (emailsList.indexOf(FRESH_INBOX_FILTER_EMAIL) === -1) {
+    emailsList.unshift(FRESH_INBOX_FILTER_EMAIL);
   }
 
   // format the emails into a single query string for filter criteria
@@ -109,7 +109,7 @@ export const createFilter = async ({
   }
 };
 
-// delete previous mail-magic filter with id
+// delete previous fresh-Inbox filter with id
 export const deleteFilter = async (token: string, id: string) => {
   //
   const fetchOptions: Partial<RequestInit> = {

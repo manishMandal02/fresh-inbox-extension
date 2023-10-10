@@ -6,12 +6,12 @@ import {
   GmailFilters,
 } from '@src/pages/background/types/background.types';
 import { getEmailsFromFilterQuery } from './getEmailsFromFilterQuery';
-import { MAIL_MAGIC_FILTER_EMAIL } from '@src/pages/background/constants/app.constants';
+import { FRESH_INBOX_FILTER_EMAIL } from '@src/pages/background/constants/app.constants';
 import { logger } from '@src/pages/background/utils/logger';
 
-// check if filter is mail mail magic filter (TRASH or INBOX filter created by mail magic)
+// check if filter is mail fresh inbox filter (TRASH or INBOX filter created by fresh inbox)
 
-const isMailMagicFilter = (filter: GmailFilter, filterAction: FILTER_ACTION): boolean => {
+const isFreshInboxFilter = (filter: GmailFilter, filterAction: FILTER_ACTION): boolean => {
   const labelId = filterAction === FILTER_ACTION.TRASH ? 'TRASH' : 'SPAM';
 
   const checkCondition = () => {
@@ -29,16 +29,16 @@ const isMailMagicFilter = (filter: GmailFilter, filterAction: FILTER_ACTION): bo
   return !!checkCondition();
 };
 
-type GetMailMagicFilterParams = {
+type GetFreshInboxFilterParams = {
   token: string;
   filterAction?: FILTER_ACTION;
 };
 
-// get mail-magic filter id also return all emails optionally
-export const getMailMagicFilter = async ({
+// get fresh-Inbox filter id also return all emails optionally
+export const getFreshInboxFilter = async ({
   token,
   filterAction = FILTER_ACTION.TRASH,
-}: GetMailMagicFilterParams): Promise<FilterEmails | null> => {
+}: GetFreshInboxFilterParams): Promise<FilterEmails | null> => {
   const fetchOptions: Partial<RequestInit> = {
     method: 'GET',
     headers: {
@@ -56,11 +56,11 @@ export const getMailMagicFilter = async ({
     let emails: string[] = [];
 
     for (const filter of parsedRes.filter) {
-      if (isMailMagicFilter(filter, filterAction)) {
+      if (isFreshInboxFilter(filter, filterAction)) {
         // get emails from the filter criteria
         const queryEmails = getEmailsFromFilterQuery(filter.criteria.query);
 
-        if (queryEmails.includes(MAIL_MAGIC_FILTER_EMAIL)) {
+        if (queryEmails.includes(FRESH_INBOX_FILTER_EMAIL)) {
           filterId = filter.id;
           emails = queryEmails;
           // stop the loop
@@ -74,14 +74,14 @@ export const getMailMagicFilter = async ({
         emails,
       };
     } else {
-      throw new Error('Mail Magic filter not found');
+      throw new Error('Fresh Inbox filter not found');
     }
   } catch (error) {
     logger.error({
       error,
-      msg: 'Error finding mail magic filter',
+      msg: 'Error finding fresh inbox filter',
       fileTrace:
-        'background/services/api/gmail/helper/getMailMagicFilter.ts:85 ~ getMailMagicFilter() catch block',
+        'background/services/api/gmail/helper/getFreshInboxFilter.ts:85 ~ getFreshInboxFilter() catch block',
     });
     return null;
   }

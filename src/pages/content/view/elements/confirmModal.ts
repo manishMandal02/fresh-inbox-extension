@@ -36,7 +36,7 @@ const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams
   cancelAction.innerText = 'Cancel';
 
   // add class to elements
-  modalContainer.id = 'mailMagic-confirmModal';
+  modalContainer.id = 'freshInbox-confirmModal';
   backdrop.id = 'confirmModal-backdrop';
   modalCard.id = 'confirmModal-card';
   modalTitle.id = 'confirmModal-modalTitle';
@@ -68,7 +68,7 @@ const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams
 
 const hideConfirmModal = () => {
   // get elements
-  const modalContainer = document.getElementById('mailMagic-confirmModal');
+  const modalContainer = document.getElementById('freshInbox-confirmModal');
   const backdrop = document.getElementById('confirmModal-backdrop');
 
   const modalCard = document.getElementById('confirmModal-card');

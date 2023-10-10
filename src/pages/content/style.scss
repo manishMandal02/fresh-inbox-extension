@@ -1,13 +1,13 @@
 // theme
 //colors
-$primary-color: #0957d0;
+$primary-color: #10b981;
 $light-gray-color: #dde3ea95;
 $danger-color: #f45151;
 $text-dark: #282828;
 $text-mid-gray: #505050;
 
 // common tooltip
-.mailMagic-tooltip {
+.freshInbox-tooltip {
   position: absolute;
   width: max-content;
   background-color: black;
@@ -22,7 +22,7 @@ $text-mid-gray: #505050;
 }
 
 // common loading spinner
-.mailMagic-spinner {
+.freshInbox-spinner {
   width: 100%;
   height: 100%;
   display: flex;
@@ -47,7 +47,7 @@ $text-mid-gray: #505050;
   }
 }
 // common text message
-.mailMagic-TextMsg {
+.freshInbox-TextMsg {
   width: 100%;
   height: 100%;
   display: flex;
@@ -61,7 +61,7 @@ $text-mid-gray: #505050;
   }
 }
 // common table header
-.mailMagic-tableHeader {
+.freshInbox-tableHeader {
   width: 100%;
   background-color: #e7e9ec;
   display: flex;
@@ -87,7 +87,7 @@ $text-mid-gray: #505050;
 }
 
 // main button shown beside each email
-.mailMagic-assistantBtn {
+.freshInbox-assistantBtn {
   border-radius: 50%;
   background-color: #208dd0;
   height: 16px;
@@ -96,7 +96,7 @@ $text-mid-gray: #505050;
   margin-left: auto;
 }
 
-#mailMagic-hoverCard {
+#freshInbox-hoverCard {
   width: 25rem;
   height: min-content;
   padding: 10px 0;
@@ -186,7 +186,7 @@ $text-mid-gray: #505050;
   }
 }
 
-#mailMagic-authModal {
+#freshInbox-authModal {
   // children
   #authModal-backdrop {
     position: fixed;
@@ -256,7 +256,7 @@ $text-mid-gray: #505050;
   }
 }
 
-#mailMagicSettingsBtn {
+#freshInboxSettingsBtn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -266,8 +266,8 @@ $text-mid-gray: #505050;
   z-index: 1000;
   font-size: 14px;
   font-weight: 400;
-  background-color: #efeff0;
-  color: #2180de;
+  color: #efeff0;
+  background-color: $primary-color;
   border-radius: 6px;
   outline: none;
   border: none;
@@ -275,7 +275,7 @@ $text-mid-gray: #505050;
   cursor: pointer;
 }
 
-.mailMagic-snackbar {
+.freshInbox-snackbar {
   position: fixed;
   bottom: 16px;
   left: 0px;
@@ -317,11 +317,11 @@ $text-mid-gray: #505050;
   }
 }
 
-.mailMagic-snackbar.show {
+.freshInbox-snackbar.show {
   transform: translateX(2.5%) translateY(0);
 }
 
-.mailMagic-snackbar.success {
+.freshInbox-snackbar.success {
   > span {
     &::after {
       content: ' ';
@@ -337,7 +337,7 @@ $text-mid-gray: #505050;
   }
 }
 
-.mailMagic-snackbar.error {
+.freshInbox-snackbar.error {
   > span {
     &::after {
       content: ' ';
@@ -353,7 +353,7 @@ $text-mid-gray: #505050;
 }
 
 // loading snackbar
-#mailMagic-loadingSnackbar {
+#freshInbox-loadingSnackbar {
   position: fixed;
   bottom: 16px;
   left: 12px;
@@ -384,7 +384,7 @@ $text-mid-gray: #505050;
 }
 
 // confirm modal
-#mailMagic-confirmModal {
+#freshInbox-confirmModal {
   // children
   #confirmModal-backdrop {
     position: fixed;
@@ -469,7 +469,7 @@ $text-mid-gray: #505050;
 }
 
 // settings modal
-#mailMagic-settingsModal {
+#freshInbox-settingsModal {
   // children
   #settingsModal-backdrop {
     position: fixed;

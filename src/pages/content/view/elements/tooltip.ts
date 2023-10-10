@@ -5,7 +5,7 @@ const addTooltip = (parentEl: HTMLElement, title: string) => {
   const tooltipMsg = document.createElement('span');
 
   tooltipMsg.innerText = title;
-  tooltipMsg.classList.add('mailMagic-tooltip');
+  tooltipMsg.classList.add('freshInbox-tooltip');
 
   // add relative pos to parent el
   if (parentEl.style.position !== 'absolute' && parentEl.style.position !== 'relative') {

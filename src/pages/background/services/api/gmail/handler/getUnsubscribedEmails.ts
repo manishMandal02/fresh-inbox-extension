@@ -1,5 +1,5 @@
 import { FILTER_ACTION } from '@src/pages/background/types/background.types';
-import { MAIL_MAGIC_FILTER_EMAIL, storageKeys } from '@src/pages/background/constants/app.constants';
+import { FRESH_INBOX_FILTER_EMAIL, storageKeys } from '@src/pages/background/constants/app.constants';
 import { getFilterById } from '../helper/gmailFilters';
 import { getFilterId } from '../helper/getFilterId';
 import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';

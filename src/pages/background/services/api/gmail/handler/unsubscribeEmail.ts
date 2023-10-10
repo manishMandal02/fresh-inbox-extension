@@ -19,7 +19,7 @@ type UnsubscribeEmailParams = {
 // handle unsubscribe/block email
 export const unsubscribeEmail = async ({ token, email, isWhiteListed }: UnsubscribeEmailParams) => {
   try {
-    // check if mail-magic filter id exists in storage
+    // check if fresh-Inbox filter id exists in storage
     const filterId = await getFilterId({ token, filterAction: FILTER_ACTION.TRASH });
 
     if (filterId) {

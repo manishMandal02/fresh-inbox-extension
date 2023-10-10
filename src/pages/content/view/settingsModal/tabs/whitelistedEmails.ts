@@ -17,7 +17,7 @@ const WhitelistedEmailsTabActionBtnContainer = 'whitelistedEmailsTab-actionBtn';
 
 // tab body html structure
 const whitelistedEmailsTabContainerInnerHTML = `
-<p>Mail Magic has whitelisted <u id='whitelistedEmailsTab-numUnsubscribedEmails'>0</u> emails to keep your 📨 inbox clutter free.</p>
+<p>Fresh Inbox has whitelisted <u id='whitelistedEmailsTab-numUnsubscribedEmails'>0</u> emails to keep your 📨 inbox clutter free.</p>
 
 <hr /> 
 

@@ -23,7 +23,7 @@ const showSettingsModal = () => {
   modalCard.innerHTML = `
     <div id='settingsModal-topContainer'>
         <div>
-            <p class='modalTitle'>Mail Magic</p>
+            <p class='modalTitle'>Fresh Inbox</p>
             <button id='settingsModal-closeBtn'>X</button>
         </div>
         <div class='tabs'>
@@ -42,7 +42,7 @@ const showSettingsModal = () => {
   `;
 
   // add id's to elements
-  modalContainer.id = 'mailMagic-settingsModal';
+  modalContainer.id = 'freshInbox-settingsModal';
   backdrop.id = 'settingsModal-backdrop';
   modalCard.id = 'settingsModal-card';
 
@@ -172,7 +172,7 @@ const showSettingsModal = () => {
 
 const hideSettingsModal = () => {
   // get elements
-  const modalContainer = document.getElementById('mailMagic-settingsModal');
+  const modalContainer = document.getElementById('freshInbox-settingsModal');
   const backdrop = document.getElementById('settingsModal-backdrop');
   const modalCard = document.getElementById('settingsModal-card');
 

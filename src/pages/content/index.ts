@@ -5,22 +5,22 @@ import { IMessageEvent } from './types/content.types';
 import wait from './utils/wait';
 import { getEmailIdFromPage } from './utils/getEmailIdFromPage';
 import { getSyncStorageByKey } from './utils/getStorageByKey';
-import { embedMailMagicSettingsBtn } from './view/mailMagicSettingsBtn';
+import { embedFreshInboxSettingsBtn } from './view/freshInboxSettingsBtn';
 
 // content script global variables type
-export interface MailMagicGlobalVariables {
+export interface FreshInboxGlobalVariables {
   assistantBtnContainerId: string;
   isMouseOverHoverCard: boolean;
   userEmail: string;
-  isMouseOverMailMagicAssistantBtn: boolean;
+  isMouseOverFreshInboxAssistantBtn: boolean;
   loggerLevel: 'dev' | 'prod';
 }
 
 // set  global variable state
-window.mailMagicGlobalVariables = {
+window.freshInboxGlobalVariables = {
   assistantBtnContainerId: '',
   isMouseOverHoverCard: false,
-  isMouseOverMailMagicAssistantBtn: false,
+  isMouseOverFreshInboxAssistantBtn: false,
   userEmail: '',
   //TODO: change it back to prod during deployment
   loggerLevel: 'dev',
@@ -31,23 +31,23 @@ window.mailMagicGlobalVariables = {
   // wait 2s
   await wait(2000);
   // query for user email id on page
-  mailMagicGlobalVariables.userEmail = await getEmailIdFromPage();
+  freshInboxGlobalVariables.userEmail = await getEmailIdFromPage();
 
-  // check if Mail Magic is enabled or not
+  // check if Fresh Inbox is enabled or not
   const appStatus = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
 
   if (!appStatus) {
     //wait for 1s
     await wait(1000);
     //TODO: if not then show nothing (the setting btn can represent status icon/color)
-    embedMailMagicSettingsBtn();
+    embedFreshInboxSettingsBtn();
     return;
   }
 
   // is user Authed or not? (handle multiple user) send email id from the content script
   const isTokenValid = await chrome.runtime.sendMessage({
     event: IMessageEvent.CHECK_AUTH_TOKEN,
-    email: mailMagicGlobalVariables.userEmail,
+    email: freshInboxGlobalVariables.userEmail,
   });
 
   console.log('🚀 ~ file: index.ts:62 ~ isTokenValid:', isTokenValid);

@@ -16,6 +16,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "forceConsistentCasingInFileNames": true,
     "typeRoots": ["./src/global.d.ts"],
+    "importsNotUsedAsValues": "error",
     "paths": {
       "@src/*": ["src/*"],
       "@assets/*": ["src/assets/*"],

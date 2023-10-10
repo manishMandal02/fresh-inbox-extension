@@ -12,8 +12,8 @@ export const logger = {
    */
   dev: (msg: string, fileTrace: string) => {
     // no logging if running in prod
-    if (mailMagicGlobalVariables.loggerLevel === 'prod') return;
-    console.log(`MailMagic:LOGGER:DEV 🛜 ~ ${msg}  \n  ${fileTrace ? `📁 File: ${fileTrace}` : ''}`);
+    if (freshInboxGlobalVariables.loggerLevel === 'prod') return;
+    console.log(`FreshInbox:LOGGER:DEV 🛜 ~ ${msg}  \n  ${fileTrace ? `📁 File: ${fileTrace}` : ''}`);
   },
 
   /**
@@ -22,7 +22,7 @@ export const logger = {
    * @param fileTrace file trace of the log
    */
   info: (msg: string, _fileTrace: string) => {
-    console.log(`MailMagic:LOGGER:INFO ℹ️ ~ ${msg}`);
+    console.log(`FreshInbox:LOGGER:INFO ℹ️ ~ ${msg}`);
   },
 
   /**
@@ -32,6 +32,9 @@ export const logger = {
    * @param error error object
    */
   error: ({ msg, fileTrace, error }: LoggerParams) => {
-    console.log(`MailMagic:LOGGER:ERROR ❌ ~ ${msg}  \n  ${fileTrace ? `📁 File: ${fileTrace}` : ''}`, error);
+    console.log(
+      `FreshInbox:LOGGER:ERROR ❌ ~ ${msg}  \n  ${fileTrace ? `📁 File: ${fileTrace}` : ''}`,
+      error
+    );
   },
 };

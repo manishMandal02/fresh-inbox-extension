@@ -5,9 +5,9 @@ import packageJson from './package.json';
  */
 const manifest: chrome.runtime.ManifestV3 = {
   manifest_version: 3,
-  name: 'Mail Magic',
+  name: 'Fresh Inbox',
   version: packageJson.version,
-  description: 'Clean your inbox with this magic extension for Gmail',
+  description: 'Fresh Inbox: Clean. Simple. Private.',
   options_page: 'src/pages/options/index.html',
   background: {
     service_worker: 'src/pages/background/index.js',

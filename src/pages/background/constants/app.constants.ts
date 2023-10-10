@@ -1,5 +1,5 @@
-// dummy email used to tag/identify  filters created by mail magic
-export const MAIL_MAGIC_FILTER_EMAIL = 'filter@getmailmagic.com';
+// dummy email used to tag/identify  filters created by fresh inbox
+export const FRESH_INBOX_FILTER_EMAIL = 'filter@getfreshinbox.com';
 
 // max number of results returned from the gmail api
 export const API_MAX_RESULT = 500;

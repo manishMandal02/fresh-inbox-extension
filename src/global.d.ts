@@ -1,5 +1,5 @@
 import Chrome from 'chrome';
-import { MailMagicGlobalVariables } from './pages/content';
+import { FreshInboxGlobalVariables } from './pages/content';
 
 declare namespace chrome {
   export default Chrome;
@@ -39,5 +39,5 @@ declare module '*.json' {
 
 // declare global variables
 declare global {
-  var mailMagicGlobalVariables: MailMagicGlobalVariables;
+  var freshInboxGlobalVariables: FreshInboxGlobalVariables;
 }

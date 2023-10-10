@@ -19,7 +19,7 @@ const showLoadingSnackbar = ({ title, email }: ShowLoadingSnackbarParams) => {
   label.innerHTML = `${title} <br/> <strong>${limitCharLength(email)}</strong>`;
 
   // add classes
-  container.id = 'mailMagic-loadingSnackbar';
+  container.id = 'freshInbox-loadingSnackbar';
 
   const spinner = getLoadingSpinner();
 
@@ -32,7 +32,7 @@ const showLoadingSnackbar = ({ title, email }: ShowLoadingSnackbarParams) => {
 // hide
 const hideLoadingSnackbar = () => {
   // find container element
-  const container = document.getElementById('mailMagic-loadingSnackbar');
+  const container = document.getElementById('freshInbox-loadingSnackbar');
   if (!container) return;
   container.style.display = 'none';
   // removes all it's child elements
@@ -61,7 +61,7 @@ const showSnackbar = ({ title, email, isError }: SnackbarParams) => {
     email
   )}</strong></span>`;
 
-  container.classList.add('mailMagic-snackbar');
+  container.classList.add('freshInbox-snackbar');
 
   setTimeout(() => {
     container.classList.add('show');

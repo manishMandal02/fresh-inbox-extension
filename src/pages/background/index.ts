@@ -1,13 +1,7 @@
 import reloadOnUpdate from 'virtual:reload-on-update-in-background-script';
-import {
-  FILTER_ACTION,
-  IMessageBody,
-  IMessageEvent,
-  IUserInfo,
-  NewsletterEmails,
-} from './types/background.types';
+import { FILTER_ACTION, IMessageBody, IMessageEvent, NewsletterEmails } from './types/background.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
-import { logoutUser, getAuthToken, getUserInfo, launchGoogleAuthFlow } from './services/auth';
+import { logoutUser, getAuthToken, launchGoogleAuthFlow } from './services/auth';
 import {
   deleteAllMails,
   getNewsletterEmails,
@@ -69,8 +63,8 @@ const initializeStorage = async () => {
   }
 };
 
-// check if mail magic custom filter exists, if not create it
-const checkMailMagicFilters = async () => {
+// check if fresh inbox custom filter exists, if not create it
+const checkFreshInboxFilters = async () => {
   try {
     const promises = [
       // unsubscribe filter
@@ -90,15 +84,12 @@ const checkMailMagicFilters = async () => {
   }
 };
 
-//TODO: on app install
+// extension install event listener
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason === 'install') {
     await initializeStorage();
   }
 });
-// initialize sync storage items
-// create a custom trash filter for mail-magic to add unsubscribed emails
-// create whitelist filter as well
 
 // listen for messages from content script - email action events
 chrome.runtime.onMessage.addListener(
@@ -129,7 +120,7 @@ chrome.runtime.onMessage.addListener(
       }
 
       case IMessageEvent.CHECKS_AFTER_AUTH: {
-        // enable mail magic if disabled (after successful auth)
+        // enable fresh inbox if disabled (after successful auth)
 
         const isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
         if (!isAppEnabled) {
@@ -137,8 +128,8 @@ chrome.runtime.onMessage.addListener(
           await chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: true });
         }
 
-        // check mail magic custom filters
-        const res = await checkMailMagicFilters();
+        // check fresh inbox custom filters
+        const res = await checkFreshInboxFilters();
 
         return res;
       }
@@ -197,9 +188,7 @@ chrome.runtime.onMessage.addListener(
         return await resubscribeEmail(token, request.email);
       }
 
-      case IMessageEvent.DISABLE_MAIL_MAGIC: {
-        //TODO: disable mail magic
-        // update storage accordingly, think...
+      case IMessageEvent.DISABLE_FRESH_INBOX: {
         try {
           await logoutUser(token);
 

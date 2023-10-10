@@ -55,18 +55,18 @@ const actionInfoMsg = (
 // mouse over
 const handleMouseOver = (ev: MouseEvent) => {
   ev.stopPropagation();
-  mailMagicGlobalVariables.isMouseOverHoverCard = true;
+  freshInboxGlobalVariables.isMouseOverHoverCard = true;
 };
 
 // mouse out
 const handleMouseOut = () => {
-  const { assistantBtnContainerId } = mailMagicGlobalVariables;
+  const { assistantBtnContainerId } = freshInboxGlobalVariables;
 
   setTimeout(() => {
     hideHoverCard({ parentElId: assistantBtnContainerId });
   }, 400);
 
-  mailMagicGlobalVariables.isMouseOverHoverCard = false;
+  freshInboxGlobalVariables.isMouseOverHoverCard = false;
 };
 
 // create hover card elements
@@ -83,7 +83,7 @@ const createHoverCardElements = (): IHoverCardElements => {
   const unsubscribeAndDeleteAllMailsBtn = document.createElement('button');
 
   /// add classnames
-  hoverCard.id = 'mailMagic-hoverCard';
+  hoverCard.id = 'freshInbox-hoverCard';
   label.classList.add('hoverCard-label');
   btnContainer.id = 'hoverCard-btnContainer';
 
@@ -204,10 +204,10 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
         const isSuccess = await handleWhitelistAction({ email });
         if (isSuccess) {
           // if success, remove assistant btn from for this email
-          const assistantBtnContainerId = mailMagicGlobalVariables.assistantBtnContainerId;
+          const assistantBtnContainerId = freshInboxGlobalVariables.assistantBtnContainerId;
           const assistantBtnContainer = document.getElementById(assistantBtnContainerId);
           if (!assistantBtnContainer) return;
-          const assistantBtn = assistantBtnContainer.getElementsByClassName('mailMagic-assistantBtn');
+          const assistantBtn = assistantBtnContainer.getElementsByClassName('freshInbox-assistantBtn');
 
           // remove assistant btn for for this email
           if (assistantBtn.length > 0) {
@@ -251,13 +251,13 @@ export const hideHoverCard = ({ parentElId, forceClose }: HideHoverCardParams) =
   // if mouse is hovered over the card or assistant button then do nothing
   if (
     !forceClose &&
-    (mailMagicGlobalVariables.isMouseOverHoverCard ||
-      mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn)
+    (freshInboxGlobalVariables.isMouseOverHoverCard ||
+      freshInboxGlobalVariables.isMouseOverFreshInboxAssistantBtn)
   )
     return;
 
   // get hover card el from id
-  const hoverCard = document.getElementById('mailMagic-hoverCard');
+  const hoverCard = document.getElementById('freshInbox-hoverCard');
 
   if (!hoverCard) return;
 

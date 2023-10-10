@@ -25,7 +25,7 @@ type NewsletterData = {
 
 // tab body html structure
 const newsletterTabContainerInnerHTML = `
-    <p>Mail Magic has identified <u id='newsletterTab-numNewsletterEmails'>0</u> emails as newsletters or as part of a mailing list.</p>
+    <p>Fresh Inbox has identified <u id='newsletterTab-numNewsletterEmails'>0</u> emails as newsletters or as part of a mailing list.</p>
    
     <hr />
 
@@ -98,7 +98,7 @@ const refreshTable = async ({ shouldRefreshData }: { shouldRefreshData?: boolean
     } else {
       // show message saying no newsletter emails found
       const msg = renderTextMsg(
-        `📭 No Newsletter or mailing list emails found in your Inbox. <br/> ℹ️ Emails already unsubscribed by Mail Magic won't be visible here.`
+        `📭 No Newsletter or mailing list emails found in your Inbox. <br/> ℹ️ Emails already unsubscribed by Fresh Inbox won't be visible here.`
       );
 
       // append msg to table

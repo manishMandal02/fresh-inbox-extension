@@ -6,7 +6,7 @@ const renderTextMsg = (text: string) => {
   const textEl = document.createElement('p');
 
   // add a class
-  container.classList.add('mailMagic-TextMsg');
+  container.classList.add('freshInbox-TextMsg');
 
   // add text content
   textEl.innerHTML = text;

@@ -3,7 +3,7 @@ export const tableHeader = () => {
   const tableRow = document.createElement('tr');
 
   // add class name
-  tableRow.classList.add('mailMagic-tableHeader');
+  tableRow.classList.add('freshInbox-tableHeader');
 
   // inner html for table row
   tableRow.innerHTML = `

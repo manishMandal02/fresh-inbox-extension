@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Mail Magic",
+  "name": "Fresh Inbox",
   "version": "0.1.0",
-  "description": "Clean your inbox with this magic extension for Gmail",
+  "description": "Fresh Inbox: Clean. Simple. Private.",
   "options_page": "src/pages/options/index.html",
   "background": {
     "service_worker": "src/pages/background/index.js",

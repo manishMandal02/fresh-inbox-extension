@@ -8,7 +8,7 @@ const handleAuthBtnClick = async ev => {
 
   const res = await chrome.runtime.sendMessage({
     event: IMessageEvent.LAUNCH_AUTH_FLOW,
-    email: mailMagicGlobalVariables.userEmail,
+    email: freshInboxGlobalVariables.userEmail,
   });
   if (res) {
     // success: close the modal
@@ -28,11 +28,15 @@ const handleAuthBtnClick = async ev => {
 
 const handleDisableBtnClick = async (ev: MouseEvent) => {
   ev.stopPropagation();
-  const res = await chrome.runtime.sendMessage({ event: IMessageEvent.DISABLE_MAIL_MAGIC });
+  const res = await chrome.runtime.sendMessage({ event: IMessageEvent.DISABLE_FRESH_INBOX });
+
+  // TODO: remove assistant buttons (create a utility fn)
+  // TODO: update settings button color/icon
+
   if (res) {
-    logger.dev('✅ Mail Magic has been disabled', 'authModal.ts:31 ~ handleDisableBtnClick()');
+    logger.dev('✅ Fresh Inbox has been disabled', 'authModal.ts:31 ~ handleDisableBtnClick()');
   } else {
-    logger.dev('❌ Failed to disable Mail Magic', 'authModal.ts:33 ~ handleDisableBtnClick()');
+    logger.dev('❌ Failed to disable Fresh Inbox', 'authModal.ts:33 ~ handleDisableBtnClick()');
   }
 };
 
@@ -44,30 +48,30 @@ const renderAuthModal = () => {
   const title = document.createElement('p');
   const errorMsg = document.createElement('p');
   const authBtn = document.createElement('button');
-  const disableMailMagic = document.createElement('p');
+  const disableFreshInbox = document.createElement('p');
 
   // add content to the elements
-  title.innerText = 'Give Mail Magic access to your  Gmail.';
+  title.innerText = 'Give Fresh Inbox access to your  Gmail.';
   authBtn.innerText = 'Give Access';
   errorMsg.innerHTML = '❌ Failed to complete the authentication, Please try again.';
-  disableMailMagic.innerText = 'disable Mail Magic';
+  disableFreshInbox.innerText = 'disable Fresh Inbox';
 
   // add class to elements
-  modalContainer.id = 'mailMagic-authModal';
+  modalContainer.id = 'freshInbox-authModal';
   backdrop.id = 'authModal-backdrop';
   modalCard.id = 'authModal-card';
   title.id = 'authModal-title';
   authBtn.id = 'authModal-authBtn';
   errorMsg.id = 'authModal-errorMsg';
-  disableMailMagic.id = 'authModal-disableBtn';
+  disableFreshInbox.id = 'authModal-disableBtn';
 
   // add on click lister
   // auth btn
   authBtn.addEventListener('click', asyncHandler(handleAuthBtnClick));
   // disable btn
-  disableMailMagic.addEventListener('click', asyncHandler(handleDisableBtnClick));
+  disableFreshInbox.addEventListener('click', asyncHandler(handleDisableBtnClick));
 
-  modalCard.append(title, errorMsg, authBtn, disableMailMagic);
+  modalCard.append(title, errorMsg, authBtn, disableFreshInbox);
 
   modalContainer.append(backdrop, modalCard);
 
@@ -76,14 +80,14 @@ const renderAuthModal = () => {
 
 const removeAuthModal = () => {
   // const create modal
-  const modalContainer = document.getElementById('mailMagic-authModal');
+  const modalContainer = document.getElementById('freshInbox-authModal');
   const modalCard = document.getElementById('authModal-card');
   const authBtn = document.getElementById('authModal-authBtn');
-  const disableMailMagic = document.getElementById('authModal-disableBtn');
+  const disableFreshInbox = document.getElementById('authModal-disableBtn');
 
   // remove elements
   if (authBtn) authBtn.remove();
-  if (disableMailMagic) disableMailMagic.remove();
+  if (disableFreshInbox) disableFreshInbox.remove();
 
   modalCard.remove();
 

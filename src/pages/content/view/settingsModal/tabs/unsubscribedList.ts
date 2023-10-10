@@ -13,7 +13,7 @@ const UnsubscribedTabContainerId = 'settingsModal-unsubscribedListTab';
 
 // tab body html structure
 const unsubscribedListTabContainerInnerHTML = `
-<p>Mail Magic has unsubscribed <u id='unsubscribedListTab-numUnsubscribedEmails'>0</u> emails to keep your 📨 inbox clean.</p>
+<p>Fresh Inbox has unsubscribed <u id='unsubscribedListTab-numUnsubscribedEmails'>0</u> emails to keep your 📨 inbox clean.</p>
 
 <hr /> 
 

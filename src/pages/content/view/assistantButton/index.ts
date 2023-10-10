@@ -21,18 +21,18 @@ const handleMouseOver = ({ ev, assistantBtnContainer, name, email }: HandleMouse
   ev.stopPropagation();
 
   // if hover card is already shown, do nothing
-  if (assistantBtnContainer.contains(document.getElementById('mailMagic-hoverCard'))) return;
+  if (assistantBtnContainer.contains(document.getElementById('freshInbox-hoverCard'))) return;
 
-  mailMagicGlobalVariables.assistantBtnContainerId = randomId();
-  assistantBtnContainer.id = mailMagicGlobalVariables.assistantBtnContainerId;
+  freshInboxGlobalVariables.assistantBtnContainerId = randomId();
+  assistantBtnContainer.id = freshInboxGlobalVariables.assistantBtnContainerId;
   //
-  mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn = true;
+  freshInboxGlobalVariables.isMouseOverFreshInboxAssistantBtn = true;
   setTimeout(
     asyncHandler(async () => {
       await showHoverCard({
         name,
         email,
-        parentElId: mailMagicGlobalVariables.assistantBtnContainerId,
+        parentElId: freshInboxGlobalVariables.assistantBtnContainerId,
       });
     }),
     300
@@ -41,17 +41,17 @@ const handleMouseOver = ({ ev, assistantBtnContainer, name, email }: HandleMouse
 
 //  mouse out
 const handleMouseOut = () => {
-  const { assistantBtnContainerId } = mailMagicGlobalVariables;
+  const { assistantBtnContainerId } = freshInboxGlobalVariables;
 
   setTimeout(() => {
     hideHoverCard({
       parentElId: assistantBtnContainerId,
     });
   }, 400);
-  mailMagicGlobalVariables.isMouseOverMailMagicAssistantBtn = false;
+  freshInboxGlobalVariables.isMouseOverFreshInboxAssistantBtn = false;
 };
 
-// mail magic assistant button
+// fresh inbox assistant button
 const embedAssistantBtnLogic = async (): Promise<boolean> => {
   // get all the mails with ids on the page
   const { emails, dateRange, allMailNodes } = getAllMailsOnPage();
@@ -108,7 +108,7 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
     const assistantBtnContainer = email.closest('div');
 
     const assistantBtn = document.createElement('span');
-    assistantBtn.classList.add('mailMagic-assistantBtn');
+    assistantBtn.classList.add('freshInbox-assistantBtn');
 
     // append the button to container
     assistantBtnContainer.appendChild(assistantBtn);

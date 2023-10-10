@@ -11,8 +11,8 @@ export const logger = {
    * @param fileTrace file trace of the log
    */
   info: (msg: string, _fileTrace?: string) => {
-    console.log(`MailMagic:LOGGER:INFO ℹ️ ~ ${msg}`);
-    // console.log(`MailMagic:LOGGER:INFO ℹ️ ~ ${msg}  \n  ${fileTrace ? `📁 File: ${fileTrace}` : ''}`);
+    console.log(`FreshInbox:LOGGER:INFO ℹ️ ~ ${msg}`);
+    // console.log(`FreshInbox:LOGGER:INFO ℹ️ ~ ${msg}  \n  ${fileTrace ? `📁 File: ${fileTrace}` : ''}`);
   },
 
   /**
@@ -23,7 +23,7 @@ export const logger = {
    */
   error: ({ msg, fileTrace, error }: LoggerParams) => {
     console.log(
-      `MailMagic:LOGGER:ERROR ❌ ~ ${msg}  \n  ${fileTrace ? `📁 File: ${fileTrace}` : ''} \n`,
+      `FreshInbox:LOGGER:ERROR ❌ ~ ${msg}  \n  ${fileTrace ? `📁 File: ${fileTrace}` : ''} \n`,
       error
     );
   },

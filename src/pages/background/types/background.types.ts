@@ -4,7 +4,7 @@ export enum IMessageEvent {
   UNSUBSCRIBE_AND_DELETE_MAILS = 'unsubscribeAndDeleteAllMails',
   CHECK_AUTH_TOKEN = 'checkAuthToken',
   LAUNCH_AUTH_FLOW = 'launchAuthFLow',
-  DISABLE_MAIL_MAGIC = 'disableMailMagic',
+  DISABLE_FRESH_INBOX = 'disableFreshInbox',
   GET_NEWSLETTER_EMAILS = 'getNewsletterEmails',
   GET_UNSUBSCRIBED_EMAILS = 'getUnsubscribedEmails',
   GET_WHITELISTED_EMAILS = 'getWhitelistedEmails',
@@ -57,10 +57,6 @@ export interface IMessageBody {
   isWhiteListed?: boolean;
   // for getting the newsletter emails on the page
   dataOnPage?: DataOnPage;
-}
-export interface IUserInfo {
-  email: string;
-  userId: string;
 }
 
 export type GetMsgAPIResponseSuccess = {
