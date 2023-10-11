@@ -52,13 +52,22 @@ const handleMouseOut = () => {
 };
 
 // fresh inbox assistant button
-const embedAssistantBtnLogic = async (isReEmbedding = false): Promise<boolean> => {
-  if (isReEmbedding) {
-    
-  };
+const embedAssistantBtnLogic = async (isURLChanged = false): Promise<boolean> => {
+  // remove the previous assistant buttons if the url changed
+  if (isURLChanged) {
+    const assistantsButtons = document.getElementsByClassName('freshInbox-assistantBtn');
+    // TODO: error not removing all the buttons
+    for (const btn of assistantsButtons) {
+      btn.remove();
+    }
+  }
 
   // get all the mails with ids on the page
   const { emails, dateRange, allMailNodes } = getAllMailsOnPage();
+
+  console.log('🚀 ~ file: index.ts:68 ~ embedAssistantBtnLogic ~ allMailNodes.length:', allMailNodes.length);
+
+  console.log('🚀 ~ file: index.ts:68 ~ embedAssistantBtnLogic ~ dateRange:', dateRange);
 
   if (emails.length < 1) return false;
 
@@ -85,6 +94,8 @@ const embedAssistantBtnLogic = async (isReEmbedding = false): Promise<boolean> =
     // store the  emails from response
     newsletterEmails = res;
   }
+
+  console.log('🚀 ~ file: index.ts:101 ~ embedAssistantBtnLogic ~ newsletterEmails:', newsletterEmails);
 
   // do nothing if no newsletter emails found
   if (newsletterEmails.length < 1) {
@@ -135,8 +146,14 @@ const embedAssistantBtnLogic = async (isReEmbedding = false): Promise<boolean> =
 };
 
 // embed assistant button with retry logic
-export const embedAssistantBtn = async () => {
+export const embedAssistantBtn = async (isURLChanged = false) => {
   // retry to check if the emails are found on page or not
   // if not, then retry it for 3 times with 2 seconds interval
-  await retryAtIntervals<boolean>({ retries: 3, interval: 2000, callback: embedAssistantBtnLogic });
+  await retryAtIntervals<boolean>({
+    retries: 3,
+    interval: 2000,
+    callback: async () => {
+      return await embedAssistantBtnLogic(isURLChanged);
+    },
+  });
 };

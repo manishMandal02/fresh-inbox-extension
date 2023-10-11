@@ -89,7 +89,7 @@ window.freshInboxGlobalVariables = {
         // re-embed the assistant button
         console.log('🚀 ~ file: index.ts:57 ~ re-embed the assistant button: 🔥🔥🔥');
 
-        await embedAssistantBtn();
+        await embedAssistantBtn(true);
       }
     });
   }

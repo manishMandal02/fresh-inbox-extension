@@ -3,17 +3,16 @@ import type { DateRange, EmailId } from '../../../types/content.types';
 import { getDateRangeFromNodes } from '@src/pages/content/view/assistantButton/helper/getDateRangeFromNodes';
 import { logger } from '@src/pages/content/utils/logger';
 
-// get all the mails with ids on the page
-export const getAllMailsOnPage = (): {
+type GetAllMailsOnPageReturn = {
   emails: EmailId[];
   dateRange?: DateRange;
   allMailNodes?: Element[];
-} => {
-  // TODO: check for url, only run for selected labels/folder
+};
 
-  //
+// get all the mails with ids on the page
+export const getAllMailsOnPage = (): GetAllMailsOnPageReturn => {
   // get all mail nodes on current page in the table by email attribute
-  const allMailNodes = Array.from(document.querySelectorAll(MAIL_NODES_SELECTOR));
+  let allMailNodes = Array.from(document.querySelectorAll(MAIL_NODES_SELECTOR));
 
   if (allMailNodes.length < 1) {
     logger.error({
@@ -24,6 +23,12 @@ export const getAllMailsOnPage = (): {
     return { emails: [] };
   }
 
+  // select only the nodes that are currently visible on the page
+  allMailNodes = allMailNodes.filter(node => node.checkVisibility());
+
+  // date range
+  const dateRange = getDateRangeFromNodes(allMailNodes);
+
   // get email and name from each mail node
   let allEmailsOnPage: EmailId[] = [];
 
@@ -33,7 +38,7 @@ export const getAllMailsOnPage = (): {
     const email = mailNode.getAttribute('email');
 
     // if duplicate node, remove it from the main array
-    if (allEmailsOnPage.find(emailObj => emailObj.email === email)) {
+    if ([...allMailNodes.filter(node => mailNode.isEqualNode(node))].length > 1) {
       // remove this duplicate node from array
       allEmailsOnPage.splice(idx, 1);
       return;
@@ -45,9 +50,6 @@ export const getAllMailsOnPage = (): {
     const id = idNode.getAttribute('data-legacy-last-message-id');
     allEmailsOnPage.push({ email, id });
   });
-
-  // date range
-  const dateRange = getDateRangeFromNodes(allMailNodes);
 
   // return only non null values
   allEmailsOnPage = allEmailsOnPage.filter(email => email);

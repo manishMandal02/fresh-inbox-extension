@@ -6,8 +6,6 @@ export const onURLChange = (callback: Callback) => {
 
   // location/url change event listener
   window.addEventListener('hashchange', () => {
-    console.log('🚀 ~ file: onUrlChange.ts:13 ~ onURLChange ~ location.href:', location.href);
-
     // call the callback fn, on url change
     callback(location.href);
   });

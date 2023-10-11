@@ -19,6 +19,9 @@ export interface IHoverCardElements {
   unsubscribeAndDeleteAllMailsBtn: HTMLButtonElement;
 }
 
+// TODO: a bug that stops the hover card from removing when the mouse is moved out of the button or card 
+//TODO:  handle the removal of previous hover card before rendering a new one
+
 // hide button
 const hideButtons = (buttons: HTMLButtonElement[]) => {
   for (const btn of buttons) {
