@@ -1,5 +1,5 @@
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
-import { DataOnPage, GetMsgAPIResponseSuccess } from '@src/pages/background/types/background.types';
+import type { DataOnPage, GetMsgAPIResponseSuccess } from '@src/pages/background/types/background.types';
 import { getWhitelistedEmails } from './getWhitelistedEmails';
 import { logger } from '@src/pages/background/utils/logger';
 
@@ -64,6 +64,7 @@ export const getNewsletterEmailsOnPage = async ({
     if (whitelistedEmails.length > 0) {
       newsletterEmails = newsletterEmails.filter(email => !whitelistedEmails.includes(email));
     }
+    logger.info(`Found 👉 ${newsletterEmails.length} newsletter emails on page`);
 
     return newsletterEmails;
   } catch (error) {

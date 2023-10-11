@@ -1,5 +1,5 @@
 import { MAIL_NODES_SELECTOR } from '@src/pages/content/constants/app.constants';
-import { DateRange, EmailId } from '../../../types/content.types';
+import type { DateRange, EmailId } from '../../../types/content.types';
 import { getDateRangeFromNodes } from '@src/pages/content/view/assistantButton/helper/getDateRangeFromNodes';
 import { logger } from '@src/pages/content/utils/logger';
 
@@ -25,17 +25,25 @@ export const getAllMailsOnPage = (): {
   }
 
   // get email and name from each mail node
-  let allEmailsOnPage: EmailId[] = allMailNodes.map(mailNode => {
-    if (mailNode.getAttribute('email')) {
-      const email = mailNode.getAttribute('email');
-      const idNode = mailNode
-        .closest('td')
-        .nextElementSibling.querySelector('span[data-legacy-last-message-id]');
-      const id = idNode.getAttribute('data-legacy-last-message-id');
-      return { email, id };
-    } else {
-      return null;
+  let allEmailsOnPage: EmailId[] = [];
+
+  allMailNodes.forEach((mailNode, idx) => {
+    if (!mailNode.getAttribute('email')) return;
+
+    const email = mailNode.getAttribute('email');
+
+    // if duplicate node, remove it from the main array
+    if (allEmailsOnPage.find(emailObj => emailObj.email === email)) {
+      // remove this duplicate node from array
+      allEmailsOnPage.splice(idx, 1);
+      return;
     }
+
+    const idNode = mailNode
+      .closest('td')
+      .nextElementSibling.querySelector('span[data-legacy-last-message-id]');
+    const id = idNode.getAttribute('data-legacy-last-message-id');
+    allEmailsOnPage.push({ email, id });
   });
 
   // date range

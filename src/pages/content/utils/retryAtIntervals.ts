@@ -14,7 +14,6 @@ export const retryAtIntervals = async <T>({ retries, interval, callback }: Retry
     while (retry < retries) {
       const success = await callback();
 
-      console.log('🚀 ~ file: retryAtIntervals.ts:17 ~ retryAtIntervals ~ success:', success);
 
       if (success) {
         return success;

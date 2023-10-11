@@ -6,6 +6,7 @@ import wait from './utils/wait';
 import { getEmailIdFromPage } from './utils/getEmailIdFromPage';
 import { getSyncStorageByKey } from './utils/getStorageByKey';
 import { embedFreshInboxSettingsBtn } from './view/freshInboxSettingsBtn';
+import { onURLChange } from './utils/onURLChange';
 
 // content script global variables type
 export interface FreshInboxGlobalVariables {
@@ -23,7 +24,7 @@ window.freshInboxGlobalVariables = {
   isMouseOverHoverCard: false,
   isMouseOverFreshInboxAssistantBtn: false,
   userEmail: '',
-  //TODO: change it back to prod during deployment
+  // change it back to prod during deployment
   loggerLevel: 'dev',
 };
 
@@ -34,6 +35,13 @@ window.freshInboxGlobalVariables = {
 
   // query for user email id on page
   freshInboxGlobalVariables.userEmail = await getEmailIdFromPage();
+
+  //TODO: confirm modal don't show again checkbox
+  // showConfirmModal({
+  //   msg: 'Are you sure your want to delete all mails',
+  //   email: 'flipkart-newsletter@flipkar.com',
+  //   onConfirmClick: async () => {},
+  // });
 
   // check if app is enabled or not
   const appStatus = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
@@ -46,6 +54,8 @@ window.freshInboxGlobalVariables = {
     return;
   }
 
+  // app enabled
+  // embed setting button
   embedFreshInboxSettingsBtn({ isDisabled: false });
 
   // get client id from evn variables
@@ -65,6 +75,23 @@ window.freshInboxGlobalVariables = {
   } else {
     //embed assistant button
     await embedAssistantBtn();
+
+    // re-embed assistant button on url changes
+    onURLChange(async url => {
+      // get anchor id form the url
+      const anchorId = url?.split('#').pop();
+
+      // labels/pages to embed the assistant button on
+      const labels = ['inbox', 'starred', 'all', 'spam'];
+
+      //urls to run on with ids: #inbox, #starred, #all, #spam
+      if (anchorId && labels.includes(anchorId)) {
+        // re-embed the assistant button
+        console.log('🚀 ~ file: index.ts:57 ~ re-embed the assistant button: 🔥🔥🔥');
+
+        await embedAssistantBtn();
+      }
+    });
   }
 })();
 
@@ -72,8 +99,7 @@ window.freshInboxGlobalVariables = {
 // Mark the user as logged in during the isAuth check (this user details including token will be used for api, etc.)
 
 // 🔥 re run app on web app changes (url or email table)
-//TODO: Embed/re-Embed assistant button when on inbox url: https://mail.google.com/mail/u/0/#inbox (get id from url, ex:inbox)
-//urls to run on with ids: #inbox, #starred, #all, #spam
+
 //TODO: and also when they see a email and come back to the email table
 
 // 🔥 global utilities

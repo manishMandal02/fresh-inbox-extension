@@ -1,5 +1,5 @@
 import { getAllMailsOnPage } from '@src/pages/content/view/assistantButton/helper/getMailsOnPage';
-import { geCurrentIdFromURL } from '../../utils/geCurrentIdFromURL';
+import { getAnchorIdFromURL } from '../../utils/getAnchorIdFromURL';
 import { getSelectedCategory } from '../../utils/getSelectedCategory';
 import { IMessageBody, IMessageEvent } from '../../types/content.types';
 import { hideHoverCard, showHoverCard } from './hoverCard/assistantHoverCard';
@@ -52,14 +52,18 @@ const handleMouseOut = () => {
 };
 
 // fresh inbox assistant button
-const embedAssistantBtnLogic = async (): Promise<boolean> => {
+const embedAssistantBtnLogic = async (isReEmbedding = false): Promise<boolean> => {
+  if (isReEmbedding) {
+    
+  };
+
   // get all the mails with ids on the page
   const { emails, dateRange, allMailNodes } = getAllMailsOnPage();
 
   if (emails.length < 1) return false;
 
   // get current folder (anchor ids in url like inbox, spam, all, etc.)
-  const currentFolder = geCurrentIdFromURL();
+  const currentFolder = getAnchorIdFromURL();
 
   // get current selected category
   const selectedCategory = getSelectedCategory();
@@ -88,7 +92,7 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
       '🙌 No newsletter emails found on this page.',
       'content/view/assistantButton/index.ts:90 ~ embedAssistantBtnLogic()'
     );
-    return false;
+    return true;
   }
 
   // loop through all mail nodes to embed assistant button

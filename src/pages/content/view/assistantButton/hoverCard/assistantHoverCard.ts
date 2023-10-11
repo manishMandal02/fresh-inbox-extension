@@ -182,8 +182,7 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
     // onClick listener to unsubscribe and delete all mails button
     unsubscribeAndDeleteAllMailsBtn.addEventListener(
       'click',
-      asyncHandler(async (_, ev) => {
-        ev.stopPropagation();
+      asyncHandler(async () => {
         hideHoverCard({ parentElId, forceClose: true });
         await handleUnsubscribeAndDeleteAction({
           email,
@@ -198,8 +197,7 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
     // onClick listener to white list email button
     whiteListEmailBtn.addEventListener(
       'click',
-      asyncHandler(async (_, ev) => {
-        ev.stopPropagation();
+      asyncHandler(async () => {
         hideHoverCard({ parentElId, forceClose: true });
         const isSuccess = await handleWhitelistAction({ email });
         if (isSuccess) {
@@ -221,8 +219,7 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
   // onClick listener to delete all mails button
   deleteAllMailsBtn.addEventListener(
     'click',
-    asyncHandler(async (_, ev) => {
-      ev.stopPropagation();
+    asyncHandler(async () => {
       hideHoverCard({ parentElId, forceClose: true });
       await handleDeleteAllMailsAction({
         email,
