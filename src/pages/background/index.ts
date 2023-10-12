@@ -28,6 +28,8 @@ reloadOnUpdate('pages/content/style.scss');
 
 logger.info('🏁 background script loaded');
 
+// TODO: handle token expire (if the user is logged in for more than 1 hour without closing or refreshing the tab)
+
 // background service global variable
 let token = '';
 

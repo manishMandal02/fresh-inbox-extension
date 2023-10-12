@@ -14,6 +14,11 @@ export const getAllMailsOnPage = (): GetAllMailsOnPageReturn => {
   // get all mail nodes on current page in the table by email attribute
   let allMailNodes = Array.from(document.querySelectorAll(MAIL_NODES_SELECTOR));
 
+  console.log(
+    '🚀 ~ file: getMailsOnPage.ts:29 ~ getAllMailsOnPage ~ allMailNodes.length:: before',
+    allMailNodes.length
+  );
+
   if (allMailNodes.length < 1) {
     logger.error({
       error: new Error('❌ No emails (nodes) found on this page.'),
@@ -25,6 +30,11 @@ export const getAllMailsOnPage = (): GetAllMailsOnPageReturn => {
 
   // select only the nodes that are currently visible on the page
   allMailNodes = allMailNodes.filter(node => node.checkVisibility());
+
+  console.log(
+    '🚀 ~ file: getMailsOnPage.ts:29 ~ getAllMailsOnPage ~ allMailNodes.length:: after',
+    allMailNodes.length
+  );
 
   // date range
   const dateRange = getDateRangeFromNodes(allMailNodes);
