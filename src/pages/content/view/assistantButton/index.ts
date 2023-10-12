@@ -10,7 +10,7 @@ import { logger } from '../../utils/logger';
 
 type HandleMouseOverParams = {
   ev: MouseEvent;
-  assistantBtnContainer: HTMLDivElement;
+  assistantBtnContainer: Element;
   name: string;
   email: string;
 };
@@ -49,6 +49,34 @@ const handleMouseOut = () => {
     });
   }, 400);
   freshInboxGlobalVariables.isMouseOverFreshInboxAssistantBtn = false;
+};
+
+type InitializeAssistantBtnParams = {
+  parent: Element;
+  name: string;
+  email: string;
+};
+
+const initializeAssistantBtn = ({ parent, email, name }: InitializeAssistantBtnParams) => {
+  const assistantBtn = document.createElement('span');
+  assistantBtn.classList.add('freshInbox-assistantBtn');
+
+  // append the button to container
+  parent.appendChild(assistantBtn);
+
+  //* add event listeners to assistant button
+  // on click (currently do nothing, just stop bubbling of event)
+  assistantBtn.addEventListener('click', (ev: MouseEvent) => {
+    ev.stopPropagation();
+  });
+
+  // on hover over listener
+  assistantBtn.addEventListener('mouseover', ev => {
+    handleMouseOver({ ev, name, email, assistantBtnContainer: parent });
+  });
+
+  // on hover out listener
+  assistantBtn.addEventListener('mouseout', handleMouseOut);
 };
 
 // fresh inbox assistant button
@@ -115,42 +143,30 @@ const embedAssistantBtnLogic = async (isURLChanged = false): Promise<boolean> =>
   }
 
   // loop through all mail nodes to embed assistant button
-  for (const email of allMailNodes) {
-    const emailAttr = email.getAttribute('email');
+  for (const emailNode of allMailNodes) {
+    const email = emailNode.getAttribute('email');
 
-    const name = email.getAttribute('name');
+    const name = emailNode.getAttribute('name');
 
     //* skips the iteration if the current email is not a newsletter email
     // assistant button won't be rendered
-    if (!newsletterEmails.includes(emailAttr)) {
+    if (!newsletterEmails.includes(email)) {
       continue;
     }
 
-    // append unsubscribe  button
+    // embed assistant  button
     // container to add unsubscribe button
-    const assistantBtnContainer = email.closest('div');
+    const assistantBtnContainer = emailNode.closest('div');
 
-    const assistantBtn = document.createElement('span');
-    assistantBtn.classList.add('freshInbox-assistantBtn');
-
-    // append the button to container
-    assistantBtnContainer.appendChild(assistantBtn);
-
-    //* add event listeners to assistant button
-    // on click (currently do nothing, just stop bubbling of event)
-    assistantBtn.addEventListener('click', (ev: MouseEvent) => {
-      ev.stopPropagation();
-    });
-
-    // on hover over listener
-    assistantBtn.addEventListener('mouseover', ev => {
-      handleMouseOver({ ev, assistantBtnContainer, name, email: emailAttr });
-    });
-
-    // on hover out listener
-    assistantBtn.addEventListener('mouseout', handleMouseOut);
+    initializeAssistantBtn({ name, email, parent: assistantBtnContainer });
   }
   return true;
+};
+
+// embed single assistant btn (used when single email is opened)
+export const embedSingleAssistantBtn = async ({ parent, name, email }: InitializeAssistantBtnParams) => {
+  // create and initialize all the event listeners
+  initializeAssistantBtn({ parent, name, email });
 };
 
 // embed assistant button with retry logic

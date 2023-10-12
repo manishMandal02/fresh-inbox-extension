@@ -1,4 +1,4 @@
-import { embedAssistantBtn } from './view/assistantButton';
+import { embedAssistantBtn, embedSingleAssistantBtn } from './view/assistantButton';
 import { renderAuthModal } from './view/authModal';
 import { IMessageEvent } from './types/content.types';
 
@@ -7,6 +7,8 @@ import { getEmailIdFromPage } from './utils/getEmailIdFromPage';
 import { getSyncStorageByKey } from './utils/getStorageByKey';
 import { embedFreshInboxSettingsBtn } from './view/freshInboxSettingsBtn';
 import { onURLChange } from './utils/onURLChange';
+import { asyncHandler } from './utils/asyncHandler';
+import { MAIL_NODES_SELECTOR } from './constants/app.constants';
 
 // content script global variables type
 export interface FreshInboxGlobalVariables {
@@ -28,6 +30,70 @@ window.freshInboxGlobalVariables = {
   loggerLevel: 'dev',
 };
 
+// top most container for emails table and also the single email container
+const getTopMostTableContainer = () => {
+  const containerXPath = '/html/body/div[7]/div[3]/div/div[2]/div[2]/div/div/div';
+  return document.evaluate(
+    containerXPath,
+    document, // Context node
+    null, // Namespace resolver
+    XPathResult.FIRST_ORDERED_NODE_TYPE,
+    null
+  ).singleNodeValue;
+};
+
+const listenForClicksOnContainer = () => {
+  const emailsContainer = getTopMostTableContainer();
+
+  emailsContainer.addEventListener(
+    'click',
+    asyncHandler(async () => {
+      // 1. check if assistant button is already added
+
+      const assistantBtn = document.getElementsByClassName('freshInbox-assistantBtn');
+
+      // assistant button present, do nothing
+      if (assistantBtn && assistantBtn.length > 0) return;
+
+      // 2. check if it is an (emails) table container or a single email container
+
+      // 2.1 checking for single email container
+      // check if it has a print mail button
+      const printEmailBtn = document.querySelector('button[aria-label="Print all"]');
+      if (printEmailBtn) {
+        // this is a single email container
+
+        // get email node
+        const emailNode = document.querySelector('tbody > tr > td span[email] > span')?.parentElement;
+
+        if (!emailNode) return;
+        
+        // get email id of current opened email
+        const email = emailNode.getAttribute('email');
+        // get name
+        const name = emailNode.getAttribute('name');
+        const assistantBtnContainer = printEmailBtn.closest('div');
+
+        // embed the assistant button for single mail
+        embedSingleAssistantBtn({ parent: assistantBtnContainer, email, name });
+
+        return;
+      }
+
+      // 2.2 checking for (emails) table container
+      // check for row with sender email
+      const emailRow = document.querySelector(MAIL_NODES_SELECTOR);
+      if (emailRow) {
+        // this is emails table
+
+        // embed assistant buttons on newsletter emails
+        embedAssistantBtn(true);
+      }
+      return;
+    })
+  );
+};
+
 // 🏁 main fn (starting point)
 (async () => {
   // wait 2s
@@ -42,6 +108,9 @@ window.freshInboxGlobalVariables = {
   //   email: 'flipkart-newsletter@flipkar.com',
   //   onConfirmClick: async () => {},
   // });
+
+  //TODO: testing..
+  return;
 
   // check if app is enabled or not
   const appStatus = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
