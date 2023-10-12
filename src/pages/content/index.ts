@@ -45,34 +45,48 @@ const getTopMostTableContainer = () => {
 const listenForClicksOnContainer = () => {
   const emailsContainer = getTopMostTableContainer();
 
+  console.log('🚀 ~ file: index.ts:48 ~ listenForClicksOnContainer ~ emailsContainer:', emailsContainer);
+
   emailsContainer.addEventListener(
     'click',
     asyncHandler(async () => {
       // 1. check if assistant button is already added
 
+      await wait(500);
+
       const assistantBtn = document.getElementsByClassName('freshInbox-assistantBtn');
 
+      console.log('🚀 ~ file: index.ts:57 ~ asyncHandler ~ assistantBtn:', assistantBtn);
+
       // assistant button present, do nothing
-      if (assistantBtn && assistantBtn.length > 0) return;
+      if (assistantBtn && assistantBtn.length > 0 && !![...assistantBtn].find(btn => btn.checkVisibility()))
+        return;
 
       // 2. check if it is an (emails) table container or a single email container
 
       // 2.1 checking for single email container
       // check if it has a print mail button
       const printEmailBtn = document.querySelector('button[aria-label="Print all"]');
+
+      console.log('🚀 ~ file: index.ts:69 ~ asyncHandler ~ printEmailBtn:', printEmailBtn);
+
       if (printEmailBtn) {
         // this is a single email container
 
         // get email node
         const emailNode = document.querySelector('tbody > tr > td span[email] > span')?.parentElement;
 
+        console.log('🚀 ~ file: index.ts:69 ~ asyncHandler ~ emailNode:', emailNode);
+
         if (!emailNode) return;
-        
+
         // get email id of current opened email
         const email = emailNode.getAttribute('email');
         // get name
         const name = emailNode.getAttribute('name');
-        const assistantBtnContainer = printEmailBtn.closest('div');
+        const assistantBtnContainer = printEmailBtn.closest('div').parentElement;
+
+        console.log('🚀 ~ file: index.ts:85 ~ asyncHandler ~ assistantBtnContainer:', assistantBtnContainer);
 
         // embed the assistant button for single mail
         embedSingleAssistantBtn({ parent: assistantBtnContainer, email, name });
@@ -83,13 +97,15 @@ const listenForClicksOnContainer = () => {
       // 2.2 checking for (emails) table container
       // check for row with sender email
       const emailRow = document.querySelector(MAIL_NODES_SELECTOR);
+
+      console.log('🚀 ~ file: index.ts:97 ~ asyncHandler ~ emailRow:', emailRow);
+
       if (emailRow) {
         // this is emails table
 
         // embed assistant buttons on newsletter emails
         embedAssistantBtn(true);
       }
-      return;
     })
   );
 };
@@ -108,9 +124,6 @@ const listenForClicksOnContainer = () => {
   //   email: 'flipkart-newsletter@flipkar.com',
   //   onConfirmClick: async () => {},
   // });
-
-  //TODO: testing..
-  return;
 
   // check if app is enabled or not
   const appStatus = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
@@ -156,21 +169,15 @@ const listenForClicksOnContainer = () => {
       //urls to run on with ids: #inbox, #starred, #all, #spam
       if (anchorId && labels.includes(anchorId)) {
         // re-embed the assistant button
-        console.log('🚀 ~ file: index.ts:57 ~ re-embed the assistant button: 🔥🔥🔥');
 
         await embedAssistantBtn(true);
       }
     });
+
+    // watch for changes to email table container
+    // so that we can know if it's a emails table or a single emailed opened and embed assistant button accordingly
+    listenForClicksOnContainer();
   }
 })();
 
-// save multiple auth token associated with the user based on the email id
-// Mark the user as logged in during the isAuth check (this user details including token will be used for api, etc.)
-
-// 🔥 re run app on web app changes (url or email table)
-
-//TODO: and also when they see a email and come back to the email table
-
-// 🔥 global utilities
-
-// TODO: add the chrome runtime error method, that can handler unhandled errors
+// TODO: complete all the necessary TODO comments

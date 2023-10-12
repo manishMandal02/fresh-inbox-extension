@@ -7,9 +7,10 @@ import { randomId } from '../../utils/randomId';
 import { retryAtIntervals } from '../../utils/retryAtIntervals';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { logger } from '../../utils/logger';
+import wait from '../../utils/wait';
 
 type HandleMouseOverParams = {
-  ev: MouseEvent;
+  ev?: MouseEvent;
   assistantBtnContainer: Element;
   name: string;
   email: string;
@@ -17,8 +18,8 @@ type HandleMouseOverParams = {
 
 // handle hover
 // mouse over
-const handleMouseOver = ({ ev, assistantBtnContainer, name, email }: HandleMouseOverParams) => {
-  ev.stopPropagation();
+const handleMouseOver = async ({ ev, assistantBtnContainer, name, email }: HandleMouseOverParams) => {
+  ev?.stopPropagation();
 
   // if hover card is already shown, do nothing
   if (assistantBtnContainer.contains(document.getElementById('freshInbox-hoverCard'))) return;
@@ -27,16 +28,14 @@ const handleMouseOver = ({ ev, assistantBtnContainer, name, email }: HandleMouse
   assistantBtnContainer.id = freshInboxGlobalVariables.assistantBtnContainerId;
   //
   freshInboxGlobalVariables.isMouseOverFreshInboxAssistantBtn = true;
-  setTimeout(
-    asyncHandler(async () => {
-      await showHoverCard({
-        name,
-        email,
-        parentElId: freshInboxGlobalVariables.assistantBtnContainerId,
-      });
-    }),
-    300
-  );
+
+  await wait(200);
+
+  await showHoverCard({
+    name,
+    email,
+    parentElId: freshInboxGlobalVariables.assistantBtnContainerId,
+  });
 };
 
 //  mouse out
@@ -55,11 +54,17 @@ type InitializeAssistantBtnParams = {
   parent: Element;
   name: string;
   email: string;
+  isSingle?: boolean;
 };
 
-const initializeAssistantBtn = ({ parent, email, name }: InitializeAssistantBtnParams) => {
+const initializeAssistantBtn = ({ parent, email, name, isSingle }: InitializeAssistantBtnParams) => {
   const assistantBtn = document.createElement('span');
+
   assistantBtn.classList.add('freshInbox-assistantBtn');
+
+  if (isSingle) {
+    assistantBtn.classList.add('singleEmail');
+  }
 
   // append the button to container
   parent.appendChild(assistantBtn);
@@ -71,9 +76,23 @@ const initializeAssistantBtn = ({ parent, email, name }: InitializeAssistantBtnP
   });
 
   // on hover over listener
-  assistantBtn.addEventListener('mouseover', ev => {
-    handleMouseOver({ ev, name, email, assistantBtnContainer: parent });
-  });
+  assistantBtn.addEventListener(
+    'mouseover',
+    asyncHandler(async () => {
+      console.log('🚀 ~ file: index.ts:94 ~ initializeAssistantBtn ~ mouseover:');
+
+      await handleMouseOver({ ev: null, name, email, assistantBtnContainer: parent });
+      // add single class to the button if it is a single email (to get correct positioning)
+      if (isSingle) {
+        const hoveredCard = document.getElementById('freshInbox-hoverCard');
+
+        console.log('🚀 ~ file: index.ts:86 ~ initializeAssistantBtn ~ hoveredCard:', hoveredCard);
+
+        if (!hoveredCard) return;
+        hoveredCard.classList.add('singleEmail');
+      }
+    })
+  );
 
   // on hover out listener
   assistantBtn.addEventListener('mouseout', handleMouseOut);
@@ -84,20 +103,16 @@ const embedAssistantBtnLogic = async (isURLChanged = false): Promise<boolean> =>
   // remove the previous assistant buttons if the url changed
   if (isURLChanged) {
     const assistantsButtons = document.getElementsByClassName('freshInbox-assistantBtn');
-    // TODO: error not removing all the buttons
 
     // while loop to check if the buttons are removed or not
     // as the for loop below didn't remove all the buttons in one go
     while (assistantsButtons.length > 0) {
-      console.log('🚀 ~ file: index.ts:63 ~ embedAssistantBtnLogic ~ assistantsButtons:', assistantsButtons);
-
       // remove all the buttons
       for (const btn of assistantsButtons) {
         btn.remove();
       }
     }
   }
-
   // get all the mails with ids on the page
   const { emails, dateRange, allMailNodes } = getAllMailsOnPage();
 
@@ -164,9 +179,15 @@ const embedAssistantBtnLogic = async (isURLChanged = false): Promise<boolean> =>
 };
 
 // embed single assistant btn (used when single email is opened)
-export const embedSingleAssistantBtn = async ({ parent, name, email }: InitializeAssistantBtnParams) => {
+export const embedSingleAssistantBtn = async ({
+  parent,
+  name,
+  email,
+}: Omit<InitializeAssistantBtnParams, 'isSingle'>) => {
+  // position parent container relative, so assistant button can be positioned absolute to it
+  (parent as HTMLDivElement).style.position = 'relative';
   // create and initialize all the event listeners
-  initializeAssistantBtn({ parent, name, email });
+  initializeAssistantBtn({ parent, name, email, isSingle: true });
 };
 
 // embed assistant button with retry logic
@@ -176,8 +197,6 @@ export const embedAssistantBtn = async (isURLChanged = false) => {
   await retryAtIntervals<boolean>({
     retries: 3,
     interval: 2000,
-    callback: async () => {
-      return await embedAssistantBtnLogic(isURLChanged);
-    },
+    callback: async () => await embedAssistantBtnLogic(isURLChanged),
   });
 };

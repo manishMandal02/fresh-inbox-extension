@@ -19,6 +19,8 @@ export interface IHoverCardElements {
   unsubscribeAndDeleteAllMailsBtn: HTMLButtonElement;
 }
 
+const HOVER_CARD_ID = 'freshInbox-hoverCard';
+
 // hide button
 const hideButtons = (buttons: HTMLButtonElement[]) => {
   for (const btn of buttons) {
@@ -82,7 +84,7 @@ const createHoverCardElements = (): IHoverCardElements => {
   const unsubscribeAndDeleteAllMailsBtn = document.createElement('button');
 
   /// add classnames
-  hoverCard.id = 'freshInbox-hoverCard';
+  hoverCard.id = HOVER_CARD_ID;
   label.classList.add('hoverCard-label');
   btnContainer.id = 'hoverCard-btnContainer';
 
@@ -132,7 +134,7 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
   } = createHoverCardElements();
 
   // check if the any other hover card is already shown
-  const prevHoverCard = document.getElementById('freshInbox-hoverCard');
+  const prevHoverCard = document.getElementById(HOVER_CARD_ID);
   if (prevHoverCard) {
     // remove all children of the previous hover card
     prevHoverCard.replaceChildren();
@@ -262,7 +264,7 @@ export const hideHoverCard = ({ parentElId, forceClose }: HideHoverCardParams) =
     return;
 
   // get hover card el from id
-  const hoverCard = document.getElementById('freshInbox-hoverCard');
+  const hoverCard = document.getElementById(HOVER_CARD_ID);
 
   if (!hoverCard) return;
 
