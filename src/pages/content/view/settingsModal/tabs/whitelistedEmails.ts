@@ -186,9 +186,7 @@ const removeWhitelistedEmailsTab = () => {
   if (!whitelistedEmailsTabContainer) return;
 
   // removes all it's child elements
-  while (whitelistedEmailsTabContainer.firstChild) {
-    whitelistedEmailsTabContainer.removeChild(whitelistedEmailsTabContainer.firstChild);
-  }
+  whitelistedEmailsTabContainer.replaceChildren();
 
   whitelistedEmailsTabContainer.remove();
 };

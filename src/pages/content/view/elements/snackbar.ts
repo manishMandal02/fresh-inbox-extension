@@ -43,9 +43,7 @@ const hideLoadingSnackbar = () => {
   if (!container) return;
   container.style.display = 'none';
   // removes all it's child elements
-  while (container.firstChild) {
-    container.removeChild(container.firstChild);
-  }
+  container.replaceChildren();
   // remove the container el from dom
   container.remove();
 };

@@ -19,9 +19,6 @@ export interface IHoverCardElements {
   unsubscribeAndDeleteAllMailsBtn: HTMLButtonElement;
 }
 
-// TODO: a bug that stops the hover card from removing when the mouse is moved out of the button or card
-//TODO:  handle the removal of previous hover card before rendering a new one
-
 // hide button
 const hideButtons = (buttons: HTMLButtonElement[]) => {
   for (const btn of buttons) {
@@ -74,7 +71,6 @@ const handleMouseOut = () => {
 
 // create hover card elements
 const createHoverCardElements = (): IHoverCardElements => {
-  // create hoverCard elements
   // main container
   const hoverCard = document.createElement('div');
   const label = document.createElement('div');
@@ -134,6 +130,15 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
     deleteAllMailsBtn,
     unsubscribeAndDeleteAllMailsBtn,
   } = createHoverCardElements();
+
+  // check if the any other hover card is already shown
+  const prevHoverCard = document.getElementById('freshInbox-hoverCard');
+  if (prevHoverCard) {
+    // remove all children of the previous hover card
+    prevHoverCard.replaceChildren();
+    // remove the previous hover card
+    prevHoverCard.remove();
+  }
 
   // get parent el from id
   const parentEl = document.getElementById(parentElId);
@@ -268,6 +273,9 @@ export const hideHoverCard = ({ parentElId, forceClose }: HideHoverCardParams) =
     // hide the card
     hoverCard.style.display = 'none';
     hoverCard.style.visibility = 'hidden';
+
+    // remove all children from hover card
+    hoverCard.replaceChildren();
 
     // remove hover card from parentEl
     parentEl.removeChild(hoverCard);

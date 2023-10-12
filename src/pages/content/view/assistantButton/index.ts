@@ -58,9 +58,12 @@ const embedAssistantBtnLogic = async (isURLChanged = false): Promise<boolean> =>
     const assistantsButtons = document.getElementsByClassName('freshInbox-assistantBtn');
     // TODO: error not removing all the buttons
 
+    // while loop to check if the buttons are removed or not
+    // as the for loop below didn't remove all the buttons in one go
     while (assistantsButtons.length > 0) {
       console.log('🚀 ~ file: index.ts:63 ~ embedAssistantBtnLogic ~ assistantsButtons:', assistantsButtons);
 
+      // remove all the buttons
       for (const btn of assistantsButtons) {
         btn.remove();
       }

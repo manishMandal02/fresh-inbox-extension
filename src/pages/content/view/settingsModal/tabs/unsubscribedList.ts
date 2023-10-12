@@ -159,9 +159,7 @@ const removeUnsubscribedListTab = () => {
   if (!unsubscribedListTabContainer) return;
 
   // removes all it's child elements
-  while (unsubscribedListTabContainer.firstChild) {
-    unsubscribedListTabContainer.removeChild(unsubscribedListTabContainer.firstChild);
-  }
+  unsubscribedListTabContainer.replaceChildren();
 
   unsubscribedListTabContainer.remove();
 };

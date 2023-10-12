@@ -238,9 +238,7 @@ const removeNewsletterTab = () => {
   if (!newsletterTabContainer) return;
 
   // removes all it's child elements
-  while (newsletterTabContainer.firstChild) {
-    newsletterTabContainer.removeChild(newsletterTabContainer.firstChild);
-  }
+  newsletterTabContainer.replaceChildren();
 
   newsletterTabContainer.remove();
 };
