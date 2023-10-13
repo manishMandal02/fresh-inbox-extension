@@ -245,6 +245,7 @@ export const showHoverCard = async ({ parentElId, email, name, isSingleEmail }: 
         email,
         onSuccess: async () => {
           // refresh the the table or go back to inbox based on the current container/page
+
           !isSingleEmail ? await refreshEmailsTable() : await goBackToInbox();
         },
       });

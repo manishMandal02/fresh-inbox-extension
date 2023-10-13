@@ -1,5 +1,6 @@
 //* the refresh button doesn't have a consistent selector to target it
 
+import wait from '@src/pages/content/utils/wait';
 import { logger } from '../../../utils/logger';
 
 // dispatches custom mouse events to simulate a click event (used for buttons on gmail table)
@@ -64,7 +65,7 @@ export const goBackToInbox = () => {
     'div[data-tooltip="Back to Inbox"]',
     'div[aria-label="Back to Inbox"]',
   ];
-  return new Promise<string>((resolve, reject) => {
+  return new Promise<string>(async (resolve, reject) => {
     let goBackToInboxBtn: HTMLDivElement | null = null;
 
     // loop through selectors to find go back to inbox button
@@ -85,6 +86,11 @@ export const goBackToInbox = () => {
     }
 
     dispatchClickEvent(goBackToInboxBtn);
+
+    // wait for 250ms (to load all the elements including the refresh btn)
+    await wait(250);
+    // refresh table
+    await refreshEmailsTable();
 
     resolve('success');
   });
