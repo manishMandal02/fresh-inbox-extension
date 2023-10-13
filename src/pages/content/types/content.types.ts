@@ -25,7 +25,7 @@ export type DateRange = {
   endDate: string; // yyyy-mm-dd
 };
 
-export type GmailFolder = 'all' | 'inbox' | 'spam';
+export type GmailFolder = 'all' | 'inbox' | 'spam' | 'starred';
 
 // for checking newsletter emails on page
 export interface DataOnPage {

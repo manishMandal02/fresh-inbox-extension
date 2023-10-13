@@ -11,10 +11,6 @@ export const getDateRangeFromNodes = (nodes: Element[]) => {
     .querySelector('td[role=gridcell]>span[title]')
     .getAttribute('title');
 
-  console.log('🚀 ~ file: getDateRangeFromNodes.ts:8 ~ getDateRangeFromNodes ~ startDate:', startDate);
-
-  console.log('🚀 ~ file: getDateRangeFromNodes.ts:14 ~ getDateRangeFromNodes ~ endDate:', endDate);
-
   return {
     startDate: formatDate(startDate),
     endDate: formatDate(endDate),

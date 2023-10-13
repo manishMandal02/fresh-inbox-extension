@@ -1,7 +1,7 @@
 import { MAIL_NODES_SELECTOR } from '@src/pages/content/constants/app.constants';
 import type { DateRange, EmailId } from '../../../types/content.types';
-import { getDateRangeFromNodes } from '@src/pages/content/view/assistantButton/helper/getDateRangeFromNodes';
 import { logger } from '@src/pages/content/utils/logger';
+import { getDateRangeFromNodes } from './getDateRangeFromNodes';
 
 type GetAllMailsOnPageReturn = {
   emails: EmailId[];
@@ -11,13 +11,8 @@ type GetAllMailsOnPageReturn = {
 
 // get all the mails with ids on the page
 export const getAllMailsOnPage = (): GetAllMailsOnPageReturn => {
-  // get all mail nodes on current page in the table by email attribute
+  // get all mail nodes on current page of the table by email attribute
   let allMailNodes = Array.from(document.querySelectorAll(MAIL_NODES_SELECTOR));
-
-  console.log(
-    '🚀 ~ file: getMailsOnPage.ts:29 ~ getAllMailsOnPage ~ allMailNodes.length:: before',
-    allMailNodes.length
-  );
 
   if (allMailNodes.length < 1) {
     logger.error({
@@ -30,11 +25,6 @@ export const getAllMailsOnPage = (): GetAllMailsOnPageReturn => {
 
   // select only the nodes that are currently visible on the page
   allMailNodes = allMailNodes.filter(node => node.checkVisibility());
-
-  console.log(
-    '🚀 ~ file: getMailsOnPage.ts:29 ~ getAllMailsOnPage ~ allMailNodes.length:: after',
-    allMailNodes.length
-  );
 
   // date range
   const dateRange = getDateRangeFromNodes(allMailNodes);

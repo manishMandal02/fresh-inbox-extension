@@ -1,7 +1,8 @@
 //* the refresh button doesn't have a consistent selector to target it
 
-import { logger } from './logger';
+import { logger } from '../../../utils/logger';
 
+// dispatches custom mouse events to simulate a click event (used for buttons on gmail table)
 const dispatchClickEvent = (el: Element) => {
   // Simulate a mousedown event
   const mousedownEvent = new MouseEvent('mousedown', {
@@ -28,6 +29,7 @@ const dispatchClickEvent = (el: Element) => {
   el.dispatchEvent(mouseoutEvent);
 };
 
+// refreshes inbox table
 export const refreshEmailsTable = () => {
   const refreshBtnSelectors = ['div[title="Refresh"]', '[aria-label="Refresh"]', '[data-tooltip="Refresh"]'];
   return new Promise<string>((resolve, reject) => {
@@ -55,11 +57,13 @@ export const refreshEmailsTable = () => {
   });
 };
 
-// go back to inbox btn selectors
-// [['data-tooltip="Back to Inbox"'], ['aria-label="Back to Inbox"']]
-
+// goes back to inbox from single mail view
 export const goBackToInbox = () => {
-  const goBackToInboxBtnSelectors = ['div[data-tooltip="Back to Inbox"]', 'div[aria-label="Back to Inbox"]'];
+  const goBackToInboxBtnSelectors = [
+    'div[title="Back to Inbox"]',
+    'div[data-tooltip="Back to Inbox"]',
+    'div[aria-label="Back to Inbox"]',
+  ];
   return new Promise<string>((resolve, reject) => {
     let goBackToInboxBtn: HTMLDivElement | null = null;
 

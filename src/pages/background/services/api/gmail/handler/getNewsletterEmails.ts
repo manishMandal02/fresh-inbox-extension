@@ -1,5 +1,5 @@
 import { API_MAX_RESULT, storageKeys } from '@src/pages/background/constants/app.constants';
-import { NewsletterEmails } from '@src/pages/background/types/background.types';
+import type { NewsletterEmails } from '@src/pages/background/types/background.types';
 import { removeDuplicateEmails } from '@src/pages/background/utils/removeDuplicateEmails';
 import { getUnsubscribedEmails } from './getUnsubscribedEmails';
 import { getWhitelistedEmails } from './getWhitelistedEmails';
@@ -170,7 +170,6 @@ export const getNewsletterEmails = async (token: string) => {
       }
 
       //* check if these emails are already unsubscribed or whitelisted
-      // TODO: this is not working, check
       if (newsletterEmails.length > 0) {
         const unsubscribedEmails = await getUnsubscribedEmails(token);
 

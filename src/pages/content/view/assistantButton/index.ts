@@ -1,6 +1,5 @@
-import { getAllMailsOnPage } from '@src/pages/content/view/assistantButton/helper/getMailsOnPage';
-import { getAnchorIdFromURL } from '../../utils/getAnchorIdFromURL';
-import { getSelectedCategory } from '../../utils/getSelectedCategory';
+import { getAnchorIdFromURL } from './helper/getAnchorIdFromURL';
+import { getSelectedCategory } from './helper/getSelectedCategory';
 import { IMessageBody, IMessageEvent } from '../../types/content.types';
 import { hideHoverCard, showHoverCard } from './hoverCard/assistantHoverCard';
 import { randomId } from '../../utils/randomId';
@@ -8,17 +7,26 @@ import { retryAtIntervals } from '../../utils/retryAtIntervals';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { logger } from '../../utils/logger';
 import wait from '../../utils/wait';
+import { isSupportedURL } from './helper/isSupportedURL';
+import { getOpenedContainerType } from './helper/getOpenedContainerType';
+import { getAllMailsOnPage } from './helper/getMailsOnPage';
 
 type HandleMouseOverParams = {
   ev?: MouseEvent;
   assistantBtnContainer: Element;
   name: string;
   email: string;
+  isSingleEmail?: boolean;
 };
 
-// handle hover
-// mouse over
-const handleMouseOver = async ({ ev, assistantBtnContainer, name, email }: HandleMouseOverParams) => {
+// hover: mouse over
+const handleMouseOver = async ({
+  ev,
+  assistantBtnContainer,
+  name,
+  email,
+  isSingleEmail,
+}: HandleMouseOverParams) => {
   ev?.stopPropagation();
 
   // if hover card is already shown, do nothing
@@ -34,11 +42,12 @@ const handleMouseOver = async ({ ev, assistantBtnContainer, name, email }: Handl
   await showHoverCard({
     name,
     email,
+    isSingleEmail,
     parentElId: freshInboxGlobalVariables.assistantBtnContainerId,
   });
 };
 
-//  mouse out
+// hover:  mouse out
 const handleMouseOut = () => {
   const { assistantBtnContainerId } = freshInboxGlobalVariables;
 
@@ -54,20 +63,20 @@ type InitializeAssistantBtnParams = {
   assistantBtnContainer: Element;
   name: string;
   email: string;
-  isSingle?: boolean;
+  isSingleEmail?: boolean;
 };
 
 const initializeAssistantBtn = ({
   assistantBtnContainer,
   email,
   name,
-  isSingle,
+  isSingleEmail,
 }: InitializeAssistantBtnParams) => {
   const assistantBtn = document.createElement('span');
 
   assistantBtn.classList.add('freshInbox-assistantBtn');
 
-  if (isSingle) {
+  if (isSingleEmail) {
     assistantBtn.classList.add('singleEmail');
   }
 
@@ -84,14 +93,7 @@ const initializeAssistantBtn = ({
   assistantBtn.addEventListener(
     'mouseover',
     asyncHandler(async () => {
-      await handleMouseOver({ ev: null, name, email, assistantBtnContainer });
-      // add single class to the button if it is a single email (to get correct positioning)
-      if (isSingle) {
-        const hoveredCard = document.getElementById('freshInbox-hoverCard');
-
-        if (!hoveredCard) return;
-        hoveredCard.classList.add('singleEmail');
-      }
+      await handleMouseOver({ ev: null, name, email, assistantBtnContainer, isSingleEmail });
     })
   );
 
@@ -100,9 +102,9 @@ const initializeAssistantBtn = ({
 };
 
 // fresh inbox assistant button
-const embedAssistantBtnLogic = async (isURLChanged = false): Promise<boolean> => {
+const embedAssistantBtnLogic = async (isReEmbedding = false): Promise<boolean> => {
   // remove the previous assistant buttons if the url changed
-  if (isURLChanged) {
+  if (isReEmbedding) {
     const assistantsButtons = document.getElementsByClassName('freshInbox-assistantBtn');
 
     // while loop to check if the buttons are removed or not
@@ -143,8 +145,6 @@ const embedAssistantBtnLogic = async (isURLChanged = false): Promise<boolean> =>
     newsletterEmails = res;
   }
 
-  console.log('🚀 ~ file: index.ts:101 ~ embedAssistantBtnLogic ~ newsletterEmails:', newsletterEmails);
-
   // do nothing if no newsletter emails found
   if (newsletterEmails.length < 1) {
     logger.info(
@@ -180,8 +180,6 @@ export const embedSingleAssistantBtn = async () => {
   // get print email button
   const printEmailBtn = document.querySelector('button[aria-label="Print all"]');
 
-  console.log('🚀 ~ file: index.ts:183 ~ embedSingleAssistantBtn ~ printEmailBtn:', printEmailBtn);
-
   // get the parent container of print email button to embed assistant button
   const assistantBtnContainer = printEmailBtn.closest('div').parentElement;
 
@@ -201,16 +199,50 @@ export const embedSingleAssistantBtn = async () => {
   const name = emailNode.getAttribute('name');
 
   // create and initialize all the event listeners
-  initializeAssistantBtn({ assistantBtnContainer, name, email, isSingle: true });
+  initializeAssistantBtn({ assistantBtnContainer, name, email, isSingleEmail: true });
 };
 
 // embed assistant button with retry logic
-export const embedAssistantBtn = async (isURLChanged = false) => {
-  // retry to check if the emails are found on page or not
-  // if not, then retry it for 3 times with 2 seconds interval
-  await retryAtIntervals<boolean>({
-    retries: 3,
-    interval: 2000,
-    callback: async () => await embedAssistantBtnLogic(isURLChanged),
-  });
+export const embedAssistantBtn = async (isReEmbedding = false) => {
+  // check for container type & embed assistant button accordingly
+  const containerType = getOpenedContainerType();
+
+  console.log('🚀 ~ file: index.ts:210 ~ embedAssistantBtn ~ containerType:', containerType);
+
+  if (!containerType) {
+    // not a supported container type
+    logger.info('Not supported container type');
+    return;
+  }
+
+  // check if current url is supported && current tab/page is inbox container
+  // supported url/labels (inbox, starred, all, spam)
+  if (isSupportedURL() && containerType === 'inbox') {
+    console.log('🚀 ~ file: index.ts:222 ~ embedAssistantBtn ~ isSupportedURL:', isSupportedURL());
+
+    // re-embed the assistant button
+    // this is a supported url
+
+    if (containerType === 'inbox') {
+      // this is inbox
+      // embed assistant buttons on newsletter emails
+    }
+
+    // retry to check if the emails are found on page or not
+    // if not, then retry it for 3 times with 2 seconds interval
+    await retryAtIntervals<boolean>({
+      retries: 3,
+      interval: 2000,
+      callback: async () => await embedAssistantBtnLogic(isReEmbedding),
+    });
+
+    return;
+  }
+
+  if (containerType === 'singleEmail') {
+    // this is a single email container
+
+    // embed the assistant button
+    embedSingleAssistantBtn();
+  }
 };

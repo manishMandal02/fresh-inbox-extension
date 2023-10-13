@@ -1,4 +1,7 @@
-import { refreshEmailsTable } from '@src/pages/content/utils/dispatchClickEvents';
+import {
+  goBackToInbox,
+  refreshEmailsTable,
+} from '@src/pages/content/view/assistantButton/helper/dispatchClickEvents';
 import {
   handleUnsubscribeAction,
   handleDeleteAllMailsAction,
@@ -122,9 +125,10 @@ type ShowHoverCardParams = {
   parentElId: string;
   email: string;
   name: string;
+  isSingleEmail?: boolean;
 };
 
-export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardParams) => {
+export const showHoverCard = async ({ parentElId, email, name, isSingleEmail }: ShowHoverCardParams) => {
   const {
     hoverCard,
     label,
@@ -147,6 +151,11 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
   const parentEl = document.getElementById(parentElId);
 
   parentEl.appendChild(hoverCard);
+
+  // add single class to the button if it is a single email (to get correct positioning)
+  if (isSingleEmail) {
+    hoverCard.classList.add('singleEmail');
+  }
 
   // add text to label
   label.innerHTML = `<p>Email Actions for <strong>${limitCharLength(name, 20)}</strong></p>`;
@@ -198,8 +207,8 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
         await handleUnsubscribeAndDeleteAction({
           email,
           onSuccess: async () => {
-            // refresh the the table
-            await refreshEmailsTable();
+            // refresh the the table or go back to inbox based on the current container/page
+            !isSingleEmail ? await refreshEmailsTable() : await goBackToInbox();
           },
         });
       })
@@ -235,8 +244,8 @@ export const showHoverCard = async ({ parentElId, email, name }: ShowHoverCardPa
       await handleDeleteAllMailsAction({
         email,
         onSuccess: async () => {
-          // refresh the the table
-          await refreshEmailsTable();
+          // refresh the the table or go back to inbox based on the current container/page
+          !isSingleEmail ? await refreshEmailsTable() : await goBackToInbox();
         },
       });
     })

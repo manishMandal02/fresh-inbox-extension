@@ -8,7 +8,6 @@ import { getSyncStorageByKey } from './utils/getStorageByKey';
 import { embedFreshInboxSettingsBtn } from './view/freshInboxSettingsBtn';
 import { onURLChange } from './utils/onURLChange';
 import { asyncHandler } from './utils/asyncHandler';
-import { MAIL_NODES_SELECTOR } from './constants/app.constants';
 import { logger } from './utils/logger';
 
 // content script global variables type
@@ -36,64 +35,13 @@ const getTopMostTableContainer = () => {
   const containerXPath = '/html/body/div[7]/div[3]/div/div[2]/div[2]/div/div/div';
   return document.evaluate(
     containerXPath,
-    document, // Context node
-    null, // Namespace resolver
+    // Context node
+    document,
+    // Namespace resolver
+    null,
     XPathResult.FIRST_ORDERED_NODE_TYPE,
     null
   ).singleNodeValue;
-};
-
-// checks if the current url is supported (inbox, starred, all, spam)
-const isSupportedURL = () => {
-  // get anchor id form the url
-
-  const anchorId = location.href.split('#')?.pop();
-
-  // labels/pages to embed the assistant button on
-  const supportedLabels = ['inbox', 'starred', 'all', 'spam'];
-
-  // check if anchor id is present and it is one of the supported labels
-  if (anchorId && supportedLabels.includes(anchorId)) {
-    // supported url
-    return true;
-  }
-  // not supported url
-  return false;
-};
-
-// watch for url change
-// re-embed assistant button if the changed url is supported
-const reEmbedAssistantBtnOnURLChange = () => {
-  // watch for url change
-  onURLChange(async () => {
-    // check if the url is supported (inbox, starred, all, spam)
-    if (isSupportedURL()) {
-      // this is a supported url
-      // re-embed the assistant button
-      await embedAssistantBtn(true);
-    }
-  });
-};
-
-// get the opened container type (inbox or single email)
-const getOpenedContainerType = (): 'inbox' | 'singleEmail' => {
-  // checking for single email container
-  // check if it has a print mail button
-  const printEmailBtn = document.querySelector('button[aria-label="Print all"]');
-
-  if (printEmailBtn) {
-    return 'singleEmail';
-  }
-
-  // checking for inbox inbox
-  // check for row with sender email
-  const emailRow = document.querySelector(MAIL_NODES_SELECTOR);
-
-  if (emailRow) {
-    return 'inbox';
-  }
-
-  return null;
 };
 
 // watch for main container click (if a single is opened or navigated to diff categories)
@@ -104,41 +52,18 @@ const reEmbedAssistantBtnOnContainerClick = () => {
   emailsContainer.addEventListener(
     'click',
     asyncHandler(async () => {
-      // 1. check if assistant button is already added
-
       await wait(500);
 
       const assistantBtn = document.getElementsByClassName('freshInbox-assistantBtn');
 
-      // assistant button present, do nothing
+      // check if assistant button is already present
+      // if present, do nothing
       if (assistantBtn && assistantBtn.length > 0 && !![...assistantBtn].find(btn => btn.checkVisibility()))
         return;
 
-      //  check if it is an inbox container or a single email container
-
-      const containerType = getOpenedContainerType();
-
-      if (!containerType) {
-        // not a supported container type
-        logger.info('Not supported container type');
-        return;
-      }
-
-      if (containerType === 'singleEmail') {
-        // this is a single email container
-
-        // embed the assistant button
-        embedSingleAssistantBtn();
-
-        return;
-      }
-
-      if (containerType === 'inbox') {
-        // this is inbox
-
-        // embed assistant buttons on newsletter emails
-        embedAssistantBtn(true);
-      }
+      // assistant button not found
+      // embed assistant
+      embedAssistantBtn(true);
     })
   );
 };
@@ -188,28 +113,18 @@ const reEmbedAssistantBtnOnContainerClick = () => {
     // show auth modal to allow users to give app access to gmail service
     renderAuthModal();
   } else {
-    // check current url is a supported url
-    if (isSupportedURL()) {
-      console.log('🚀 ~ file: index.ts:194 ~ isSupportedURL:', isSupportedURL());
+    // embed assistant button
 
-      // check for container type & embed assistant button accordingly
-      const containerType = getOpenedContainerType();
+    await embedAssistantBtn();
 
-      console.log('🚀 ~ file: index.ts:198 ~ containerType:', containerType);
+    // watch url change:  re-embed assistant button on url changes (if url supported)
+    onURLChange(async () => {
+      console.log('🚀 ~ file: index.ts:122 ~ onURLChange ~ onURLChange:');
 
-      if (containerType === 'inbox') {
-        //embed multiple assistant buttons on newsletter emails
-        await embedAssistantBtn();
-      } else if (containerType === 'singleEmail') {
-        // embed single assistant button
-        embedSingleAssistantBtn();
-      }
-    }
+      await embedAssistantBtn(true);
+    });
 
-    // re-embed assistant button on url changes
-    reEmbedAssistantBtnOnURLChange();
-
-    // watch for changes to inbox container
+    // watch for container/page change:
     // so that we can know if it's a inbox or a single emailed opened and embed assistant button accordingly
     reEmbedAssistantBtnOnContainerClick();
   }
