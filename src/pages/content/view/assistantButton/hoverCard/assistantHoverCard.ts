@@ -12,6 +12,7 @@ import { getUnsubscribedEmails } from '../../../utils/getEmailsFromStorage';
 import { addTooltip } from '../../elements/tooltip';
 import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
 import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
+import wait from '@src/pages/content/utils/wait';
 
 export interface IHoverCardElements {
   hoverCard: HTMLDivElement;
@@ -207,8 +208,17 @@ export const showHoverCard = async ({ parentElId, email, name, isSingleEmail }: 
         await handleUnsubscribeAndDeleteAction({
           email,
           onSuccess: async () => {
-            // refresh the the table or go back to inbox based on the current container/page
-            !isSingleEmail ? await refreshEmailsTable() : await goBackToInbox();
+            // if action dispatched from single email view
+            if (isSingleEmail) {
+              // go back to inbox table and then refresh the table
+              await goBackToInbox();
+
+              // wait for 500ms for table to load
+              await wait(500);
+            }
+
+            // refresh the the table
+            await refreshEmailsTable();
           },
         });
       })
@@ -244,9 +254,17 @@ export const showHoverCard = async ({ parentElId, email, name, isSingleEmail }: 
       await handleDeleteAllMailsAction({
         email,
         onSuccess: async () => {
-          // refresh the the table or go back to inbox based on the current container/page
+          // if action dispatched from single email view
+          if (isSingleEmail) {
+            // go back to inbox table and then refresh the table
+            await goBackToInbox();
 
-          !isSingleEmail ? await refreshEmailsTable() : await goBackToInbox();
+            // wait for 500ms for table to load
+            await wait(500);
+          }
+
+          // refresh the the table
+          await refreshEmailsTable();
         },
       });
     })

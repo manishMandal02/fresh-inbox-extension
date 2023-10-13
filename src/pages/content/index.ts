@@ -1,4 +1,4 @@
-import { embedAssistantBtn, embedSingleAssistantBtn } from './view/assistantButton';
+import { embedAssistantBtn } from './view/assistantButton';
 import { renderAuthModal } from './view/authModal';
 import { IMessageEvent } from './types/content.types';
 
@@ -8,7 +8,6 @@ import { getSyncStorageByKey } from './utils/getStorageByKey';
 import { embedFreshInboxSettingsBtn } from './view/freshInboxSettingsBtn';
 import { onURLChange } from './utils/onURLChange';
 import { asyncHandler } from './utils/asyncHandler';
-import { logger } from './utils/logger';
 
 // content script global variables type
 export interface FreshInboxGlobalVariables {
@@ -49,23 +48,26 @@ const getTopMostTableContainer = () => {
 const reEmbedAssistantBtnOnContainerClick = () => {
   const emailsContainer = getTopMostTableContainer();
 
-  emailsContainer.addEventListener(
-    'click',
-    asyncHandler(async () => {
-      await wait(500);
+  const handleContainerClick = async () => {
+    await wait(500);
 
-      const assistantBtn = document.getElementsByClassName('freshInbox-assistantBtn');
+    const assistantBtn = document.getElementsByClassName('freshInbox-assistantBtn');
 
-      // check if assistant button is already present
-      // if present, do nothing
-      if (assistantBtn && assistantBtn.length > 0 && !![...assistantBtn].find(btn => btn.checkVisibility()))
-        return;
+    // check if assistant button is already present
+    // if present, do nothing
+    if (assistantBtn && assistantBtn.length > 0 && !![...assistantBtn].find(btn => btn.checkVisibility()))
+      return;
 
-      // assistant button not found
-      // embed assistant
-      embedAssistantBtn(true);
-    })
-  );
+    // assistant button not found
+    // embed assistant
+    embedAssistantBtn(true);
+  };
+
+  // list to on click
+  emailsContainer.addEventListener('click', asyncHandler(handleContainerClick));
+
+  // list to mouse up
+  emailsContainer.addEventListener('mouseup', asyncHandler(handleContainerClick));
 };
 
 // 🏁 main fn (starting point)

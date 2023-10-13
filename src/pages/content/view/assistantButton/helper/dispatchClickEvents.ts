@@ -1,7 +1,7 @@
 //* the refresh button doesn't have a consistent selector to target it
 
-import wait from '@src/pages/content/utils/wait';
 import { logger } from '../../../utils/logger';
+import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 
 // dispatches custom mouse events to simulate a click event (used for buttons on gmail table)
 const dispatchClickEvent = (el: Element) => {
@@ -60,12 +60,13 @@ export const refreshEmailsTable = () => {
 
 // goes back to inbox from single mail view
 export const goBackToInbox = () => {
+  // query selector for the go back button
   const goBackToInboxBtnSelectors = [
-    'div[title="Back to Inbox"]',
-    'div[data-tooltip="Back to Inbox"]',
-    'div[aria-label="Back to Inbox"]',
+    'div[title*="Back to"]',
+    'div[data-tooltip*="Back to"]',
+    'div[aria-label*="Back to"]',
   ];
-  return new Promise<string>(async (resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     let goBackToInboxBtn: HTMLDivElement | null = null;
 
     // loop through selectors to find go back to inbox button
@@ -86,11 +87,6 @@ export const goBackToInbox = () => {
     }
 
     dispatchClickEvent(goBackToInboxBtn);
-
-    // wait for 250ms (to load all the elements including the refresh btn)
-    await wait(250);
-    // refresh table
-    await refreshEmailsTable();
 
     resolve('success');
   });
