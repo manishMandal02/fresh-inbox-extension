@@ -51,13 +51,18 @@ const handleMouseOut = () => {
 };
 
 type InitializeAssistantBtnParams = {
-  parent: Element;
+  assistantBtnContainer: Element;
   name: string;
   email: string;
   isSingle?: boolean;
 };
 
-const initializeAssistantBtn = ({ parent, email, name, isSingle }: InitializeAssistantBtnParams) => {
+const initializeAssistantBtn = ({
+  assistantBtnContainer,
+  email,
+  name,
+  isSingle,
+}: InitializeAssistantBtnParams) => {
   const assistantBtn = document.createElement('span');
 
   assistantBtn.classList.add('freshInbox-assistantBtn');
@@ -67,7 +72,7 @@ const initializeAssistantBtn = ({ parent, email, name, isSingle }: InitializeAss
   }
 
   // append the button to container
-  parent.appendChild(assistantBtn);
+  assistantBtnContainer.appendChild(assistantBtn);
 
   //* add event listeners to assistant button
   // on click (currently do nothing, just stop bubbling of event)
@@ -79,14 +84,10 @@ const initializeAssistantBtn = ({ parent, email, name, isSingle }: InitializeAss
   assistantBtn.addEventListener(
     'mouseover',
     asyncHandler(async () => {
-      console.log('🚀 ~ file: index.ts:94 ~ initializeAssistantBtn ~ mouseover:');
-
-      await handleMouseOver({ ev: null, name, email, assistantBtnContainer: parent });
+      await handleMouseOver({ ev: null, name, email, assistantBtnContainer });
       // add single class to the button if it is a single email (to get correct positioning)
       if (isSingle) {
         const hoveredCard = document.getElementById('freshInbox-hoverCard');
-
-        console.log('🚀 ~ file: index.ts:86 ~ initializeAssistantBtn ~ hoveredCard:', hoveredCard);
 
         if (!hoveredCard) return;
         hoveredCard.classList.add('singleEmail');
@@ -115,10 +116,6 @@ const embedAssistantBtnLogic = async (isURLChanged = false): Promise<boolean> =>
   }
   // get all the mails with ids on the page
   const { emails, dateRange, allMailNodes } = getAllMailsOnPage();
-
-  console.log('🚀 ~ file: index.ts:68 ~ embedAssistantBtnLogic ~ allMailNodes.length:', allMailNodes.length);
-
-  console.log('🚀 ~ file: index.ts:68 ~ embedAssistantBtnLogic ~ dateRange:', dateRange);
 
   if (emails.length < 1) return false;
 
@@ -173,21 +170,38 @@ const embedAssistantBtnLogic = async (isURLChanged = false): Promise<boolean> =>
     // container to add unsubscribe button
     const assistantBtnContainer = emailNode.closest('div');
 
-    initializeAssistantBtn({ name, email, parent: assistantBtnContainer });
+    initializeAssistantBtn({ name, email, assistantBtnContainer });
   }
   return true;
 };
 
 // embed single assistant btn (used when single email is opened)
-export const embedSingleAssistantBtn = async ({
-  parent,
-  name,
-  email,
-}: Omit<InitializeAssistantBtnParams, 'isSingle'>) => {
+export const embedSingleAssistantBtn = async () => {
+  // get print email button
+  const printEmailBtn = document.querySelector('button[aria-label="Print all"]');
+
+  console.log('🚀 ~ file: index.ts:183 ~ embedSingleAssistantBtn ~ printEmailBtn:', printEmailBtn);
+
+  // get the parent container of print email button to embed assistant button
+  const assistantBtnContainer = printEmailBtn.closest('div').parentElement;
+
+  if (!assistantBtnContainer) return;
+
   // position parent container relative, so assistant button can be positioned absolute to it
-  (parent as HTMLDivElement).style.position = 'relative';
+  (assistantBtnContainer as HTMLDivElement).style.position = 'relative';
+
+  // get email node
+  const emailNode = document.querySelector('tbody > tr > td span[email] > span')?.parentElement;
+
+  if (!emailNode) return;
+
+  // get email id of current opened email
+  const email = emailNode.getAttribute('email');
+  // get name
+  const name = emailNode.getAttribute('name');
+
   // create and initialize all the event listeners
-  initializeAssistantBtn({ parent, name, email, isSingle: true });
+  initializeAssistantBtn({ assistantBtnContainer, name, email, isSingle: true });
 };
 
 // embed assistant button with retry logic

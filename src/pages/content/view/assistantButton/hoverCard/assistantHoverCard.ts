@@ -1,4 +1,4 @@
-import { refreshEmailsTable } from '@src/pages/content/utils/refreshEmailsTable';
+import { refreshEmailsTable } from '@src/pages/content/utils/dispatchClickEvents';
 import {
   handleUnsubscribeAction,
   handleDeleteAllMailsAction,
@@ -21,13 +21,14 @@ export interface IHoverCardElements {
 
 const HOVER_CARD_ID = 'freshInbox-hoverCard';
 
-// hide button
+// hide buttons
 const hideButtons = (buttons: HTMLButtonElement[]) => {
   for (const btn of buttons) {
     btn.style.display = 'none';
   }
 };
 
+// show buttons
 const showButtons = (buttons: HTMLButtonElement[]) => {
   for (const btn of buttons) {
     btn.style.display = 'block';

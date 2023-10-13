@@ -1,6 +1,6 @@
 import { logger } from './../../../../utils/logger';
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
-import { APIHandleParams, GetMsgAPIResponseSuccess } from '@src/pages/background/types/background.types';
+import type { APIHandleParams, GetMsgAPIResponseSuccess } from '@src/pages/background/types/background.types';
 
 // delete all mails in batches for faster processing
 const batchDeleteMails = async (token: string, ids: string[]) => {
@@ -89,7 +89,7 @@ export const deleteAllMails = async ({ token, email }: APIHandleParams) => {
       // batch delete messages/emails
       await batchDeleteMails(token, msgIds);
       logger.info(
-        '✅ Batch delete successful, deleted ${msgIds.length} mails',
+        `✅ Batch delete successful, deleted ${msgIds.length} mails`,
         'background/services/api/gmail/handler/deleteAllMails.ts:93 ~ deleteAllMails()'
       );
       //* end of do...while loop

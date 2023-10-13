@@ -21,7 +21,7 @@ export const logger = {
    * @param msg log message
    * @param fileTrace file trace of the log
    */
-  info: (msg: string, _fileTrace: string) => {
+  info: (msg: string, _fileTrace?: string) => {
     console.log(`FreshInbox:LOGGER:INFO ℹ️ ~ ${msg}`);
   },
 

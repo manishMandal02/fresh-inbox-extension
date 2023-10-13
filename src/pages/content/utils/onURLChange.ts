@@ -1,4 +1,4 @@
-type Callback = (url: string) => Promise<void>;
+type Callback = () => Promise<void>;
 
 // watch for url change
 export const onURLChange = (callback: Callback) => {
@@ -7,7 +7,7 @@ export const onURLChange = (callback: Callback) => {
   // location/url change event listener
   window.addEventListener('hashchange', () => {
     // call the callback fn, on url change
-    callback(location.href);
+    callback();
   });
 
   // handle location/url change

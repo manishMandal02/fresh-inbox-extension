@@ -9,6 +9,7 @@ import { embedFreshInboxSettingsBtn } from './view/freshInboxSettingsBtn';
 import { onURLChange } from './utils/onURLChange';
 import { asyncHandler } from './utils/asyncHandler';
 import { MAIL_NODES_SELECTOR } from './constants/app.constants';
+import { logger } from './utils/logger';
 
 // content script global variables type
 export interface FreshInboxGlobalVariables {
@@ -30,7 +31,7 @@ window.freshInboxGlobalVariables = {
   loggerLevel: 'dev',
 };
 
-// top most container for emails table and also the single email container
+// top most container for inbox and also the single email container
 const getTopMostTableContainer = () => {
   const containerXPath = '/html/body/div[7]/div[3]/div/div[2]/div[2]/div/div/div';
   return document.evaluate(
@@ -42,10 +43,63 @@ const getTopMostTableContainer = () => {
   ).singleNodeValue;
 };
 
-const listenForClicksOnContainer = () => {
-  const emailsContainer = getTopMostTableContainer();
+// checks if the current url is supported (inbox, starred, all, spam)
+const isSupportedURL = () => {
+  // get anchor id form the url
 
-  console.log('🚀 ~ file: index.ts:48 ~ listenForClicksOnContainer ~ emailsContainer:', emailsContainer);
+  const anchorId = location.href.split('#')?.pop();
+
+  // labels/pages to embed the assistant button on
+  const supportedLabels = ['inbox', 'starred', 'all', 'spam'];
+
+  // check if anchor id is present and it is one of the supported labels
+  if (anchorId && supportedLabels.includes(anchorId)) {
+    // supported url
+    return true;
+  }
+  // not supported url
+  return false;
+};
+
+// watch for url change
+// re-embed assistant button if the changed url is supported
+const reEmbedAssistantBtnOnURLChange = () => {
+  // watch for url change
+  onURLChange(async () => {
+    // check if the url is supported (inbox, starred, all, spam)
+    if (isSupportedURL()) {
+      // this is a supported url
+      // re-embed the assistant button
+      await embedAssistantBtn(true);
+    }
+  });
+};
+
+// get the opened container type (inbox or single email)
+const getOpenedContainerType = (): 'inbox' | 'singleEmail' => {
+  // checking for single email container
+  // check if it has a print mail button
+  const printEmailBtn = document.querySelector('button[aria-label="Print all"]');
+
+  if (printEmailBtn) {
+    return 'singleEmail';
+  }
+
+  // checking for inbox inbox
+  // check for row with sender email
+  const emailRow = document.querySelector(MAIL_NODES_SELECTOR);
+
+  if (emailRow) {
+    return 'inbox';
+  }
+
+  return null;
+};
+
+// watch for main container click (if a single is opened or navigated to diff categories)
+// re-embed assistant button based on the container (weather it is an inbox or a single email)
+const reEmbedAssistantBtnOnContainerClick = () => {
+  const emailsContainer = getTopMostTableContainer();
 
   emailsContainer.addEventListener(
     'click',
@@ -56,52 +110,31 @@ const listenForClicksOnContainer = () => {
 
       const assistantBtn = document.getElementsByClassName('freshInbox-assistantBtn');
 
-      console.log('🚀 ~ file: index.ts:57 ~ asyncHandler ~ assistantBtn:', assistantBtn);
-
       // assistant button present, do nothing
       if (assistantBtn && assistantBtn.length > 0 && !![...assistantBtn].find(btn => btn.checkVisibility()))
         return;
 
-      // 2. check if it is an (emails) table container or a single email container
+      //  check if it is an inbox container or a single email container
 
-      // 2.1 checking for single email container
-      // check if it has a print mail button
-      const printEmailBtn = document.querySelector('button[aria-label="Print all"]');
+      const containerType = getOpenedContainerType();
 
-      console.log('🚀 ~ file: index.ts:69 ~ asyncHandler ~ printEmailBtn:', printEmailBtn);
+      if (!containerType) {
+        // not a supported container type
+        logger.info('Not supported container type');
+        return;
+      }
 
-      if (printEmailBtn) {
+      if (containerType === 'singleEmail') {
         // this is a single email container
 
-        // get email node
-        const emailNode = document.querySelector('tbody > tr > td span[email] > span')?.parentElement;
-
-        console.log('🚀 ~ file: index.ts:69 ~ asyncHandler ~ emailNode:', emailNode);
-
-        if (!emailNode) return;
-
-        // get email id of current opened email
-        const email = emailNode.getAttribute('email');
-        // get name
-        const name = emailNode.getAttribute('name');
-        const assistantBtnContainer = printEmailBtn.closest('div').parentElement;
-
-        console.log('🚀 ~ file: index.ts:85 ~ asyncHandler ~ assistantBtnContainer:', assistantBtnContainer);
-
-        // embed the assistant button for single mail
-        embedSingleAssistantBtn({ parent: assistantBtnContainer, email, name });
+        // embed the assistant button
+        embedSingleAssistantBtn();
 
         return;
       }
 
-      // 2.2 checking for (emails) table container
-      // check for row with sender email
-      const emailRow = document.querySelector(MAIL_NODES_SELECTOR);
-
-      console.log('🚀 ~ file: index.ts:97 ~ asyncHandler ~ emailRow:', emailRow);
-
-      if (emailRow) {
-        // this is emails table
+      if (containerType === 'inbox') {
+        // this is inbox
 
         // embed assistant buttons on newsletter emails
         embedAssistantBtn(true);
@@ -155,29 +188,33 @@ const listenForClicksOnContainer = () => {
     // show auth modal to allow users to give app access to gmail service
     renderAuthModal();
   } else {
-    //embed assistant button
-    await embedAssistantBtn();
+    // check current url is a supported url
+    if (isSupportedURL()) {
+      console.log('🚀 ~ file: index.ts:194 ~ isSupportedURL:', isSupportedURL());
+
+      // check for container type & embed assistant button accordingly
+      const containerType = getOpenedContainerType();
+
+      console.log('🚀 ~ file: index.ts:198 ~ containerType:', containerType);
+
+      if (containerType === 'inbox') {
+        //embed multiple assistant buttons on newsletter emails
+        await embedAssistantBtn();
+      } else if (containerType === 'singleEmail') {
+        // embed single assistant button
+        embedSingleAssistantBtn();
+      }
+    }
 
     // re-embed assistant button on url changes
-    onURLChange(async url => {
-      // get anchor id form the url
-      const anchorId = url?.split('#').pop();
+    reEmbedAssistantBtnOnURLChange();
 
-      // labels/pages to embed the assistant button on
-      const labels = ['inbox', 'starred', 'all', 'spam'];
-
-      //urls to run on with ids: #inbox, #starred, #all, #spam
-      if (anchorId && labels.includes(anchorId)) {
-        // re-embed the assistant button
-
-        await embedAssistantBtn(true);
-      }
-    });
-
-    // watch for changes to email table container
-    // so that we can know if it's a emails table or a single emailed opened and embed assistant button accordingly
-    listenForClicksOnContainer();
+    // watch for changes to inbox container
+    // so that we can know if it's a inbox or a single emailed opened and embed assistant button accordingly
+    reEmbedAssistantBtnOnContainerClick();
   }
 })();
+
+// TODO: check all email actions from all 3 places (table, single email, modal)
 
 // TODO: complete all the necessary TODO comments
