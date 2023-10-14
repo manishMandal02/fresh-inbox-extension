@@ -8,6 +8,7 @@ import { renderTextMsg } from '../../elements/text';
 import wait from '@src/pages/content/utils/wait';
 import { tableHeader } from '../../elements/tableHeader';
 import { logger } from '@src/pages/content/utils/logger';
+import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 
 const UnsubscribedTabContainerId = 'settingsModal-unsubscribedListTab';
 
@@ -113,25 +114,28 @@ const renderTable = async (unsubscribedEmails: string[]) => {
 
     if (!reSubscribeBtn) return;
 
-    reSubscribeBtn.addEventListener('click', async () => {
-      // show loading spinner
-      const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons('unsubscribedListTab-actionBtn');
+    reSubscribeBtn.addEventListener(
+      'click',
+      asyncHandler(async () => {
+        // show loading spinner
+        const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons('unsubscribedListTab-actionBtn');
 
-      // handle whitelist action
-      const isSuccess = await handleReSubscribeAction({
-        email,
-        btnContainerId: 'unsubscribedListTab-actionBtn',
-      });
+        // handle whitelist action
+        const isSuccess = await handleReSubscribeAction({
+          email,
+          btnContainerId: 'unsubscribedListTab-actionBtn',
+        });
 
-      // hide loading spinner
-      if (isSuccess) {
-        hideLoadingSpinner();
-        // re-render table on success
-        await refreshTable();
-      } else {
-        hideLoadingSpinner(true);
-      }
-    });
+        // hide loading spinner
+        if (isSuccess) {
+          hideLoadingSpinner();
+          // re-render table on success
+          await refreshTable();
+        } else {
+          hideLoadingSpinner(true);
+        }
+      })
+    );
 
     // add tooltips to buttons
     addTooltip(reSubscribeBtn, 're-Subscribe/Whitelist');

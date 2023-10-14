@@ -49,7 +49,7 @@ const reEmbedAssistantBtnOnContainerClick = () => {
   const emailsContainer = getTopMostTableContainer();
 
   const handleContainerClick = async () => {
-    await wait(500);
+    await wait(750);
 
     const assistantBtn = document.getElementsByClassName('freshInbox-assistantBtn');
 
@@ -59,6 +59,7 @@ const reEmbedAssistantBtnOnContainerClick = () => {
       return;
 
     // assistant button not found
+
     // embed assistant
     embedAssistantBtn(true);
   };
@@ -84,6 +85,12 @@ const reEmbedAssistantBtnOnContainerClick = () => {
   //   email: 'flipkart-newsletter@flipkar.com',
   //   onConfirmClick: async () => {},
   // });
+
+  import('./view/settingsModal/react/index');
+
+  //TODO: testing...
+
+  return;
 
   // check if app is enabled or not
   const appStatus = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');

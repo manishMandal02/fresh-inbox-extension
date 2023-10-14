@@ -213,8 +213,8 @@ export const showHoverCard = async ({ parentElId, email, name, isSingleEmail }: 
               // go back to inbox table and then refresh the table
               await goBackToInbox();
 
-              // wait for 500ms for table to load
-              await wait(500);
+              // wait for 750ms for table to load
+              await wait(750);
             }
 
             // refresh the the table
@@ -259,8 +259,8 @@ export const showHoverCard = async ({ parentElId, email, name, isSingleEmail }: 
             // go back to inbox table and then refresh the table
             await goBackToInbox();
 
-            // wait for 500ms for table to load
-            await wait(500);
+            // wait for 750ms for table to load
+            await wait(750);
           }
 
           // refresh the the table

@@ -15,6 +15,7 @@ import { IMessageEvent } from '@src/pages/content/types/content.types';
 import wait from '@src/pages/content/utils/wait';
 import { getLocalStorageByKey } from '@src/pages/content/utils/getStorageByKey';
 import { logger } from '@src/pages/content/utils/logger';
+import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 
 const NewsletterTabActionBtnContainer = 'newsletterTab-actionBtn';
 
@@ -170,28 +171,34 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
     if (!whitelistBtn || !unsubscribeBtn || !deleteAllMails || !unsubscribeAndDeleteAllMailsBtn) return;
 
     // handle whitelist btn click
-    whitelistBtn.addEventListener('click', async () => {
-      const isSuccess = handleWhitelistAction({
-        email: emailData.email,
-        btnContainerId: NewsletterTabActionBtnContainer,
-      });
-      // refresh table if success
-      if (isSuccess) {
-        await refreshTable({ shouldRefreshData: false });
-      }
-    });
+    whitelistBtn.addEventListener(
+      'click',
+      asyncHandler(async () => {
+        const isSuccess = handleWhitelistAction({
+          email: emailData.email,
+          btnContainerId: NewsletterTabActionBtnContainer,
+        });
+        // refresh table if success
+        if (isSuccess) {
+          await refreshTable({ shouldRefreshData: false });
+        }
+      })
+    );
 
     // handle unsubscribe btn click
-    unsubscribeBtn.addEventListener('click', async () => {
-      const isSuccess = handleUnsubscribeAction({
-        email: emailData.email,
-        btnContainerId: NewsletterTabActionBtnContainer,
-      });
-      // refresh table if success
-      if (isSuccess) {
-        await refreshTable({ shouldRefreshData: false });
-      }
-    });
+    unsubscribeBtn.addEventListener(
+      'click',
+      asyncHandler(async () => {
+        const isSuccess = handleUnsubscribeAction({
+          email: emailData.email,
+          btnContainerId: NewsletterTabActionBtnContainer,
+        });
+        // refresh table if success
+        if (isSuccess) {
+          await refreshTable({ shouldRefreshData: false });
+        }
+      })
+    );
 
     // handle delete-all-mail btn click
     deleteAllMails.addEventListener('click', ev => {
