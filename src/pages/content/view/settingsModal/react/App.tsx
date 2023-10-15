@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Tabs } from '../../elements/Tabs';
 
-const tabs = ['General', 'Newsletter', 'Unsubscribed', 'whitelisted'] as const;
+const tabs = ['General', 'Search', 'Newsletter', 'Unsubscribed', 'Whitelisted'] as const;
 
 export type Tabs = (typeof tabs)[number];
 
@@ -41,7 +41,9 @@ export default function App() {
           ></div>
           {/* modal card */}
           <div className='w-[60%] h-4/6 rounded-md shadow-lg z-50 shadow-slate-600 bg-slate-100'>
-            <Tabs tabs={[...tabs]} activeTab={activeTab} setActiveTab={setActiveTab} />
+            <Tabs tabs={[...tabs]} activeTab={activeTab} setActiveTab={setActiveTab}>
+              Body
+            </Tabs>
           </div>
         </div>
       ) : null}
