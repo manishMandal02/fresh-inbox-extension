@@ -1,4 +1,4 @@
-import { tableHeader } from './../../elements/tableHeader';
+import { tableHeader } from '../../elements/tableHeader';
 import {
   handleUnsubscribeAction,
   handleDeleteAllMailsAction,
@@ -174,7 +174,7 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
     whitelistBtn.addEventListener(
       'click',
       asyncHandler(async () => {
-        const isSuccess = handleWhitelistAction({
+        const isSuccess = await handleWhitelistAction({
           email: emailData.email,
           btnContainerId: NewsletterTabActionBtnContainer,
         });
@@ -189,7 +189,7 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
     unsubscribeBtn.addEventListener(
       'click',
       asyncHandler(async () => {
-        const isSuccess = handleUnsubscribeAction({
+        const isSuccess = await handleUnsubscribeAction({
           email: emailData.email,
           btnContainerId: NewsletterTabActionBtnContainer,
         });
@@ -201,15 +201,18 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
     );
 
     // handle delete-all-mail btn click
-    deleteAllMails.addEventListener('click', ev => {
+    deleteAllMails.addEventListener('click', async ev => {
       ev.stopPropagation();
-      handleDeleteAllMailsAction({ email: emailData.email, btnContainerId: NewsletterTabActionBtnContainer });
+      await handleDeleteAllMailsAction({
+        email: emailData.email,
+        btnContainerId: NewsletterTabActionBtnContainer,
+      });
     });
 
     // handle unsubscribe-and-delete-all-mails btn click
-    unsubscribeAndDeleteAllMailsBtn.addEventListener('click', ev => {
+    unsubscribeAndDeleteAllMailsBtn.addEventListener('click', async ev => {
       ev.stopPropagation();
-      handleUnsubscribeAndDeleteAction({
+      await handleUnsubscribeAndDeleteAction({
         email: emailData.email,
         btnContainerId: NewsletterTabActionBtnContainer,
         onSuccess: async () => {
@@ -226,7 +229,7 @@ const renderTable = async (newsletterEmailsData: NewsletterData[]) => {
   });
 };
 
-const renderNewsletterTab = async (parentContainer: HTMLElement) => {
+const renderNewsletterTabOLD = async (parentContainer: HTMLElement) => {
   // about tab container
   const newsletterTabContainer = document.createElement('div');
 
@@ -239,7 +242,7 @@ const renderNewsletterTab = async (parentContainer: HTMLElement) => {
 };
 
 // remove the newsletter tab from DOM
-const removeNewsletterTab = () => {
+const removeNewsletterTabOLD = () => {
   const newsletterTabContainer = document.getElementById('settingsModal-newsletterTab');
 
   if (!newsletterTabContainer) return;
@@ -250,4 +253,4 @@ const removeNewsletterTab = () => {
   newsletterTabContainer.remove();
 };
 
-export { renderNewsletterTab, removeNewsletterTab };
+export { renderNewsletterTabOLD, removeNewsletterTabOLD };

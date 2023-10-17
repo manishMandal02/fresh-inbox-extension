@@ -13,8 +13,8 @@
     "types": ["vite/client", "node"],
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
     "forceConsistentCasingInFileNames": true,
+    "lib": ["esnext", "dom", "DOM.Iterable"],
     "typeRoots": ["./src/global.d.ts"],
     "importsNotUsedAsValues": "error",
     "paths": {

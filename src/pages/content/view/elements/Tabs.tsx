@@ -37,9 +37,7 @@ export const Tabs = ({ tabs, activeTab, setActiveTab, children }: Props) => {
       </div>
 
       {/* tab content */}
-      <div className='w-full h-[90%] flex flex-col items-center justify-center p-10 bg-slate-300'>
-        {children}
-      </div>
+      <div className='w-full h-[90%] flex flex-col py-2 bg-slate-100'>{children}</div>
     </div>
   );
 };

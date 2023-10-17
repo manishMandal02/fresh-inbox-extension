@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Tabs } from '../../elements/Tabs';
+import { General } from '../tabs/General';
+import { Newsletter } from '../tabs/Newsletter';
 
 const tabs = ['General', 'Search', 'Newsletter', 'Unsubscribed', 'Whitelisted'] as const;
 
@@ -8,7 +10,7 @@ export type Tabs = (typeof tabs)[number];
 export default function App() {
   //
   const [isModalOpen, setIsModalOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState<Tabs>('General');
+  const [activeTab, setActiveTab] = useState<Tabs>('Newsletter');
 
   useEffect(() => {
     console.log('React view loaded');
@@ -21,6 +23,23 @@ export default function App() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  const renderActiveTab = (activeTab: string) => {
+    switch (activeTab) {
+      case 'General':
+        return <General />;
+      case 'Search':
+        return <div>Search</div>;
+      case 'Newsletter':
+        return <Newsletter />;
+      case 'Unsubscribed':
+        return <div>Unsubscribed</div>;
+      case 'Whitelisted':
+        return <div>Whitelisted</div>;
+      default:
+        return <div>General</div>;
+    }
   };
 
   return (
@@ -42,7 +61,7 @@ export default function App() {
           {/* modal card */}
           <div className='w-[60%] h-4/6 rounded-md shadow-lg z-50 shadow-slate-600 bg-slate-100'>
             <Tabs tabs={[...tabs]} activeTab={activeTab} setActiveTab={setActiveTab}>
-              Body
+              {renderActiveTab(activeTab)}
             </Tabs>
           </div>
         </div>

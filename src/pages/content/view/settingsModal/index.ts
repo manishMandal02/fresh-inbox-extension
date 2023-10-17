@@ -1,8 +1,3 @@
-import { removeAboutTab, renderAboutTab } from './tabs/about';
-import { removeNewsletterTab, renderNewsletterTab } from './tabs/newsletter';
-import { removeUnsubscribedListTab, renderUnsubscribedListTab } from './tabs/unsubscribedList';
-import { removeWhitelistedEmailsTab, renderWhitelistedEmailsTab } from './tabs/whitelistedEmails';
-
 const handleCloseSettingsModal = (ev: MouseEvent) => {
   ev.stopPropagation();
 
@@ -64,7 +59,7 @@ const renderSettingsModal = () => {
   const tabBodyContainer = document.getElementById('settingsModal-tabBodyContainer');
 
   // render about tab by default
-  renderAboutTab(tabBodyContainer);
+  // renderAboutTab(tabBodyContainer);
 
   // tab menu on click listener
   const aboutTab = document.getElementById('settingsTabs-about');
@@ -86,14 +81,14 @@ const renderSettingsModal = () => {
     whitelistedEmailsTab.classList.remove('settingsModal-activeTab');
 
     // remove tab body of other tabs
-    removeNewsletterTab();
-    removeUnsubscribedListTab();
-    removeWhitelistedEmailsTab();
+    // removeNewsletterTab();
+    // removeUnsubscribedListTab();
+    // removeWhitelistedEmailsTab();
 
     // add active class name
     aboutTab.classList.add('settingsModal-activeTab');
     // render about tab container
-    renderAboutTab(tabBodyContainer);
+    // renderAboutTab(tabBodyContainer);
   });
 
   //* newsletter tab event listener
@@ -111,13 +106,13 @@ const renderSettingsModal = () => {
     whitelistedEmailsTab.classList.remove('settingsModal-activeTab');
 
     // remove tab body of other tabs
-    removeAboutTab();
-    removeUnsubscribedListTab();
-    removeWhitelistedEmailsTab();
+    // removeAboutTab();
+    // removeUnsubscribedListTab();
+    // removeWhitelistedEmailsTab();
 
     newsletterTab.classList.add('settingsModal-activeTab');
     //render newsletter
-    await renderNewsletterTab(tabBodyContainer);
+    // await renderNewsletterTab(tabBodyContainer);
   });
 
   //* unsubscribedList tab event listener
@@ -135,14 +130,14 @@ const renderSettingsModal = () => {
     whitelistedEmailsTab.classList.remove('settingsModal-activeTab');
 
     // remove tab body of other tabs
-    removeAboutTab();
-    removeNewsletterTab();
-    removeWhitelistedEmailsTab();
+    // removeAboutTab();
+    // removeNewsletterTab();
+    // removeWhitelistedEmailsTab();
 
     // add active class name
     unsubscribedList.classList.add('settingsModal-activeTab');
     // render unsubscribedList tab
-    await renderUnsubscribedListTab(tabBodyContainer);
+    // await renderUnsubscribedListTab(tabBodyContainer);
   });
 
   whitelistedEmailsTab.addEventListener('click', async ev => {
@@ -159,14 +154,14 @@ const renderSettingsModal = () => {
     unsubscribedList.classList.remove('settingsModal-activeTab');
 
     // remove tab body of other tabs
-    removeAboutTab();
-    removeNewsletterTab();
-    removeUnsubscribedListTab();
+    // removeAboutTab();
+    // removeNewsletterTab();
+    // removeUnsubscribedListTab();
 
     // add active class name
     whitelistedEmailsTab.classList.add('settingsModal-activeTab');
     // render unsubscribedList tab
-    await renderWhitelistedEmailsTab(tabBodyContainer);
+    // await renderWhitelistedEmailsTab(tabBodyContainer);
   });
 };
 
