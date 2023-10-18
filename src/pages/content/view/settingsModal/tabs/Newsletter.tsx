@@ -2,10 +2,18 @@ import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 import { useEffect, useState } from 'react';
 import { Spinner } from '../../elements/Spinner';
 import { Checkbox } from '../../elements/Checkbox';
+import { IMessageEvent, type EmailAction } from '@src/pages/content/types/content.types';
+import { storageKeys } from '@src/pages/content/constants/app.constants';
+import { getLocalStorageByKey } from '@src/pages/content/utils/getStorageByKey';
 
 type NewsletterData = {
   email: string;
   name: string;
+};
+
+type ActionInProgress = {
+  emails: string[];
+  action: EmailAction;
 };
 
 const data: NewsletterData[] = [
@@ -25,31 +33,139 @@ const data: NewsletterData[] = [
   { email: 'test14@gmail.com', name: 'test mandal' },
 ];
 
+const getNewsletterEmailsData = async (shouldRefreshData = false) => {
+  let newsletterEmails: NewsletterData[] = [];
+  const getNewsletterEmailsFromBackground = async () => {
+    // send message to background to get data
+    newsletterEmails = await chrome.runtime.sendMessage({ event: IMessageEvent.GET_NEWSLETTER_EMAILS });
+
+    console.log(
+      '🚀 ~ file: Newsletter.tsx:42 ~ getNewsletterEmailsFromBackground ~ newsletterEmails:',
+      newsletterEmails
+    );
+
+    // save newsletter data to chrome local storage
+    await chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: newsletterEmails });
+  };
+
+  if (shouldRefreshData) {
+    await getNewsletterEmailsFromBackground();
+  } else {
+    //T check if the newsletter emails data is already stored in chrome.storage.local
+    // get local storage data
+    const storageData = await getLocalStorageByKey<NewsletterData[]>(storageKeys.NEWSLETTER_EMAILS);
+
+    console.log('🚀 ~ file: Newsletter.tsx:53 ~ getNewsletterEmailsData ~ storageData:', storageData);
+
+    // check if newsletters data already exists
+    if (storageData.length > 0) {
+      // data already exists, use it
+      newsletterEmails = storageData;
+    } else {
+      // data doesn't exist, fetch from background script
+      await getNewsletterEmailsFromBackground();
+    }
+  }
+
+  console.log('🚀 ~ file: Newsletter.tsx:65 ~ getNewsletterEmailsData ~ newsletterEmails:', newsletterEmails);
+  return newsletterEmails;
+};
+
+// TODO: take out the common fn/cmp to reuse for other tabs
+//TODO: fire actions👇
+// TODO: build other tabs
+
+// TODO: confirm modal  - bit design update
+
+// TODO: snackbar - bit design update
+
 export const Newsletter = () => {
   // newsletter emails
   const [newsletterEmails, setNewsletterEmails] = useState<NewsletterData[]>([]);
   // selected emails
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
+  // loading state while fetching emails
+  const [isFetchingNewsletterEmails, setIsFetchingNewsletterEmails] = useState(false);
 
-  const [loading, setIsLoading] = useState(false);
+  // email actions states
+  // current email/emails that are being unsubscribed, deleted, whitelisted, etc.
+  const [actionInProgressFor, setEmailActionsInProgressFor] = useState<ActionInProgress | null>(null);
 
-  useEffect(() => {
-    setIsLoading(true);
-    setTimeout(
-      asyncHandler(async () => {
-        setNewsletterEmails(data);
-        setIsLoading(false);
-      }),
-      1000
+  // get newsletter emails data
+  useEffect(
+    asyncHandler(async () => {
+      setIsFetchingNewsletterEmails(true);
+      const data = await getNewsletterEmailsData();
+
+      setNewsletterEmails(data);
+      setIsFetchingNewsletterEmails(false);
+    }),
+
+    []
+  );
+
+  // email action
+  useEffect(
+    asyncHandler(async () => {
+      // TODO: fire email action
+    }),
+    [actionInProgressFor]
+  );
+
+  const renderTable = () => {
+    const actionButtons = (email: string) => (
+      <>
+        <button
+          className='text-sm border border-slate-300 rounded-md px-1.5 py-px cursor-pointer transition-all duration-200 disabled:grayscale  disabled:cursor-default disabled:opacity-70'
+          onClick={() => setEmailActionsInProgressFor({ emails: [email], action: 'whitelistEmail' })}
+          disabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
+        >
+          ✅
+        </button>
+        <button
+          className='text-sm border border-slate-300 rounded-md px-1.5 py-px cursor-pointer transition-all duration-200 disabled:grayscale  disabled:cursor-default disabled:opacity-70'
+          onClick={() => setEmailActionsInProgressFor({ emails: [email], action: 'unsubscribe' })}
+          disabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
+        >
+          ❌
+        </button>
+        <button
+          className='text-sm border border-slate-300 rounded-md px-1.5 py-px cursor-pointer transition-all duration-200 disabled:grayscale  disabled:cursor-default disabled:opacity-70'
+          onClick={() => setEmailActionsInProgressFor({ emails: [email], action: 'deleteAllMails' })}
+          disabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
+        >
+          🗑️
+        </button>
+        <button
+          className='text-sm border border-slate-300 rounded-md px-1.5 py-px cursor-pointer transition-all duration-200 disabled:grayscale  disabled:cursor-default disabled:opacity-70'
+          onClick={() =>
+            setEmailActionsInProgressFor({ emails: [email], action: 'unsubscribeAndDeeAllMails' })
+          }
+          disabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
+        >
+          ❌ + 🗑️
+        </button>
+      </>
     );
-  }, []);
 
-  const renderTable = () =>
-    newsletterEmails.length > 0 ? (
+    const renderActionButtons = (email: string) => {
+      if (
+        selectedEmails.length < 1 &&
+        actionInProgressFor?.emails.length === 1 &&
+        actionInProgressFor?.emails.includes(email)
+      ) {
+        // render loading spinner if a action is in progress for this email
+        return <Spinner size='sm' />;
+      }
+
+      return actionButtons(email);
+    };
+
+    return newsletterEmails.length > 0 ? (
       //  emails table
-      <table className='w-full px-4 py-2 z-10 bg-slate-100 relative'>
+      <table className='w-full px-4 py-2 z-10 bg-slate-50 relative'>
         {/* table header */}
-        <tr className='w-full sticky top-0 left-0 text-sm font-medium text-slate-600 bg-slate-300 flex items-center justify-between px-6 py-1.5 z-20'>
+        <tr className='w-full sticky top-0 left-0 text-sm font-medium text-slate-600 bg-slate-200 flex items-center justify-between px-6 py-1.5 z-20'>
           {/* left container */}
           <td className='w-[5%]'>
             <Checkbox
@@ -74,7 +190,7 @@ export const Newsletter = () => {
         {newsletterEmails.map(({ email, name }, idx) => (
           <tr
             key={email + name}
-            className='w-full flex items-center  justify-between px-6 even:bg-slate-200 py-1.5 hover:bg-slate-300/60 transition-all duration-150'
+            className='w-full flex items-center  justify-between px-6 odd:bg-slate-100 py-1.5 hover:bg-slate-200/60 transition-all duration-150'
           >
             {/* left container */}
             <td className='w-[5%]'>
@@ -97,28 +213,8 @@ export const Newsletter = () => {
             <td className='text-sm w-[30%]'>{email}</td>
             {/* right container */}
             <td className='text-sm w-[30%] flex items-center justify-between z-10 pl-8 pr-6'>
-              <button
-                className='text-sm border border-slate-300 rounded-md px-1.5 py-px cursor-pointer'
-                onClick={() => {
-                  console.log('Action btn clicked!!');
-                }}
-              >
-                ✅
-              </button>
-              <button
-                className='text-sm border border-slate-300 rounded-md px-1.5 py-px cursor-pointer'
-                onClick={() => {
-                  console.log('Action btn clicked!! 2');
-                }}
-              >
-                ❌
-              </button>
-              <button className='text-sm border border-slate-300 rounded-md px-1.5 py-px cursor-pointer'>
-                🗑️
-              </button>
-              <button className='text-sm border border-slate-300 rounded-md px-1.5 py-px cursor-pointer'>
-                ❌ + 🗑️
-              </button>
+              {/* render action button or loading spinner (if action in progress) */}
+              {renderActionButtons(email)}
             </td>
           </tr>
         ))}
@@ -133,6 +229,7 @@ export const Newsletter = () => {
         </p>
       </div>
     );
+  };
 
   return (
     <div className='w-full h-full max-h-full'>
@@ -146,15 +243,16 @@ export const Newsletter = () => {
       {/* table container */}
       <div className='h-full'>
         <div className='w-full h-[90%] flex justify-center items-start overflow-x-hidden overflow-y-auto'>
-          {loading ? <Spinner /> : renderTable()}
+          {isFetchingNewsletterEmails ? <Spinner size='lg' /> : renderTable()}
         </div>
 
         {/* selected emails */}
         <div className='h-[10%] w-full bg-slate-200 flex justify-between items-center px-6 border-t border-slate-500/50'>
           {selectedEmails.length < 1 ? (
             // no email selected
-            <span className='text-sm text-slate-600 font-extralight'>
-              Please select emails to perform bulk actions
+            <span className='text-xs text-slate-600 font-extralight'>
+              Select multiple emails to perform bulk actions or click on action button for individual email
+              actions
             </span>
           ) : (
             <>
@@ -163,19 +261,54 @@ export const Newsletter = () => {
                 {selectedEmails.length} {selectedEmails.length > 1 ? 'Emails' : 'Email'} selected
               </span>
               {/*  email action  */}
-              <div className='w-[35%] '>
-                <button className='border border-slate-300 rounded-md px-1.5 py-px cursor-pointer text-sm h-max mr-2.5 z-[150]'>
-                  ✅
-                </button>
-                <button className='border border-slate-300 rounded-md px-1.5 py-px cursor-pointer text-sm h-max mr-2.5'>
-                  ❌
-                </button>
-                <button className='border border-slate-300 rounded-md px-1.5 py-px cursor-pointer text-sm h-max mr-2.5'>
-                  🗑️
-                </button>
-                <button className='border border-slate-300 rounded-md px-1.5 py-px cursor-pointer text-sm h-max'>
-                  ❌ + 🗑️
-                </button>
+              <div className='mr-10'>
+                {actionInProgressFor?.emails.length > 0 ? (
+                  <Spinner size='sm' />
+                ) : (
+                  <>
+                    <button
+                      className='border border-slate-300 rounded-md px-1.5 py-px cursor-pointer text-sm h-max mr-2.5 z-[150]'
+                      onClick={() => {
+                        setEmailActionsInProgressFor({
+                          emails: [...selectedEmails],
+                          action: 'whitelistEmail',
+                        });
+                      }}
+                    >
+                      ✅
+                    </button>
+                    <button
+                      className='border border-slate-300 rounded-md px-1.5 py-px cursor-pointer text-sm h-max mr-2.5'
+                      onClick={() =>
+                        setEmailActionsInProgressFor({ emails: [...selectedEmails], action: 'unsubscribe' })
+                      }
+                    >
+                      ❌
+                    </button>
+                    <button
+                      className='border border-slate-300 rounded-md px-1.5 py-px cursor-pointer text-sm h-max mr-2.5'
+                      onClick={() =>
+                        setEmailActionsInProgressFor({
+                          emails: [...selectedEmails],
+                          action: 'deleteAllMails',
+                        })
+                      }
+                    >
+                      🗑️
+                    </button>
+                    <button
+                      className='border border-slate-300 rounded-md px-1.5 py-px cursor-pointer text-sm h-max'
+                      onClick={() =>
+                        setEmailActionsInProgressFor({
+                          emails: [...selectedEmails],
+                          action: 'unsubscribeAndDeeAllMails',
+                        })
+                      }
+                    >
+                      ❌ + 🗑️
+                    </button>
+                  </>
+                )}
               </div>
             </>
           )}

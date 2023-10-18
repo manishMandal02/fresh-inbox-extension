@@ -1,4 +1,4 @@
-import { storageKeys } from '@src/pages/content/constants/app.constants';
+import type { storageKeys } from '../constants/app.constants';
 
 type StorageKey = keyof typeof storageKeys;
 

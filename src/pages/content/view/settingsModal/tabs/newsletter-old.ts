@@ -58,30 +58,7 @@ const refreshTable = async ({ shouldRefreshData }: { shouldRefreshData?: boolean
 
     let newsletterEmails: NewsletterData[] = [];
 
-    const getNewsletterEmailsFromBackground = async () => {
-      // send message to background to get data
-      newsletterEmails = await chrome.runtime.sendMessage({ event: IMessageEvent.GET_NEWSLETTER_EMAILS });
-
-      // save newsletter data to chrome local storage
-      await chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: newsletterEmails });
-    };
-
-    if (shouldRefreshData) {
-      await getNewsletterEmailsFromBackground();
-    } else {
-      //T check if the newsletter emails data is already stored in chrome.storage.local
-      // get local storage data
-      const storageData = await getLocalStorageByKey<NewsletterData[]>(storageKeys.NEWSLETTER_EMAILS);
-
-      // check if newsletters data already exists
-      if (storageData) {
-        // data already exists, use it
-        newsletterEmails = storageData;
-      } else {
-        // data doesn't exist, fetch from background script
-        await getNewsletterEmailsFromBackground();
-      }
-    }
+ 
 
     // remove loading spinner
     spinner.remove();

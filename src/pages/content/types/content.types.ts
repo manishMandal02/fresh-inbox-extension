@@ -46,3 +46,7 @@ export interface IMessageBody {
   // for getting the newsletter emails on the page
   dataOnPage?: DataOnPage;
 }
+
+// email action types
+
+export type EmailAction = 'unsubscribe' | 'deleteAllMails' | 'unsubscribeAndDeeAllMails' | 'whitelistEmail';
