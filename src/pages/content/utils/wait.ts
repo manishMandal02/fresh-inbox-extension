@@ -1,3 +1,3 @@
-const wait = (ms: number) => new Promise(res => setTimeout(res, ms));
+const wait = (ms: number): Promise<void> => new Promise(res => setTimeout(res, ms));
 
 export default wait;
