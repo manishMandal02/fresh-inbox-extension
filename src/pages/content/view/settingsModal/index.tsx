@@ -1,8 +1,9 @@
 import { createRoot } from 'react-dom/client';
 import refreshOnUpdate from 'virtual:reload-on-update-in-view';
-import App from './App';
 
-import '../../../style.scss';
+import SettingsModal from './SettingsModal';
+
+import '../../style.scss';
 
 refreshOnUpdate('pages/content');
 
@@ -15,4 +16,4 @@ root.style.zIndex = '10000';
 root.style.top = '20px';
 root.style.right = '200px';
 
-createRoot(root).render(<App />);
+createRoot(root).render(<SettingsModal />);

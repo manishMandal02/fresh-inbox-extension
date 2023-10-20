@@ -4,10 +4,28 @@ import { IMessageEvent } from './types/content.types';
 
 import wait from './utils/wait';
 import { getEmailIdFromPage } from './utils/getEmailIdFromPage';
-import { getSyncStorageByKey } from './utils/getStorageByKey';
+import { getLocalStorageByKey as getSyncStorageByKey } from './view/settingsModal/helpers/getStorageByKey';
 import { embedFreshInboxSettingsBtn } from './view/freshInboxSettingsBtn';
 import { onURLChange } from './utils/onURLChange';
 import { asyncHandler } from './utils/asyncHandler';
+
+import { createRoot } from 'react-dom/client';
+import refreshOnUpdate from 'virtual:reload-on-update-in-view';
+
+import SettingsModal from './SettingsModal';
+
+import '../../style.scss';
+
+refreshOnUpdate('pages/content');
+
+const root = document.createElement('div');
+root.id = 'fresh-inbox-react-root';
+document.body.append(root);
+
+root.style.position = 'fixed';
+root.style.zIndex = '10000';
+root.style.top = '20px';
+root.style.right = '200px';
 
 // content script global variables type
 export interface FreshInboxGlobalVariables {
@@ -86,26 +104,14 @@ const reEmbedAssistantBtnOnContainerClick = () => {
   //   onConfirmClick: async () => {},
   // });
 
-  import('./view/settingsModal/react/index');
-
-  //TODO: testing...
-
-  return;
-
   // check if app is enabled or not
   const appStatus = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
 
   freshInboxGlobalVariables.isAppEnabled = appStatus;
 
-  if (!appStatus) {
-    // App is disabled, embed setting btn with disabled state
-    embedFreshInboxSettingsBtn({ isDisabled: true });
-    return;
-  }
-
-  // app enabled
-  // embed setting button
-  embedFreshInboxSettingsBtn({ isDisabled: false });
+  //TODO: testing... react
+  import('./view/settingsModal/index');
+  createRoot(root).render(<SettingsModal />);
 
   // get client id from evn variables
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;

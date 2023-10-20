@@ -1,7 +1,7 @@
 import { asyncHandler } from '../utils/asyncHandler';
 import { renderAuthModal } from './authModal';
 import { addTooltip } from './elements/tooltip';
-import { renderSettingsModal } from './settingsModal';
+import { renderSettingsModal } from './settingsModal/index-old';
 
 type SettingsBtnParams = {
   isDisabled?: boolean;

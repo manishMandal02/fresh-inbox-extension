@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Tabs } from '../../elements/Tabs';
-import { General } from '../tabs/General';
-import { Newsletter } from '../tabs/Newsletter';
+import { Tabs } from '../elements/Tabs';
+import { General } from './tabs/General';
+import { Newsletter } from './tabs/Newsletter';
 
 const tabs = ['General', 'Search', 'Newsletter', 'Unsubscribed', 'Whitelisted'] as const;
 
 export type Tabs = (typeof tabs)[number];
 
-export default function App() {
+export default function SettingsModal() {
   //
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<Tabs>('Newsletter');
@@ -41,6 +41,8 @@ export default function App() {
         return <div>General</div>;
     }
   };
+
+ const appStatus =   freshInboxGlobalVariables.isAppEnabled ;
 
   return (
     <>

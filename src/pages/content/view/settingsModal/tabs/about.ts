@@ -1,6 +1,6 @@
 import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 import { disableApp } from '@src/pages/content/utils/disableApp';
-import { hideSettingsModal } from '..';
+import { hideSettingsModal } from '../index-old';
 
 const renderAboutTab = (parentContainer: HTMLElement) => {
   // about tab container

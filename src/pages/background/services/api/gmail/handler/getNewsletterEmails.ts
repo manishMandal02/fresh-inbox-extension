@@ -1,4 +1,5 @@
-import { API_MAX_RESULT, storageKeys } from '@src/pages/background/constants/app.constants';
+import { error } from 'console';
+import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
 import type { NewsletterEmails } from '@src/pages/background/types/background.types';
 import { removeDuplicateEmails } from '@src/pages/background/utils/removeDuplicateEmails';
 import { getUnsubscribedEmails } from './getUnsubscribedEmails';
@@ -133,6 +134,11 @@ export const getNewsletterEmails = async (token: string) => {
 
       const parsedRes = await res.json();
 
+      // handle api errors
+      if (parsedRes.error && parsedRes.error.code === 401) throw new Error('Invalid token');
+
+      if (parsedRes.error) throw new Error(parsedRes.error.message);
+
       if (parsedRes.messages && parsedRes.messages.length < 1) throw new Error('No emails found');
 
       // save next page token if present to fetch next batch of messages
@@ -215,5 +221,6 @@ export const getNewsletterEmails = async (token: string) => {
       fileTrace:
         'background/services/api/gmail/handler/getNewsletterEmails.ts:230 getNewsletterEmails() catch block',
     });
+    return [];
   }
 };
