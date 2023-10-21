@@ -7,7 +7,11 @@ const tabs = ['General', 'Search', 'Newsletter', 'Unsubscribed', 'Whitelisted'] 
 
 export type Tabs = (typeof tabs)[number];
 
-export default function SettingsModal() {
+type Props = {
+  isAppEnabled: boolean;
+};
+
+const SettingsModal = ({ isAppEnabled }: Props) => {
   //
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<Tabs>('Newsletter');
@@ -42,12 +46,12 @@ export default function SettingsModal() {
     }
   };
 
- const appStatus =   freshInboxGlobalVariables.isAppEnabled ;
-
   return (
     <>
       <button
-        className='text-slate-50 bg-brand-primary py-1.5 px-2 rounded-md text-sm cursor-pointer '
+        className={`text-slate-50  py-1.5 px-2 rounded-md text-sm cursor-pointer  
+        ${isAppEnabled ? 'bg-brand-primary' : 'bg-slate-500'}
+        `}
         onClick={handleOpenSettings}
       >
         ✉️ Fresh Inbox
@@ -57,7 +61,7 @@ export default function SettingsModal() {
         <div className='fixed top-0 left-0 w-screen h-screen flex items-center justify-center'>
           {/* backdrop */}
           <div
-            className='fixed w-screen h-screen bg-slate-500 bg-opacity-50 transition-opacity z-10'
+            className='fixed w-screen h-screen bg-slate-800 bg-opacity-70 transition-opacity z-10'
             onClick={handleCloseModal}
           ></div>
           {/* modal card */}
@@ -70,4 +74,6 @@ export default function SettingsModal() {
       ) : null}
     </>
   );
-}
+};
+
+export default SettingsModal;

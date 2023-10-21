@@ -3,6 +3,8 @@ import { Spinner } from '../../elements/Spinner';
 import { Checkbox } from '../../elements/Checkbox';
 import { IMessageEvent, type EmailAction } from '../../../types/content.types';
 import { storageKeys } from '../../../constants/app.constants';
+import Tooltip from '../../elements/TooltipReact';
+import ActionButton from '../../elements/ActionButton';
 
 type NewsletterData = {
   email: string;
@@ -141,36 +143,34 @@ export const Newsletter = () => {
   const renderTable = () => {
     const actionButtons = (email: string) => (
       <>
-        <button
-          className='text-sm border border-slate-300 rounded-md px-1.5 py-px cursor-pointer transition-all duration-200 disabled:grayscale  disabled:cursor-default disabled:opacity-70'
+        <ActionButton
+          text={'✅'}
+          tooltipLabel='Keep/Whitelist'
           onClick={() => setEmailActionsInProgressFor({ emails: [email], action: 'whitelistEmail' })}
-          disabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
-        >
-          ✅
-        </button>
-        <button
-          className='text-sm border border-slate-300 rounded-md px-1.5 py-px cursor-pointer transition-all duration-200 disabled:grayscale  disabled:cursor-default disabled:opacity-70'
+          isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
+        />
+
+        <ActionButton
+          text={'❌'}
+          tooltipLabel='Unsubscribe'
           onClick={() => setEmailActionsInProgressFor({ emails: [email], action: 'unsubscribe' })}
-          disabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
-        >
-          ❌
-        </button>
-        <button
-          className='text-sm border border-slate-300 rounded-md px-1.5 py-px cursor-pointer transition-all duration-200 disabled:grayscale  disabled:cursor-default disabled:opacity-70'
+          isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
+        />
+
+        <ActionButton
+          text={'🗑️'}
+          tooltipLabel='Delete all mails'
           onClick={() => setEmailActionsInProgressFor({ emails: [email], action: 'deleteAllMails' })}
-          disabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
-        >
-          🗑️
-        </button>
-        <button
-          className='text-sm border border-slate-300 rounded-md px-1.5 py-px cursor-pointer transition-all duration-200 disabled:grayscale  disabled:cursor-default disabled:opacity-70'
+          isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
+        />
+        <ActionButton
+          text={'❌ + 🗑️'}
+          tooltipLabel='Unsubscribe & Delete all'
           onClick={() =>
             setEmailActionsInProgressFor({ emails: [email], action: 'unsubscribeAndDeeAllMails' })
           }
-          disabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
-        >
-          ❌ + 🗑️
-        </button>
+          isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
+        />
       </>
     );
 
@@ -189,131 +189,133 @@ export const Newsletter = () => {
 
     return newsletterEmails.length > 0 ? (
       <>
-        // emails table
-        <table className='w-full h-[90%] px-4 py-2 z-10 bg-slate-50 relative'>
-          {/* table header */}
-          <tr className='w-full sticky top-0 left-0 text-sm font-medium text-slate-600 bg-slate-200 flex items-center justify-between px-6 py-1.5 z-20'>
-            {/* left container */}
-            <td className='w-[5%]'>
-              <Checkbox
-                isChecked={selectedEmails.length === newsletterEmails.length}
-                onChange={isChecked => {
-                  if (!isChecked) {
-                    // handle select all
-                    setSelectedEmails([]);
-                    return;
-                  }
-
-                  // handle deselect all
-                  setSelectedEmails([...newsletterEmails.map(email => email.email)]);
-                }}
-              />{' '}
-            </td>
-            <td className='w-[5%]'>#</td>
-            <td className='w-[30%] ml-1'>Name</td>
-            <td className='w-[30%] ml-1'>Email</td>
-            <td className='w-[30%] text-center'>Action </td>
-          </tr>
-          {newsletterEmails.map(({ email, name }, idx) => (
-            <tr
-              key={email + name}
-              className='w-full flex items-center  justify-between px-6 odd:bg-slate-100 py-1.5 hover:bg-slate-200/60 transition-all duration-150'
-            >
+        {/* emails table */}
+        {/* table container */}
+        <div className='w-full  h-[90%] overflow-x-hidden overflow-y-auto z-20'>
+          <table className='w-full h-full px-4 py-2 bg-slate-50 relative  z-30'>
+            {/* table header */}
+            <tr className='w-full sticky top-0 left-0 text-sm font-medium text-slate-600 bg-slate-200 flex items-center justify-between px-6 py-1.5 z-20'>
               {/* left container */}
               <td className='w-[5%]'>
                 <Checkbox
-                  isChecked={selectedEmails.includes(email)}
+                  isChecked={selectedEmails.length === newsletterEmails.length}
                   onChange={isChecked => {
                     if (!isChecked) {
-                      // unchecked, remove the email from the list
-                      setSelectedEmails(prevEmails => prevEmails.filter(e => e !== email));
+                      // handle select all
+                      setSelectedEmails([]);
                       return;
                     }
 
-                    // checked, add the email to the list
-                    setSelectedEmails(prevEmails => [...prevEmails, email]);
+                    // handle deselect all
+                    setSelectedEmails([...newsletterEmails.map(email => email.email)]);
                   }}
-                />
+                />{' '}
               </td>
-              <td className='text-sm w-[5%]'>{idx + 1}.</td>
-              <td className='text-sm ml-1 w-[30%]'>{name.replace(`\\`, '').trim()}</td>
-              <td className='text-sm w-[30%]'>{email}</td>
-              {/* right container */}
-              <td className='text-sm w-[30%] flex items-center justify-between z-10 pl-8 pr-6'>
-                {/* render action button or loading spinner (if action in progress) */}
-                {renderActionButtons(email)}
-              </td>
+              <td className='w-[5%]'>#</td>
+              <td className='w-[30%] ml-1'>Name</td>
+              <td className='w-[30%] ml-1'>Email</td>
+              <td className='w-[30%] text-center'>Action </td>
             </tr>
-          ))}
-        </table>
-        <div>
-          {/* selected emails */}
-          <div className='h-[10%] w-full bg-slate-200 flex justify-between items-center px-6 border-t border-slate-500/50'>
-            {selectedEmails.length < 1 ? (
-              // no email selected
-              <span className='text-xs text-slate-600 font-extralight'>
-                Select multiple emails to perform bulk actions or click on action button for individual email
-                actions
+            {newsletterEmails.map(({ email, name }, idx) => (
+              <tr
+                key={email + name}
+                className='w-full flex items-center  justify-between px-6 odd:bg-slate-100 py-1.5 hover:bg-slate-200/60 transition-all duration-150'
+              >
+                {/* left container */}
+                <td className='w-[5%]'>
+                  <Checkbox
+                    isChecked={selectedEmails.includes(email)}
+                    onChange={isChecked => {
+                      if (!isChecked) {
+                        // unchecked, remove the email from the list
+                        setSelectedEmails(prevEmails => prevEmails.filter(e => e !== email));
+                        return;
+                      }
+
+                      // checked, add the email to the list
+                      setSelectedEmails(prevEmails => [...prevEmails, email]);
+                    }}
+                  />
+                </td>
+                <td className='text-sm w-[5%]'>{idx + 1}.</td>
+                <td className='text-sm ml-1 w-[30%]'>{name.replace(`\\`, '').trim()}</td>
+                <td className='text-sm w-[30%]'>{email}</td>
+                {/* right container */}
+                <td className='text-sm w-[30%] flex items-center justify-between z-50 pl-8 pr-6'>
+                  {/* render action button or loading spinner (if action in progress) */}
+                  {renderActionButtons(email)}
+                </td>
+              </tr>
+            ))}
+          </table>
+        </div>
+
+        {/* selected emails */}
+        <div className='h-[10%] z-50 w-full bg-slate-200 flex justify-between items-center px-6 border-t border-slate-500/50'>
+          {selectedEmails.length < 1 ? (
+            // no email selected
+            <span className='text-xs text-slate-600 font-extralight'>
+              Select multiple emails to perform bulk actions or click on action button for individual email
+              actions
+            </span>
+          ) : (
+            <>
+              {/* email selected  */}
+              <span className='text-sm text-slate-600 font-extralight w-[75%]'>
+                {selectedEmails.length} {selectedEmails.length > 1 ? 'Emails' : 'Email'} selected
               </span>
-            ) : (
-              <>
-                {/* email selected  */}
-                <span className='text-sm text-slate-600 font-extralight'>
-                  {selectedEmails.length} {selectedEmails.length > 1 ? 'Emails' : 'Email'} selected
-                </span>
-                {/*  email action  */}
-                <div className='mr-10'>
-                  {actionInProgressFor?.emails.length > 0 ? (
-                    <Spinner size='sm' />
-                  ) : (
-                    <>
-                      <button
-                        className='border border-slate-300 rounded-md px-1.5 py-px cursor-pointer text-sm h-max mr-2.5 z-[150]'
-                        onClick={() => {
-                          setEmailActionsInProgressFor({
-                            emails: [...selectedEmails],
-                            action: 'whitelistEmail',
-                          });
-                        }}
-                      >
-                        ✅
-                      </button>
-                      <button
-                        className='border border-slate-300 rounded-md px-1.5 py-px cursor-pointer text-sm h-max mr-2.5'
-                        onClick={() =>
-                          setEmailActionsInProgressFor({ emails: [...selectedEmails], action: 'unsubscribe' })
-                        }
-                      >
-                        ❌
-                      </button>
-                      <button
-                        className='border border-slate-300 rounded-md px-1.5 py-px cursor-pointer text-sm h-max mr-2.5'
-                        onClick={() =>
-                          setEmailActionsInProgressFor({
-                            emails: [...selectedEmails],
-                            action: 'deleteAllMails',
-                          })
-                        }
-                      >
-                        🗑️
-                      </button>
-                      <button
-                        className='border border-slate-300 rounded-md px-1.5 py-px cursor-pointer text-sm h-max'
-                        onClick={() =>
-                          setEmailActionsInProgressFor({
-                            emails: [...selectedEmails],
-                            action: 'unsubscribeAndDeeAllMails',
-                          })
-                        }
-                      >
-                        ❌ + 🗑️
-                      </button>
-                    </>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
+              {/*  email action  */}
+              <div className='mr-10 w-[25%]  '>
+                {actionInProgressFor?.emails.length > 0 ? (
+                  <Spinner size='sm' />
+                ) : (
+                  <div className='flex items-centers justify-between min-w-fit z-50'>
+                    <ActionButton
+                      text={'✅'}
+                      tooltipLabel='Keep/Whitelist'
+                      onClick={() =>
+                        setEmailActionsInProgressFor({
+                          emails: [...selectedEmails],
+                          action: 'whitelistEmail',
+                        })
+                      }
+                    />
+                    <ActionButton
+                      text={'❌'}
+                      tooltipLabel='Unsubscribe'
+                      onClick={() =>
+                        setEmailActionsInProgressFor({
+                          emails: [...selectedEmails],
+                          action: 'unsubscribe',
+                        })
+                      }
+                    />
+
+                    <ActionButton
+                      text={'🗑️'}
+                      tooltipLabel='Delete all mails'
+                      onClick={() =>
+                        setEmailActionsInProgressFor({
+                          emails: [...selectedEmails],
+                          action: 'deleteAllMails',
+                        })
+                      }
+                    />
+                    <ActionButton
+                      text={'❌ + 🗑️'}
+                      tooltipLabel='Unsubscribe & Delete all'
+                      onClick={() =>
+                        setEmailActionsInProgressFor({
+                          emails: [...selectedEmails],
+                          action: 'unsubscribeAndDeeAllMails',
+                        })
+                      }
+                    />
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </>
     ) : (
@@ -337,11 +339,9 @@ export const Newsletter = () => {
 
       <hr className='h-px w-full bg-slate-400' />
 
-      {/* table container */}
-      <div className='h-full'>
-        <div className='w-full h-full flex justify-center items-start overflow-x-hidden overflow-y-auto'>
-          {isFetchingNewsletterEmails ? <Spinner size='lg' /> : renderTable()}
-        </div>
+      {/* bottom container */}
+      <div className='w-full h-full flex flex-col justify-center items-start'>
+        {isFetchingNewsletterEmails ? <Spinner size='lg' /> : renderTable()}
       </div>
     </div>
   );
