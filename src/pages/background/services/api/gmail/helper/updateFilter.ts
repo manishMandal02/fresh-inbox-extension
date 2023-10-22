@@ -4,7 +4,7 @@ import { storageKeys } from '@src/pages/background/constants/app.constants';
 
 type UpdateFilterParams = {
   token: string;
-  email: string;
+  emails: string[];
   filterId: string;
   filterAction: FILTER_ACTION;
 };
@@ -19,14 +19,14 @@ const getStorageKeyByAction = (filterAction: FILTER_ACTION) => {
 };
 
 // update filter helper
-export const addEmailToFilter = async ({ token, email, filterId, filterAction }: UpdateFilterParams) => {
+export const addEmailToFilter = async ({ token, emails, filterId, filterAction }: UpdateFilterParams) => {
   // sync storage (storage id)
   const storageKey = getStorageKeyByAction(filterAction);
 
   const filter = await getFilterById(token, filterId);
 
   // add email to existing filter emails
-  const updatedFilterEmails = [...filter.emails, email];
+  const updatedFilterEmails = [...filter.emails, ...emails];
 
   // delete existing filter
   await deleteFilter(token, filterId);
@@ -41,15 +41,20 @@ export const addEmailToFilter = async ({ token, email, filterId, filterAction }:
 };
 
 // remove email from filter
-export const removeEmailFromFilter = async ({ token, email, filterId, filterAction }: UpdateFilterParams) => {
+export const removeEmailFromFilter = async ({
+  token,
+  emails,
+  filterId,
+  filterAction,
+}: UpdateFilterParams) => {
   // sync storage (storage id)
   const storageKey = getStorageKeyByAction(filterAction);
 
   // get  filter id
   // get filter by id
   const filter = await getFilterById(token, filterId);
-  // update the email list, remove the email being unsubscribed
-  const updatedFilterEmails = filter.emails.filter(e => e !== email);
+  // update the email list, remove the email
+  const updatedFilterEmails = filter.emails.filter(e => !emails.includes(e));
   // delete current whitelist/inbox filter
   await deleteFilter(token, filterId);
   // create new one with new emails list

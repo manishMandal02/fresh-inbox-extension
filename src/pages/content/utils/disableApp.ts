@@ -1,4 +1,4 @@
-import { IMessageEvent } from '../types/content.types';
+import { IMessageBody, IMessageEvent } from '../types/content.types';
 import { hideLoadingSnackbar, showLoadingSnackbar, showSnackbar } from '../view/elements/snackbar';
 import { updateFreshInboxSettingsBtn } from '../view/freshInboxSettingsBtn';
 import { logger } from './logger';
@@ -8,7 +8,7 @@ export const disableApp = async () => {
   // show loading snackbar
   showLoadingSnackbar({ title: 'Disabling Fresh Inbox...', email: '' });
   // disable app
-  const res = await chrome.runtime.sendMessage({ event: IMessageEvent.DISABLE_FRESH_INBOX });
+  const res = await chrome.runtime.sendMessage<IMessageBody>({ event: IMessageEvent.DISABLE_FRESH_INBOX });
 
   //  remove assistant buttons (create a utility fn)
   const assistantButtons = document.getElementsByClassName('freshInbox-assistantBtn');

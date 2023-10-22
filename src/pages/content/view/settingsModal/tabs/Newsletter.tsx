@@ -1,10 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Spinner } from '../../elements/Spinner';
 import { Checkbox } from '../../elements/Checkbox';
-import { IMessageEvent, type EmailAction } from '../../../types/content.types';
+import { IMessageEvent, type EmailAction, IMessageBody } from '../../../types/content.types';
 import { storageKeys } from '../../../constants/app.constants';
-import Tooltip from '../../elements/TooltipReact';
 import ActionButton from '../../elements/ActionButton';
+import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
+import {
+  handleDeleteAllMailsAction,
+  handleUnsubscribeAction,
+  handleUnsubscribeAndDeleteAction,
+  handleWhitelistAction,
+} from '@src/pages/content/utils/emailActions';
 
 type NewsletterData = {
   email: string;
@@ -33,7 +39,9 @@ const getNewsletterEmailsData = async (shouldRefreshData = false) => {
     let newsletterEmails: NewsletterData[] = [];
     const getNewsletterEmailsFromBackground = async () => {
       // send message to background to get data
-      newsletterEmails = await chrome.runtime.sendMessage({ event: IMessageEvent.GET_NEWSLETTER_EMAILS });
+      newsletterEmails = await chrome.runtime.sendMessage<IMessageBody>({
+        event: IMessageEvent.GET_NEWSLETTER_EMAILS,
+      });
 
       // save newsletter data to chrome local storage
       await chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: newsletterEmails });
@@ -120,19 +128,57 @@ export const Newsletter = () => {
       setIsFetchingNewsletterEmails(false);
     })();
   }, []);
+  // handle refresh table/data
+  const refreshTable = async () => {
+    // reset state
+    setEmailActionsInProgressFor(null);
+    setSelectedEmails([]);
 
+    // refresh/refetch newsletter data if current data is below 60
+    const shouldRefreshData = newsletterEmails.length - selectedEmails.length >= 60;
+
+    if (shouldRefreshData) {
+      // show loading spinner only if refetching data from gmail (as it could take some time)
+      setIsFetchingNewsletterEmails(true);
+    }
+    const data = await getNewsletterEmailsData(shouldRefreshData);
+
+    // hide loading spinner
+    if (isFetchingNewsletterEmails) setIsFetchingNewsletterEmails(false);
+
+    // set data
+    setNewsletterEmails(data);
+  };
   // email action
-  useEffect(() => {
-    // TODO: fire email action
+  useEffect(
+    asyncHandler(async () => {
+      // do nothing if no action in progress
+      if (actionInProgressFor.emails.length < 1) return;
 
-    console.log(
-      '🚀 ~ file: Newsletter.tsx:139 ~ useEffect ~ actionInProgressFor: 🔥🔥🔥',
-      actionInProgressFor
-    );
-
-    console.log('🚀 ~ file: Newsletter.tsx:143 ~ useEffect ~ selectedEmails:', selectedEmails);
-  }, [actionInProgressFor]);
-
+      // handle email actions
+      if (actionInProgressFor.action === 'unsubscribe') {
+        await handleUnsubscribeAction({ emails: actionInProgressFor.emails });
+        await refreshTable();
+        return;
+      }
+      if (actionInProgressFor.action === 'deleteAllMails') {
+        await handleDeleteAllMailsAction({ emails: actionInProgressFor.emails });
+        await refreshTable();
+        return;
+      }
+      if (actionInProgressFor.action === 'unsubscribeAndDeeAllMails') {
+        await handleUnsubscribeAndDeleteAction({ emails: actionInProgressFor.emails });
+        await refreshTable();
+        return;
+      }
+      if (actionInProgressFor.action === 'whitelistEmail') {
+        await handleWhitelistAction({ emails: actionInProgressFor.emails });
+        await refreshTable();
+        return;
+      }
+    }),
+    [actionInProgressFor]
+  );
   const renderTable = () => {
     const actionButtons = (email: string) => (
       <>

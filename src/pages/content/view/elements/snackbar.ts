@@ -1,3 +1,4 @@
+import { type } from 'os';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { limitCharLength } from '../../utils/limitCharLength';
 import wait from '../../utils/wait';
@@ -5,14 +6,14 @@ import { getLoadingSpinner } from './loadingSpinner';
 
 type ShowLoadingSnackbarParams = {
   title: string;
-  email: string;
+  emails: string[];
 };
 
 const LoadingSnackbarId = 'freshInbox-loadingSnackbar';
 
 // loading snackbar
 // show
-const showLoadingSnackbar = ({ title, email }: ShowLoadingSnackbarParams) => {
+const showLoadingSnackbar = ({ title, emails }: ShowLoadingSnackbarParams) => {
   // remove previous loading snackbar if any
   const previousSnackbar = document.getElementById(LoadingSnackbarId);
 
@@ -22,8 +23,10 @@ const showLoadingSnackbar = ({ title, email }: ShowLoadingSnackbarParams) => {
   const container = document.createElement('div');
   const label = document.createElement('span');
 
+  const emailMessage = emails.length > 1 ? `${emails.length} emails` : limitCharLength(emails[0]);
+
   // add label text
-  label.innerHTML = `${title} <br/> <strong>${limitCharLength(email)}</strong>`;
+  label.innerHTML = `${title} <br/> <strong>${emailMessage}</strong>`;
 
   // add classes
   container.id = LoadingSnackbarId;
@@ -49,34 +52,51 @@ const hideLoadingSnackbar = () => {
 };
 
 //* general message snackbar (success/error)
-type SnackbarParams = {
+type SuccessSnackbarParams = {
   title: string;
-  email: string;
-  isError?: boolean;
+  emails: string[];
 };
 
-const showSnackbar = ({ title, email, isError }: SnackbarParams) => {
+type ErrorSnackbarParams = {
+  title: string;
+  isError: boolean;
+};
+
+type ErrorType = true;
+
+type SnackbarParams<IsError> = IsError extends ErrorType ? ErrorSnackbarParams : SuccessSnackbarParams;
+
+const showSnackbar = <IsError>(params: SnackbarParams<IsError>) => {
+  const { title } = params;
+
   const container = document.createElement('div');
   const label = document.createElement('span');
 
-  const emojiIcon = !isError ? '✅' : '❌';
+  let emojiIcon = '✅';
+
+  let emails: string[] = [];
+
+  if ('isError' in params) {
+    // error emoji icon
+    emojiIcon = '❌';
+    // error class
+    container.classList.add('error');
+  } else {
+    emails = params.emails;
+    // success class
+    container.classList.add('success');
+  }
+
+  const emailMessage = emails.length > 1 ? `${emails.length} emails` : limitCharLength(emails[0]);
 
   // add label text
-  label.innerHTML = `<b>${emojiIcon}</b>  <span>${title} <br/> <strong>${limitCharLength(
-    email
-  )}</strong></span>`;
+  label.innerHTML = `<b>${emojiIcon}</b>  <span>${title} <br/> <strong>${emailMessage}</strong></span>`;
 
   container.classList.add('freshInbox-snackbar');
 
   setTimeout(() => {
     container.classList.add('show');
   }, 10);
-
-  if (!isError) {
-    container.classList.add('success');
-  } else {
-    container.classList.add('error');
-  }
 
   // append elements
   container.appendChild(label);
@@ -93,4 +113,5 @@ const showSnackbar = ({ title, email, isError }: SnackbarParams) => {
     3500
   );
 };
+
 export { showLoadingSnackbar, hideLoadingSnackbar, showSnackbar };

@@ -40,9 +40,10 @@ export interface DataOnPage {
 export interface IMessageBody {
   event: IMessageEvent;
   clientId?: string;
-  email?: string;
+  emails?: string[];
+  userEmail?: string;
   // to remove the email from the whitelisted emails after unsubscribing (if true)
-  isWhiteListed?: boolean;
+  isWhitelisted?: boolean;
   // for getting the newsletter emails on the page
   dataOnPage?: DataOnPage;
 }

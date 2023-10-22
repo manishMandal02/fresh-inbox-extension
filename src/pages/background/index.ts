@@ -20,10 +20,7 @@ import { getSyncStorageByKey } from './utils/getStorageByKey';
 
 reloadOnUpdate('pages/background');
 
-/**
- * Extension reloading is necessary because the browser automatically caches the css.
- * If you do not use the css of the content script, please delete it.
- */
+// Extension reloading is necessary because the browser automatically caches the css.
 reloadOnUpdate('pages/content/style.scss');
 
 logger.info('🏁 background script loaded');
@@ -104,11 +101,11 @@ chrome.runtime.onMessage.addListener(
     logger.info(`received event: ${request.event}`);
     // switch case
     switch (request.event) {
+      // event cases
       case IMessageEvent.CHECK_AUTH_TOKEN: {
-        const res = await getAuthToken(request.email, request.clientId);
+        const res = await getAuthToken(request.userEmail, request.clientId);
 
-        console.log("🚀 ~ file: index.ts:110 ~ res:", res);
-
+        console.log('🚀 ~ file: index.ts:110 ~ res:', res);
 
         if (res) {
           token = res;
@@ -119,7 +116,7 @@ chrome.runtime.onMessage.addListener(
       }
 
       case IMessageEvent.LAUNCH_AUTH_FLOW: {
-        const res = await launchGoogleAuthFlow(request.email, request.clientId);
+        const res = await launchGoogleAuthFlow(request.userEmail, request.clientId);
 
         if (res) {
           token = res;
@@ -144,22 +141,22 @@ chrome.runtime.onMessage.addListener(
       case IMessageEvent.UNSUBSCRIBE: {
         return await unsubscribeEmail({
           token,
-          email: request.email,
-          isWhiteListed: request.isWhiteListed,
+          emails: request.emails,
+          isWhitelisted: request.isWhitelisted,
         });
       }
 
       // delete all mails
       case IMessageEvent.DELETE_ALL_MAILS: {
-        return await deleteAllMails({ token, email: request.email });
+        return await deleteAllMails({ token, emails: request.emails });
       }
 
       // unsubscribe and delete all mails
       case IMessageEvent.UNSUBSCRIBE_AND_DELETE_MAILS: {
         return await unsubscribeAndDeleteAllMails({
           token,
-          email: request.email,
-          isWhiteListed: request.isWhiteListed,
+          emails: request.emails,
+          isWhitelisted: request.isWhitelisted,
         });
       }
 
@@ -167,7 +164,7 @@ chrome.runtime.onMessage.addListener(
       case IMessageEvent.GET_NEWSLETTER_EMAILS: {
         const newsletterEmails = await getNewsletterEmails(token);
 
-        if (newsletterEmails.length > 0) {
+        if (newsletterEmails) {
           return newsletterEmails;
         } else {
           return [];
@@ -176,7 +173,7 @@ chrome.runtime.onMessage.addListener(
 
       // handle whitelist email
       case IMessageEvent.WHITELIST_EMAIL: {
-        return await whitelistEmail(token, request.email);
+        return await whitelistEmail({ token, emails: request.emails });
       }
 
       // handle check for newsletter emails on page
@@ -195,7 +192,7 @@ chrome.runtime.onMessage.addListener(
 
       // handle re-subscribe
       case IMessageEvent.RE_SUBSCRIBE: {
-        return await resubscribeEmail(token, request.email);
+        return await resubscribeEmail({ token, emails: request.emails });
       }
 
       // disable app

@@ -1,32 +1,38 @@
 import { storageKeys } from '@src/pages/background/constants/app.constants';
-import { FILTER_ACTION, NewsletterEmails } from '@src/pages/background/types/background.types';
+import {
+  APIHandleParams,
+  FILTER_ACTION,
+  NewsletterEmails,
+} from '@src/pages/background/types/background.types';
 import { getFilterId } from '../helper/getFilterId';
 import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';
 import { addEmailToFilter } from '../helper/updateFilter';
 import { logger } from '@src/pages/background/utils/logger';
 
 // TODO: check if already whitelisted, if yes do nothing (update storage)
-//
-export const whitelistEmail = async (token: string, email: string) => {
+
+export const whitelistEmail = async ({ token, emails }: APIHandleParams) => {
   try {
     // get whitelist filter id
     const filterId = await getFilterId({ token, filterAction: FILTER_ACTION.INBOX });
     if (filterId) {
       // add email to filter
-      addEmailToFilter({ token, email, filterId, filterAction: FILTER_ACTION.INBOX });
+      addEmailToFilter({ token, emails, filterId, filterAction: FILTER_ACTION.INBOX });
 
-      // check if the email exists in the newsletters list (local.storage), if yes remove it
+      // get all the newsletter emails
       const newsletterEmails = await getLocalStorageByKey<NewsletterEmails[]>(storageKeys.NEWSLETTER_EMAILS);
+      if (newsletterEmails && newsletterEmails.length > 0) {
+        // check if these emails exists in the newsletters list (local.storage)
+        const emailsPresentInNewsletterEmails = newsletterEmails?.filter(e => emails.includes(e.email));
 
-      if (
-        newsletterEmails &&
-        newsletterEmails.length > 0 &&
-        !!newsletterEmails.find(e => e.email === email)
-      ) {
-        // remove the email from newsletter list
-        const updatedNewsletterEmails = newsletterEmails.filter(e => e.email !== email);
-        // save updated newsletter emails
-        await chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: updatedNewsletterEmails });
+        if (emailsPresentInNewsletterEmails.length > 0) {
+          // if yes, remove the emails from newsletter list
+          const updatedNewsletterEmails = newsletterEmails.filter(
+            e => !emailsPresentInNewsletterEmails.includes(e)
+          );
+          // save updated newsletter emails
+          await chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: updatedNewsletterEmails });
+        }
       }
       return true;
     } else {

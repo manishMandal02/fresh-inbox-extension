@@ -5,14 +5,12 @@ import SettingsModal from '../view/settingsModal/SettingsModal';
 
 import '../style.scss';
 
-// import { embedAssistantBtn } from '../view/assistantButton';
 import { embedAssistantBtn } from '../view/assistantButton';
 import { renderAuthModal } from '../view/authModal';
-import { IMessageEvent } from '../types/content.types';
+import { IMessageBody, IMessageEvent } from '../types/content.types';
 
 import wait from '../utils/wait';
 import { getEmailIdFromPage } from '../utils/getEmailIdFromPage';
-import { embedFreshInboxSettingsBtn } from '../view/freshInboxSettingsBtn';
 import { onURLChange } from '../utils/onURLChange';
 import { asyncHandler } from '../utils/asyncHandler';
 import { getSyncStorageByKey } from '../view/settingsModal/helpers/getStorageByKey';
@@ -117,10 +115,10 @@ refreshOnUpdate('pages/content');
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   // is user Authed or not? (handle multiple user) send email id from the content script
-  const isTokenValid = await chrome.runtime.sendMessage({
+  const isTokenValid = await chrome.runtime.sendMessage<IMessageBody>({
     clientId,
     event: IMessageEvent.CHECK_AUTH_TOKEN,
-    email: freshInboxGlobalVariables.userEmail,
+    userEmail: freshInboxGlobalVariables.userEmail,
   });
 
   if (!isTokenValid) {

@@ -130,15 +130,18 @@ const embedAssistantBtnLogic = async (isReEmbedding = false): Promise<boolean> =
   // newsletter emails
   let newsletterEmails = [''];
 
-  const res = await chrome.runtime.sendMessage<IMessageBody>({
-    event: IMessageEvent.GET_NEWSLETTER_EMAILS_ON_PAGE,
-    dataOnPage: {
-      emails,
-      dateRange,
-      category: selectedCategory || null,
-      folder: currentFolder,
-    },
-  });
+  const res =
+    (await chrome.runtime.sendMessage) <
+    IMessageBody >
+    <IMessageBody>{
+      event: IMessageEvent.GET_NEWSLETTER_EMAILS_ON_PAGE,
+      dataOnPage: {
+        emails,
+        dateRange,
+        category: selectedCategory || null,
+        folder: currentFolder,
+      },
+    };
 
   if (res) {
     // store the  emails from response

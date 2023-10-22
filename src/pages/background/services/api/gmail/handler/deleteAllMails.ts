@@ -33,7 +33,7 @@ const batchDeleteMails = async (token: string, ids: string[]) => {
 };
 
 // delete all mails
-export const deleteAllMails = async ({ token, email }: APIHandleParams) => {
+export const deleteAllMails = async ({ token, emails }: APIHandleParams) => {
   try {
     const fetchOptions: Partial<RequestInit> = {
       method: 'GET',
@@ -44,10 +44,10 @@ export const deleteAllMails = async ({ token, email }: APIHandleParams) => {
     };
 
     let nextPageToken: string | null = null;
-
-    const queryParams = `from:${email}&maxResults=${API_MAX_RESULT}${
-      nextPageToken ? `&pageToken=${nextPageToken}` : ''
-    }`;
+    // search query to get all emails/message ids of these emails
+    const queryParams = `from:(${emails
+      .map(email => `${email}`)
+      .join(' OR ')}) &maxResults=${API_MAX_RESULT}${nextPageToken ? `&pageToken=${nextPageToken}` : ''}`;
 
     let parsedRes: GetMsgAPIResponseSuccess | null = null;
 

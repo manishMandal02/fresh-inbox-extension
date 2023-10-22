@@ -5,17 +5,17 @@ import { logger } from './logger';
 import { renderLoadingSpinnerInsteadOfButtons } from './renderLoadingSpinnerInsteadOfButtons';
 
 // handle unsubscribe
-const handleUnsubscribeEmail = async (email: string, isWhiteListed = false): Promise<boolean> => {
+const handleUnsubscribeEmail = async (emails: string[], isWhitelisted = false): Promise<boolean> => {
   try {
     // show loading snackbar
     showLoadingSnackbar({
+      emails,
       title: `Unsubscribing from`,
-      email,
     });
     // send message/event to background script
     const res = await chrome.runtime.sendMessage<IMessageBody>({
-      email,
-      isWhiteListed,
+      emails,
+      isWhitelisted,
       event: IMessageEvent.UNSUBSCRIBE,
     });
     if (!res) {
@@ -24,13 +24,16 @@ const handleUnsubscribeEmail = async (email: string, isWhiteListed = false): Pro
     // hide snackbar
     hideLoadingSnackbar();
     // show success snackbar
-    showSnackbar({ title: 'Successfully unsubscribed from', email });
+    showSnackbar({
+      emails,
+      title: 'Successfully unsubscribed from',
+    });
 
     return res;
   } catch (error) {
     hideLoadingSnackbar();
     // show error snackbar
-    showSnackbar({ title: 'Failed to unsubscribe from', email: '', isError: true });
+    showSnackbar<true>({ title: 'Failed to unsubscribe from', isError: true });
     logger.error({
       error,
       msg: 'Failed to unsubscribe email',
@@ -41,17 +44,17 @@ const handleUnsubscribeEmail = async (email: string, isWhiteListed = false): Pro
 };
 
 // handle delete all mails
-const handleDeleteAllMails = async (email: string): Promise<boolean> => {
+const handleDeleteAllMails = async (emails: string[]): Promise<boolean> => {
   try {
     // show loading snackbar
     showLoadingSnackbar({
+      emails,
       title: `Deleting all mails from`,
-      email,
     });
     // send message/event to background script
-    const res = await chrome.runtime.sendMessage({
+    const res = await chrome.runtime.sendMessage<IMessageBody>({
       event: IMessageEvent.DELETE_ALL_MAILS,
-      email,
+      emails,
     });
     if (!res) {
       throw new Error('Failed to delete mails');
@@ -59,13 +62,13 @@ const handleDeleteAllMails = async (email: string): Promise<boolean> => {
     // hide snackbar
     hideLoadingSnackbar();
     // show success snackbar
-    showSnackbar({ title: 'Successfully deleted all mails from', email });
+    showSnackbar({ title: 'Successfully deleted all mails from', emails });
 
     return res;
   } catch (error) {
     hideLoadingSnackbar();
     // show error snackbar
-    showSnackbar({ title: 'Failed to delete all mails from', email: '', isError: true });
+    showSnackbar<true>({ title: 'Failed to delete all mails from', isError: true });
     logger.error({
       error,
       msg: 'Failed to delete all mails',
@@ -76,26 +79,26 @@ const handleDeleteAllMails = async (email: string): Promise<boolean> => {
 };
 
 type HandleUnSubscribeAndDeleteAllMailsParams = {
-  email: string;
+  emails: string[];
   isWhitelisted?: boolean;
 };
 
 // handle unsubscribe and delete all mails
 const handleUnsubscribeAndDeleteAllMails = async ({
-  email,
+  emails,
   isWhitelisted,
 }: HandleUnSubscribeAndDeleteAllMailsParams): Promise<boolean> => {
   try {
     // show loading snackbar
     showLoadingSnackbar({
+      emails,
       title: `Unsubscribing and deleting all mails from`,
-      email,
     });
 
     // send message/event to background script
-    const res = await chrome.runtime.sendMessage({
+    const res = await chrome.runtime.sendMessage<IMessageBody>({
       event: IMessageEvent.UNSUBSCRIBE_AND_DELETE_MAILS,
-      email,
+      emails,
       isWhitelisted,
     });
 
@@ -106,12 +109,12 @@ const handleUnsubscribeAndDeleteAllMails = async ({
     // hide snackbar
     hideLoadingSnackbar();
     // show success snackbar
-    showSnackbar({ title: 'Successfully unsubscribed & deleted all mails from', email });
+    showSnackbar({ title: 'Successfully unsubscribed & deleted all mails from', emails });
     return res;
   } catch (error) {
     hideLoadingSnackbar();
     // show error snackbar
-    showSnackbar({ title: 'Failed to unsubscribed & delete all mails from', email: '', isError: true });
+    showSnackbar<true>({ title: 'Failed to unsubscribed & delete all mails from', isError: true });
     logger.error({
       error,
       msg: 'Failed to unsubscribed & delete mails',
@@ -122,16 +125,16 @@ const handleUnsubscribeAndDeleteAllMails = async ({
 };
 
 // handle re-subscribe
-const handleReSubscribeEmail = async (email: string): Promise<boolean> => {
+const handleReSubscribeEmail = async (emails: string[]): Promise<boolean> => {
   try {
     // show loading snackbar
     showLoadingSnackbar({
+      emails,
       title: `Re-subscribing to `,
-      email,
     });
 
     // send message/event to background script
-    const res = await chrome.runtime.sendMessage({ event: IMessageEvent.RE_SUBSCRIBE, email });
+    const res = await chrome.runtime.sendMessage<IMessageBody>({ event: IMessageEvent.RE_SUBSCRIBE, emails });
 
     if (!res) {
       throw new Error('Failed to resubscribe');
@@ -139,13 +142,13 @@ const handleReSubscribeEmail = async (email: string): Promise<boolean> => {
     // hide snackbar
     hideLoadingSnackbar();
     // show success snackbar
-    showSnackbar({ title: 'Successfully reSubscribed to', email });
+    showSnackbar({ title: 'Successfully reSubscribed to', emails });
 
     return res;
   } catch (error) {
     hideLoadingSnackbar();
     // show error snackbar
-    showSnackbar({ title: 'Failed to reSubscribe', email: '', isError: true });
+    showSnackbar<true>({ title: 'Failed to reSubscribe', isError: true });
 
     logger.error({
       error,
@@ -157,28 +160,31 @@ const handleReSubscribeEmail = async (email: string): Promise<boolean> => {
 };
 
 // handle whitelist
-const handleWhitelistEmail = async (email: string): Promise<boolean> => {
+const handleWhitelistEmail = async (emails: string[]): Promise<boolean> => {
   try {
     // show loading snackbar
     showLoadingSnackbar({
+      emails,
       title: `Whitelisting `,
-      email,
     });
 
     // send message/event to background script
-    const res = await chrome.runtime.sendMessage({ event: IMessageEvent.WHITELIST_EMAIL, email });
+    const res = await chrome.runtime.sendMessage<IMessageBody>({
+      emails,
+      event: IMessageEvent.WHITELIST_EMAIL,
+    });
     if (!res) {
       throw new Error('Failed to whitelist email');
     }
     // hide snackbar
     hideLoadingSnackbar();
     // show success snackbar
-    showSnackbar({ title: 'Successfully whitelisted', email });
+    showSnackbar({ title: 'Successfully whitelisted', emails });
     return res;
   } catch (error) {
     hideLoadingSnackbar();
     // show error snackbar
-    showSnackbar({ title: 'Failed to whitelist ', email: '', isError: true });
+    showSnackbar<true>({ title: 'Failed to whitelist ', isError: true });
     logger.error({
       error,
       msg: 'Failed to whitelist',
@@ -190,7 +196,7 @@ const handleWhitelistEmail = async (email: string): Promise<boolean> => {
 
 //*** export email actions handler
 interface IEmailActionParams {
-  email: string;
+  emails: string[];
   name?: string;
   btnContainerId?: string;
   onSuccess?: () => Promise<void>;
@@ -199,25 +205,25 @@ interface IEmailActionParams {
 
 // export handle whitelist action handler
 export const handleWhitelistAction = async ({
-  email,
+  emails,
   btnContainerId,
 }: IEmailActionParams): Promise<boolean> => {
   // render loading spinner if btnContainerId is provided
   if (btnContainerId) {
     const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
-    const isSuccess = await handleWhitelistEmail(email);
+    const isSuccess = await handleWhitelistEmail(emails);
 
     hideLoadingSpinner(!isSuccess);
     return isSuccess;
   } else {
-    const isSuccess = await handleWhitelistEmail(email);
+    const isSuccess = await handleWhitelistEmail(emails);
     return isSuccess;
   }
 };
 
 // export handle unsubscribe action handler
 export const handleUnsubscribeAction = async ({
-  email,
+  emails,
   btnContainerId,
   isWhitelisted,
 }: IEmailActionParams): Promise<boolean> => {
@@ -225,13 +231,13 @@ export const handleUnsubscribeAction = async ({
   if (btnContainerId) {
     const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
 
-    const isSuccess = await handleUnsubscribeEmail(email, isWhitelisted);
+    const isSuccess = await handleUnsubscribeEmail(emails, isWhitelisted);
 
     hideLoadingSpinner(!isSuccess);
 
     return isSuccess;
   } else {
-    const isSuccess = await handleUnsubscribeEmail(email, isWhitelisted);
+    const isSuccess = await handleUnsubscribeEmail(emails, isWhitelisted);
 
     return isSuccess;
   }
@@ -239,83 +245,52 @@ export const handleUnsubscribeAction = async ({
 
 // export delete-all-mails-action handler
 export const handleDeleteAllMailsAction = async ({
-  email,
+  emails,
   btnContainerId,
   onSuccess,
 }: IEmailActionParams) => {
   // render loading spinner if btnContainerId is provided
 
-  if (btnContainerId) {
-    showConfirmModal({
-      email,
-      msg: 'Are you sure you want to delete all mails from',
-      onConfirmClick: async () => {
-        const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
-        const isSuccess = await handleDeleteAllMails(email);
-        hideLoadingSpinner(!isSuccess);
-        // call onSuccess callback fn
+  showConfirmModal({
+    email: emails.length > 1 ? `${emails.length} emails` : emails[0],
+    msg: 'Are you sure you want to delete all mails from',
+    onConfirmClick: async () => {
+      const isSuccess = await handleDeleteAllMails(emails);
+      // call onSuccess callback fn
+      if (isSuccess) {
         await onSuccess();
-      },
-    });
-  } else {
-    showConfirmModal({
-      email,
-      msg: 'Are you sure you want to delete all mails from',
-      onConfirmClick: async () => {
-        const isSuccess = await handleDeleteAllMails(email);
-        // call onSuccess callback fn
-        if (isSuccess) {
-          await onSuccess();
-        }
-      },
-    });
-  }
+      }
+    },
+  });
 };
 
 // export unsubscribe--and--delete--all--mails action handler
 export const handleUnsubscribeAndDeleteAction = async ({
-  email,
+  emails,
   btnContainerId,
   onSuccess,
   isWhitelisted,
 }: IEmailActionParams) => {
   // render loading spinner if btnContainerId is provided
-  if (btnContainerId) {
-    showConfirmModal({
-      email,
-      msg: 'Are you sure you want to delete all mails and unsubscribe from',
-      onConfirmClick: async () => {
-        const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
-        const isSuccess = await handleUnsubscribeAndDeleteAllMails({
-          email,
+  showConfirmModal({
+    email: emails.length > 1 ? `${emails.length} emails` : emails[0],
+    msg: 'Are you sure you want to delete all mails and unsubscribe from',
+    onConfirmClick: async () => {
+      const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
+      const isSuccess = await handleUnsubscribeAndDeleteAllMails({
+        emails,
 
-          isWhitelisted,
-        });
-        hideLoadingSpinner(!isSuccess);
-        // call onSuccess callback fn
-        await onSuccess();
-      },
-    });
-  } else {
-    showConfirmModal({
-      email,
-      msg: 'Are you sure you want to delete all mails and unsubscribe from',
-      onConfirmClick: async () => {
-        const isSuccess = await handleUnsubscribeAndDeleteAllMails({
-          email,
-          isWhitelisted,
-        });
-        // call onSuccess callback fn
-        if (isSuccess) {
-          await onSuccess();
-        }
-      },
-    });
-  }
+        isWhitelisted,
+      });
+      hideLoadingSpinner(!isSuccess);
+      // call onSuccess callback fn
+      await onSuccess();
+    },
+  });
 };
 
 export const handleReSubscribeAction = async ({
-  email,
+  emails,
   btnContainerId,
 }: IEmailActionParams): Promise<boolean> => {
   // render loading spinner if btnContainerId is provided
@@ -324,13 +299,13 @@ export const handleReSubscribeAction = async ({
     const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
 
     // handle whitelist action
-    const isSuccess = await handleReSubscribeEmail(email);
+    const isSuccess = await handleReSubscribeEmail(emails);
 
     hideLoadingSpinner(!isSuccess);
     return isSuccess;
   } else {
     // handle whitelist action
-    const isSuccess = await handleReSubscribeEmail(email);
+    const isSuccess = await handleReSubscribeEmail(emails);
     return isSuccess;
   }
 };

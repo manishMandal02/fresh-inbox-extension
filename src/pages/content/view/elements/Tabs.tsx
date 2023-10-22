@@ -16,7 +16,7 @@ export const Tabs = ({ tabs, activeTab, setActiveTab, children }: Props) => {
   return (
     <div className='w-full h-full'>
       {/* tabs */}
-      <div className='w-full h-[10%] relative flex items-center justify-between bg-slate-800 rounded-tr-md rounded-tl-md p-0'>
+      <div className='w-full h-[10%] relative flex items-center justify-between bg-slate-800 rounded-tr-md rounded-tl-md p-0 select-none'>
         {tabs.map(tab => (
           <span
             key={tab}

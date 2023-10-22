@@ -1,4 +1,4 @@
-import { FILTER_ACTION } from '@src/pages/background/types/background.types';
+import { APIHandleParams, FILTER_ACTION } from '@src/pages/background/types/background.types';
 import { addEmailToFilter, removeEmailFromFilter } from '../helper/updateFilter';
 import { getFilterId } from '../helper/getFilterId';
 import { logger } from '@src/pages/background/utils/logger';
@@ -6,13 +6,13 @@ import { logger } from '@src/pages/background/utils/logger';
 // TODO: check if already re-Subscribed, if yes do nothing (update storage)
 
 // handle resubscribe
-export const resubscribeEmail = async (token: string, email: string) => {
+export const resubscribeEmail = async ({ token, emails }: APIHandleParams) => {
   try {
     // remove email from unsubscribe filter
     const unsubscribeFilterId = await getFilterId({ token, filterAction: FILTER_ACTION.TRASH });
     await removeEmailFromFilter({
       token,
-      email,
+      emails,
       filterId: unsubscribeFilterId,
       filterAction: FILTER_ACTION.TRASH,
     });
@@ -21,7 +21,7 @@ export const resubscribeEmail = async (token: string, email: string) => {
     const whitelistFilterId = await getFilterId({ token, filterAction: FILTER_ACTION.INBOX });
     await addEmailToFilter({
       token,
-      email,
+      emails,
       filterId: whitelistFilterId,
       filterAction: FILTER_ACTION.INBOX,
     });

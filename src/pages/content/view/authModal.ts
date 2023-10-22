@@ -8,7 +8,7 @@ const handleAuthBtnClick = async () => {
   // get client id from evn variables
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-  const res = await chrome.runtime.sendMessage({
+  const res = await chrome.runtime.sendMessage<IMessageBody>({
     clientId,
     event: IMessageEvent.LAUNCH_AUTH_FLOW,
     email: freshInboxGlobalVariables.userEmail,
@@ -24,7 +24,7 @@ const handleAuthBtnClick = async () => {
     await embedAssistantBtn();
 
     // run checks after successful auth
-    await chrome.runtime.sendMessage({
+    await chrome.runtime.sendMessage<IMessageBody>({
       event: IMessageEvent.CHECKS_AFTER_AUTH,
     });
   } else {
