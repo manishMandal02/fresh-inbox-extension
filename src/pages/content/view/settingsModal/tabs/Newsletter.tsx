@@ -33,13 +33,7 @@ const getNewsletterEmailsData = async (shouldRefreshData = false) => {
     let newsletterEmails: NewsletterData[] = [];
     const getNewsletterEmailsFromBackground = async () => {
       // send message to background to get data
-      console.log('🚀 ~ file: Newsletter.tsx:37 ~ getNewsletterEmailsFromBackground ~ chrome:', chrome);
       newsletterEmails = await chrome.runtime.sendMessage({ event: IMessageEvent.GET_NEWSLETTER_EMAILS });
-
-      console.log(
-        '🚀 ~ file: Newsletter.tsx:42 ~ getNewsletterEmailsFromBackground ~ newsletterEmails:',
-        newsletterEmails
-      );
 
       // save newsletter data to chrome local storage
       await chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: newsletterEmails });
@@ -52,8 +46,6 @@ const getNewsletterEmailsData = async (shouldRefreshData = false) => {
       // get local storage data
 
       const storageData = await getLocalStorageByKey<NewsletterData[]>(storageKeys.NEWSLETTER_EMAILS);
-
-      console.log('🚀 ~ file: Newsletter.tsx:53 ~ getNewsletterEmailsData ~ storageData:', storageData);
 
       // check if newsletters data already exists
       if (storageData.length > 0) {
@@ -120,13 +112,9 @@ export const Newsletter = () => {
 
   // get newsletter emails data
   useEffect(() => {
-    console.log('🚀 ~ file: Newsletter.tsx:114 ~ useEffect ~ useEffect:', useEffect);
-
     (async () => {
       setIsFetchingNewsletterEmails(true);
       const data = await getNewsletterEmailsData();
-
-      console.log('🚀 ~ file: Newsletter.tsx:117 ~ asyncHandler ~ data:', data);
 
       setNewsletterEmails(data);
       setIsFetchingNewsletterEmails(false);
@@ -137,7 +125,12 @@ export const Newsletter = () => {
   useEffect(() => {
     // TODO: fire email action
 
-    console.log('🚀 ~ file: Newsletter.tsx:128 ~ useEffect ~ fire email action:');
+    console.log(
+      '🚀 ~ file: Newsletter.tsx:139 ~ useEffect ~ actionInProgressFor: 🔥🔥🔥',
+      actionInProgressFor
+    );
+
+    console.log('🚀 ~ file: Newsletter.tsx:143 ~ useEffect ~ selectedEmails:', selectedEmails);
   }, [actionInProgressFor]);
 
   const renderTable = () => {
@@ -219,7 +212,7 @@ export const Newsletter = () => {
             {newsletterEmails.map(({ email, name }, idx) => (
               <tr
                 key={email + name}
-                className='w-full flex items-center  justify-between px-6 odd:bg-slate-100 py-1.5 hover:bg-slate-200/60 transition-all duration-150'
+                className='w-full flex items-center  justify-between px-6 odd:bg-slate-100 py-1.5 hover:bg-slate-200/60 transition-all duration-150 z-20'
               >
                 {/* left container */}
                 <td className='w-[5%]'>
@@ -241,12 +234,16 @@ export const Newsletter = () => {
                 <td className='text-sm ml-1 w-[30%]'>{name.replace(`\\`, '').trim()}</td>
                 <td className='text-sm w-[30%]'>{email}</td>
                 {/* right container */}
-                <td className='text-sm w-[30%] flex items-center justify-between z-50 pl-8 pr-6'>
+                <td className='text-sm w-[30%] flex items-center justify-between pl-8 pr-6'>
                   {/* render action button or loading spinner (if action in progress) */}
                   {renderActionButtons(email)}
                 </td>
               </tr>
             ))}
+            {/* refresh table button */}
+            <tr>
+              <td colSpan={5} className='w-full flex justify-center items-center'></td>
+            </tr>
           </table>
         </div>
 
@@ -333,7 +330,12 @@ export const Newsletter = () => {
   return (
     <div className='w-full h-full max-h-full'>
       <h2 className=' text-slate-700 text-center mb-[.4rem] font-light text-sm'>
-        Fresh Inbox has identified <u id='newsletterTab-numNewsletterEmails'>{newsletterEmails.length}</u>{' '}
+        Fresh Inbox has identified{' '}
+        <u id='newsletterTab-numNewsletterEmails'>
+          {newsletterEmails.length}
+          {/* show + if more than 100 emails */}
+          <strong>{newsletterEmails.length > 100 ? '+' : null}</strong>
+        </u>{' '}
         emails as newsletters or as part of a mailing list.
       </h2>
 
