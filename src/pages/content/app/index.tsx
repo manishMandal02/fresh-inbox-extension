@@ -14,6 +14,7 @@ import { getEmailIdFromPage } from '../utils/getEmailIdFromPage';
 import { onURLChange } from '../utils/onURLChange';
 import { asyncHandler } from '../utils/asyncHandler';
 import { getSyncStorageByKey } from '../view/settingsModal/helpers/getStorageByKey';
+import { showConfirmModal } from '../view/elements/confirmModal';
 
 // react root
 const root = document.createElement('div');
@@ -44,6 +45,8 @@ window.freshInboxGlobalVariables = {
   // change it back to prod during deployment
   loggerLevel: 'dev',
 };
+
+// TODO: complete all the necessary TODO comments
 
 // top most container for inbox and also the single email container
 const getTopMostTableContainer = () => {
@@ -93,23 +96,27 @@ refreshOnUpdate('pages/content');
   // wait 2s
   await wait(2000);
 
+  showConfirmModal({
+    msg: 'Are you sure your want to delete all mails',
+    email: 'flipkart-newsletter@flipkar.com',
+    onConfirmClick: async () => {},
+  });
+
+  // TODO: testing;
+  return;
+
   // query for user email id on page
   freshInboxGlobalVariables.userEmail = await getEmailIdFromPage();
 
   //TODO: confirm modal don't show again checkbox
-  // showConfirmModal({
-  //   msg: 'Are you sure your want to delete all mails',
-  //   email: 'flipkart-newsletter@flipkar.com',
-  //   onConfirmClick: async () => {},
-  // });
 
   // check if app is enabled or not
   const appStatus = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
 
   freshInboxGlobalVariables.isAppEnabled = appStatus;
 
-  //    TODO: settings button with disabled state based on app status
-  createRoot(root).render(<SettingsModal isAppEnabled={appStatus} />);
+  //    TODO: uncomment this code to show settings modal
+  // createRoot(root).render(<SettingsModal isAppEnabled={appStatus} />);
 
   // get client id from evn variables
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;

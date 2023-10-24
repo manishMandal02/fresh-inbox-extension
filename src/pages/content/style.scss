@@ -1,4 +1,3 @@
-@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -81,7 +80,6 @@ $text-mid-gray: #505050;
     display: flex;
     align-items: center !important;
     justify-content: center !important;
-
     padding: 0 !important;
   }
 
@@ -100,7 +98,7 @@ $text-mid-gray: #505050;
   margin-left: auto;
 }
 
-.freshInbox-assistantBtn.singleEmail {
+.freshInbox-assistantBtn.singleEmailAssistantBtn {
   position: absolute;
   left: -1rem;
   top: 6px;
@@ -152,6 +150,7 @@ $text-mid-gray: #505050;
       margin: 0;
     }
   }
+
   #hoverCard-btnContainer {
     display: flex;
     width: 100%;
@@ -197,7 +196,7 @@ $text-mid-gray: #505050;
   }
 }
 
-#freshInbox-hoverCard.singleEmail {
+#freshInbox-hoverCard.singleEmailHoverCard {
   transform: translate(-44%, 0%);
 }
 
@@ -269,30 +268,6 @@ $text-mid-gray: #505050;
       margin-top: 0.5rem;
     }
   }
-}
-
-#freshInboxSettingsBtn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 16px;
-  right: 200px;
-  z-index: 1000;
-  font-size: 14px;
-  font-weight: 500;
-  color: #efeff0;
-  background-color: $primary-color;
-  border-radius: 6px;
-  outline: none;
-  border: none;
-  padding: 10px 12px;
-  cursor: pointer;
-}
-
-#freshInboxSettingsBtn.inactive {
-  color: #efeff0;
-  background-color: $text-dark;
 }
 
 .freshInbox-snackbar {
@@ -405,27 +380,32 @@ $text-mid-gray: #505050;
 
 // confirm modal
 #freshInbox-confirmModal {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
   // children
   #confirmModal-backdrop {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    z-index: 10000;
+    z-index: 1000;
     width: 100vw;
     height: 100vw;
     background-color: #242222;
-    opacity: 0.35;
+    opacity: 0.5;
   }
   #confirmModal-card {
     display: flex;
     flex-direction: column;
-    padding: 18px 32px;
-    border-radius: 16px;
     box-shadow: #64646f33 0px 7px 29px 0px;
     background-color: #f3f1f1;
+    height: 25vh;
     width: fit-content;
-    height: 20vh;
-    position: fixed;
+    position: absolute;
+    padding: 18px 32px;
+    border-radius: 16px;
     top: 25%;
     left: 32%;
     z-index: 10000;
@@ -483,442 +463,6 @@ $text-mid-gray: #505050;
         text-align: center;
         cursor: pointer;
         margin-right: 0.6rem;
-      }
-    }
-  }
-}
-
-// settings modal
-#freshInbox-settingsModal {
-  // children
-  #settingsModal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 9000;
-    width: 100vw;
-    height: 100vw;
-    background-color: #242222;
-    opacity: 0.45;
-  }
-  #settingsModal-card {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    border-radius: 12px;
-    box-shadow: #64646f33 0px 7px 29px 0px;
-    background-color: #f3f1f1;
-    width: 50vw;
-    height: 50vh;
-    position: fixed;
-    top: 22%;
-    left: 25%;
-    overflow: hidden;
-    z-index: 10000;
-    // children
-    #settingsModal-topContainer {
-      display: flex;
-      flex-direction: column;
-      > div:first-child {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.35rem 0;
-        > p {
-          margin: 0;
-          margin-left: 1.2rem;
-          font-size: 1.5rem;
-          color: #333434;
-          font-weight: 400;
-        }
-        > button {
-          margin-right: 0.8rem;
-          cursor: pointer;
-          outline: none;
-          border: none;
-          transform: scale(1.7);
-          font-weight: 300;
-        }
-      }
-      .tabs {
-        display: flex;
-        width: 95%;
-        justify-content: space-evenly;
-        margin-top: 0.6rem;
-        margin-left: 16px;
-        border-radius: 4px;
-        padding: 3px 3px;
-        background-color: $light-gray-color;
-        > li {
-          list-style-type: none;
-          display: flex;
-          width: 33%;
-          justify-content: center;
-          align-items: center;
-          font-size: 16px;
-          padding: 4px;
-          cursor: pointer;
-          user-select: none;
-          // single child selector
-          // &:nth-child(1) {
-          // }
-          // &:nth-child(2) {
-          // }
-          // &:nth-child(3) {
-          // }
-        }
-        // active tab style
-        .settingsModal-activeTab {
-          background-color: #edeeef;
-          color: $primary-color;
-          border-radius: 4px;
-          border-bottom: 1px solid $primary-color;
-        }
-      }
-    }
-    #settingsModal-tabBodyContainer {
-      display: flex;
-      width: 96%;
-      max-height: calc(100% - 20%);
-      margin-top: 4px;
-      margin-left: 16px;
-      border-radius: 4px;
-      padding: 3px 3px;
-      background-color: $light-gray-color;
-      overflow: hidden;
-      // children (tabs)
-      #settingsModal-authTab {
-        display: flex;
-      }
-
-      #settingsModal-aboutTab {
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-        > h4 {
-          margin: 6px 0;
-          font-size: 16px;
-          font-weight: 400;
-          color: #121313;
-          margin-bottom: 16px;
-          > strong {
-            background-color: #c1f7c1;
-            color: #303131;
-            padding: 0 5px;
-            font-weight: 500;
-            border-radius: 2px;
-          }
-        }
-        > p {
-          margin: 4px 0;
-          font-size: 15px;
-          font-weight: 400;
-          color: #121313;
-          line-height: 24px;
-          > u {
-            color: #2c2d2d;
-            font-weight: 500;
-            border-radius: 2px;
-            margin-bottom: 4px;
-          }
-        }
-        > p:nth-child(3) {
-          margin: 8px 0;
-        }
-        > button {
-          width: fit-content;
-          border: none;
-          outline: none;
-          text-decoration: underline;
-          background-color: transparent;
-          margin-top: 32px;
-          color: #404040;
-          align-self: center;
-          cursor: pointer;
-        }
-      }
-
-      #settingsModal-newsletterTab {
-        width: 100%;
-        display: flex;
-        align-items: flex-start;
-        flex-direction: column;
-        max-height: 100%;
-        min-height: 100%;
-        > p {
-          font-size: 14px;
-          color: #181717;
-          opacity: 0.9;
-          text-align: center;
-          margin: 6px auto 0 auto;
-          > u {
-            font-size: 14px;
-            font-weight: 500;
-          }
-        }
-        > hr {
-          width: calc(100% + 3px);
-          height: 0.6px;
-          margin: 6px 0 0px -3px;
-          background-color: #000000;
-          opacity: 0.1;
-        }
-        > div {
-          width: calc(100% + 6px);
-          margin-left: -3px;
-          height: 35vh;
-          overflow-y: auto;
-          > table {
-            width: 100%;
-            > tbody {
-              width: 100%;
-              height: 100%;
-              > tr {
-                padding: 3px 12px;
-                > td {
-                  padding: 10px 20px;
-                  font-size: 15px;
-                  color: #2c2c2c;
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  > span {
-                    margin: 0;
-                    font-size: 12.5px;
-                    min-width: 65%;
-
-                    // serial number
-                    > strong {
-                      margin-right: 1px;
-                      font-weight: 500;
-                      color: #2b2b2b;
-                      font-size: 12px;
-                      opacity: 0.7;
-                    }
-                    // name
-                    > span {
-                      margin-right: 4px;
-                      font-size: 13.5px;
-                      color: #2b2b2b;
-                    }
-                  }
-                  > div {
-                    min-width: 20%;
-                    width: 35%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-
-                    > button {
-                      margin-right: 5px;
-                      cursor: pointer;
-                      opacity: 0.9;
-                    }
-                  }
-                }
-              }
-              > tr:nth-child(even) {
-                background-color: #0959d00a;
-              }
-              #newsletterTab-refresh-table {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-                background-color: #e8eff9;
-                padding: 14px 0;
-                > q {
-                  font-size: 13px;
-                  color: $text-dark;
-                  text-align: center;
-                  line-height: 20px;
-                  margin: 0;
-                  margin-bottom: 8px;
-                  > strong {
-                    font-size: 13px;
-                    font-weight: 500;
-                  }
-                }
-
-                > button {
-                  cursor: pointer;
-                  border-radius: 6px;
-                  padding: 6px 12px;
-                  font-size: 13px;
-                  text-align: center;
-                  color: $text-dark;
-                  outline: none;
-                  border: none;
-                  background-color: #f9f9f9;
-                  box-shadow: #00000029 0px 1px 4px;
-                  font-weight: 500;
-                  > span {
-                    margin-right: 2px;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      #settingsModal-unsubscribedListTab {
-        width: 100%;
-        display: flex;
-        align-items: flex-start;
-        flex-direction: column;
-        max-height: 100%;
-        > p {
-          font-size: 14px;
-          color: #181717;
-          opacity: 0.9;
-          text-align: center;
-          margin: 6px auto 0 auto;
-          > u {
-            font-size: 14px;
-            font-weight: 500;
-          }
-        }
-        > hr {
-          width: calc(100% + 3px);
-          height: 0.6px;
-          margin: 6px 0 0px -3px;
-          background-color: #000000;
-          opacity: 0.1;
-        }
-        > div {
-          width: calc(100% + 6px);
-          margin-left: -3px;
-          height: 35vh;
-          overflow-y: auto;
-          > table {
-            width: 100%;
-            > tbody {
-              > tr {
-                padding: 3px 12px;
-                > td {
-                  padding: 10px 32px;
-                  font-size: 15px;
-                  color: #2c2c2c;
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  > span {
-                    margin: 0;
-                    font-size: 12.5px;
-                    width: 65%;
-
-                    // serial number
-                    > strong {
-                      margin-right: 1px;
-                      font-weight: 500;
-                      color: #2b2b2b;
-                      font-size: 12px;
-                      opacity: 0.7;
-                    }
-                  }
-                  > div {
-                    min-width: 20%;
-                    width: 35%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    > button {
-                      margin-right: 5px;
-                      cursor: pointer;
-                      opacity: 0.9;
-                    }
-                  }
-                }
-              }
-              > tr:nth-child(even) {
-                background-color: #0959d00a;
-              }
-            }
-          }
-        }
-      }
-
-      #settingsModal-whitelistedEmailsTab {
-        width: 100%;
-        display: flex;
-        align-items: flex-start;
-        flex-direction: column;
-        max-height: 100%;
-        min-height: 100%;
-        > p {
-          font-size: 14px;
-          color: #181717;
-          opacity: 0.9;
-          text-align: center;
-          margin: 6px auto 0 auto;
-          > u {
-            font-size: 14px;
-            font-weight: 500;
-          }
-        }
-        > hr {
-          width: calc(100% + 3px);
-          height: 0.6px;
-          margin: 6px 0 0px -3px;
-          background-color: #000000;
-          opacity: 0.1;
-        }
-        > div {
-          width: calc(100% + 6px);
-          margin-left: -3px;
-          height: 35vh;
-          overflow-y: auto;
-          > table {
-            width: 100%;
-            > tbody {
-              width: 100%;
-              height: 100%;
-              > tr {
-                padding: 3px 12px;
-                > td {
-                  padding: 10px 20px;
-                  font-size: 15px;
-                  color: #2c2c2c;
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  > span {
-                    margin: 0;
-                    font-size: 12.5px;
-                    width: 65%;
-
-                    // serial number
-                    > strong {
-                      margin-right: 1px;
-                      font-weight: 500;
-                      color: #2b2b2b;
-                      font-size: 12px;
-                      opacity: 0.7;
-                    }
-                  }
-                  > div {
-                    min-width: 20%;
-                    width: 35%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-
-                    > button {
-                      margin-right: 5px;
-                      cursor: pointer;
-                      opacity: 0.9;
-                    }
-                  }
-                }
-              }
-              > tr:nth-child(even) {
-                background-color: #0959d00a;
-              }
-            }
-          }
-        }
       }
     }
   }

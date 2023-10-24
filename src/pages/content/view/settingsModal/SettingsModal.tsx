@@ -61,7 +61,7 @@ const SettingsModal = ({ isAppEnabled }: Props) => {
         <div className='fixed top-0 left-0 w-screen h-screen flex items-center justify-center'>
           {/* backdrop */}
           <div
-            className='fixed w-screen h-screen bg-slate-800 bg-opacity-70 transition-opacity z-10'
+            className='absolute w-full h-full bg-slate-800 bg-opacity-70 transition-opacity z-10'
             onClick={handleCloseModal}
           ></div>
           {/* modal card */}

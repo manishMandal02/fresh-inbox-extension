@@ -11,6 +11,7 @@ import {
   handleUnsubscribeAndDeleteAction,
   handleWhitelistAction,
 } from '@src/pages/content/utils/emailActions';
+import { showConfirmModal } from '../../elements/confirmModal';
 
 type NewsletterData = {
   email: string;
@@ -128,8 +129,9 @@ export const Newsletter = () => {
       setIsFetchingNewsletterEmails(false);
     })();
   }, []);
+
   // handle refresh table/data
-  const refreshTable = async () => {
+  const refreshTable = async (isSuccess = false) => {
     // reset state
     setEmailActionsInProgressFor(null);
     setSelectedEmails([]);
@@ -143,32 +145,46 @@ export const Newsletter = () => {
     }
     const data = await getNewsletterEmailsData(shouldRefreshData);
 
+    console.log('🚀 ~ file: Newsletter.tsx:147 ~ refreshTable ~ data:', data);
+
     // hide loading spinner
     if (isFetchingNewsletterEmails) setIsFetchingNewsletterEmails(false);
 
     // set data
     setNewsletterEmails(data);
   };
+
   // email action
   useEffect(
     asyncHandler(async () => {
       // do nothing if no action in progress
-      if (actionInProgressFor.emails.length < 1) return;
+      if (!actionInProgressFor || actionInProgressFor.emails.length < 1) return;
+
+      console.log('🚀 ~ file: Newsletter.tsx:162 ~ asyncHandler ~ actionInProgressFor:', actionInProgressFor);
 
       // handle email actions
       if (actionInProgressFor.action === 'unsubscribe') {
-        await handleUnsubscribeAction({ emails: actionInProgressFor.emails });
+        await handleUnsubscribeAction({ emails: actionInProgressFor.emails, isWhitelisted: false });
         await refreshTable();
         return;
       }
       if (actionInProgressFor.action === 'deleteAllMails') {
-        await handleDeleteAllMailsAction({ emails: actionInProgressFor.emails });
-        await refreshTable();
+        await handleDeleteAllMailsAction({
+          emails: actionInProgressFor.emails,
+          onSuccess: async () => {
+            await refreshTable();
+          },
+        });
         return;
       }
       if (actionInProgressFor.action === 'unsubscribeAndDeeAllMails') {
-        await handleUnsubscribeAndDeleteAction({ emails: actionInProgressFor.emails });
-        await refreshTable();
+        await handleUnsubscribeAndDeleteAction({
+          emails: actionInProgressFor.emails,
+          isWhitelisted: false,
+          onSuccess: async () => {
+            await refreshTable();
+          },
+        });
         return;
       }
       if (actionInProgressFor.action === 'whitelistEmail') {
@@ -180,6 +196,7 @@ export const Newsletter = () => {
     [actionInProgressFor]
   );
   const renderTable = () => {
+    // action buttons for each email
     const actionButtons = (email: string) => (
       <>
         <ActionButton
@@ -199,20 +216,35 @@ export const Newsletter = () => {
         <ActionButton
           text={'🗑️'}
           tooltipLabel='Delete all mails'
-          onClick={() => setEmailActionsInProgressFor({ emails: [email], action: 'deleteAllMails' })}
+          onClick={() =>
+            showConfirmModal({
+              email,
+              msg: 'Are you sure you want to delete all mails from',
+              onConfirmClick: async () => {
+                setEmailActionsInProgressFor({ emails: [email], action: 'deleteAllMails' });
+              },
+            })
+          }
           isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
         />
         <ActionButton
           text={'❌ + 🗑️'}
           tooltipLabel='Unsubscribe & Delete all'
           onClick={() =>
-            setEmailActionsInProgressFor({ emails: [email], action: 'unsubscribeAndDeeAllMails' })
+            showConfirmModal({
+              email,
+              msg: 'Are you sure you want to delete all mails and unsubscribe from',
+              onConfirmClick: async () => {
+                setEmailActionsInProgressFor({ emails: [email], action: 'unsubscribeAndDeeAllMails' });
+              },
+            })
           }
           isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
         />
       </>
     );
 
+    // render action buttons or spinner based on loading state
     const renderActionButtons = (email: string) => {
       if (
         selectedEmails.length < 1 &&
@@ -277,7 +309,7 @@ export const Newsletter = () => {
                   />
                 </td>
                 <td className='text-sm w-[5%]'>{idx + 1}.</td>
-                <td className='text-sm ml-1 w-[30%]'>{name.replace(`\\`, '').trim()}</td>
+                <td className='text-sm ml-1 w-[30%]'>{name.replaceAll(`\\`, '').trim()}</td>
                 <td className='text-sm w-[30%]'>{email}</td>
                 {/* right container */}
                 <td className='text-sm w-[30%] flex items-center justify-between pl-8 pr-6'>

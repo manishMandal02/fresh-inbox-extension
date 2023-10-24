@@ -51,7 +51,7 @@ const hideLoadingSnackbar = () => {
   container.remove();
 };
 
-//* general message snackbar (success/error)
+// general message snackbar (success/error)
 type SuccessSnackbarParams = {
   title: string;
   emails: string[];

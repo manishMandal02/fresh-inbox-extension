@@ -1,3 +1,5 @@
+import { asyncHandler } from '../../utils/asyncHandler';
+
 const handleConfirmActionBtnClick = async (ev: MouseEvent, onConfirmClick: () => Promise<void>) => {
   ev.stopPropagation();
   // execute callback
@@ -50,8 +52,10 @@ const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams
   backdrop.addEventListener('click', handleCancelActionBtnClick);
   //
 
-  confirmAction.addEventListener('click', async ev => {
-    await handleConfirmActionBtnClick(ev, onConfirmClick);
+  confirmAction.addEventListener('click', (ev: MouseEvent) => {
+    asyncHandler(async () => {
+      await handleConfirmActionBtnClick(ev, onConfirmClick);
+    });
   });
 
   // disable btn

@@ -155,7 +155,7 @@ export const showHoverCard = async ({ parentElId, email, name, isSingleEmail }: 
 
   // add single class to the button if it is a single email (to get correct positioning)
   if (isSingleEmail) {
-    hoverCard.classList.add('singleEmail');
+    hoverCard.classList.add('singleEmailHoverCard');
   }
 
   // add text to label
@@ -196,7 +196,7 @@ export const showHoverCard = async ({ parentElId, email, name, isSingleEmail }: 
       'click',
       asyncHandler(async () => {
         hideHoverCard({ parentElId, forceClose: true });
-        await handleUnsubscribeAction({ email });
+        await handleUnsubscribeAction({ emails: [email] });
       })
     );
 
@@ -206,7 +206,7 @@ export const showHoverCard = async ({ parentElId, email, name, isSingleEmail }: 
       asyncHandler(async () => {
         hideHoverCard({ parentElId, forceClose: true });
         await handleUnsubscribeAndDeleteAction({
-          email,
+          emails: [email],
           onSuccess: async () => {
             // if action dispatched from single email view
             if (isSingleEmail) {
@@ -229,7 +229,7 @@ export const showHoverCard = async ({ parentElId, email, name, isSingleEmail }: 
       'click',
       asyncHandler(async () => {
         hideHoverCard({ parentElId, forceClose: true });
-        const isSuccess = await handleWhitelistAction({ email });
+        const isSuccess = await handleWhitelistAction({ emails: [email] });
         if (isSuccess) {
           // if success, remove assistant btn from for this email
           const assistantBtnContainerId = freshInboxGlobalVariables.assistantBtnContainerId;
@@ -252,7 +252,7 @@ export const showHoverCard = async ({ parentElId, email, name, isSingleEmail }: 
     asyncHandler(async () => {
       hideHoverCard({ parentElId, forceClose: true });
       await handleDeleteAllMailsAction({
-        email,
+        emails: [email],
         onSuccess: async () => {
           // if action dispatched from single email view
           if (isSingleEmail) {
