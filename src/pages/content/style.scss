@@ -5,7 +5,7 @@
 //colors
 $primary-color: #10b981;
 $light-gray-color: #dde3ea95;
-$danger-color: #f45151;
+$danger-color: #ee4242;
 $text-dark: #282828;
 $text-mid-gray: #505050;
 
@@ -49,6 +49,7 @@ $text-mid-gray: #505050;
     }
   }
 }
+
 // common text message
 .freshInbox-TextMsg {
   width: 100%;
@@ -63,6 +64,7 @@ $text-mid-gray: #505050;
     margin: 0;
   }
 }
+
 // common table header
 .freshInbox-tableHeader {
   width: 100%;
@@ -401,10 +403,10 @@ $text-mid-gray: #505050;
     flex-direction: column;
     box-shadow: #64646f33 0px 7px 29px 0px;
     background-color: #f3f1f1;
-    height: 25vh;
+    height: 20vh;
     width: fit-content;
     position: absolute;
-    padding: 18px 32px;
+    padding: 18px 28px;
     border-radius: 16px;
     top: 25%;
     left: 32%;
@@ -413,55 +415,60 @@ $text-mid-gray: #505050;
     #confirmModal-modalTitle {
       color: #252525;
       font-size: 1.4rem;
-      font-weight: 400;
+      font-weight: 500;
       margin: 0;
-      margin-bottom: 0.75rem;
+      margin-bottom: 1rem;
     }
     #confirmModal-modalMessage {
       color: #434242;
       font-size: 16px;
       font-weight: 400;
       margin: 0;
-      margin-bottom: 1.5rem;
       padding-right: 20px;
+      line-height: 1.5rem;
       > strong {
         font-size: 16px;
-        margin-top: 8px;
+        font-weight: 500;
       }
     }
+
+    // TODO:
+    #confirmModal-checkboxWrapper {
+      display: flex;
+    }
+
     #confirmModal-btnContainer {
       display: flex;
       width: 100%;
-      margin-top: 1rem;
+      margin-top: 1.75rem;
       align-items: center;
       justify-content: flex-end;
 
-      // children
-      #confirmModal-confirmActionBtn {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+      > button {
         font-size: 16px;
-        font-weight: 400;
-        background-color: $danger-color;
-        color: #f3f1f1;
+        align-items: center;
         border-radius: 6px;
         outline: none;
         border: none;
         padding: 10px 20px;
         cursor: pointer;
+      }
+
+      // children
+      #confirmModal-confirmActionBtn {
+        font-weight: 400;
+        background-color: $danger-color;
+        color: #f3f1f1;
+        transition: all;
+        transition-duration: 0.2s;
+        &:hover {
+          transform: scale(1.025);
+        }
       }
       #confirmModal-cancelActionBtn {
         color: #484747;
         font-weight: 300;
-        font-size: 16px;
-        border-radius: 6px;
-        outline: none;
-        border: none;
         background-color: #e3e4e5;
-        padding: 10px 20px;
-        text-align: center;
-        cursor: pointer;
         margin-right: 0.6rem;
       }
     }

@@ -102,7 +102,7 @@ refreshOnUpdate('pages/content');
     onConfirmClick: async () => {},
   });
 
-  // TODO: testing;
+  // TODO: testing
   return;
 
   // query for user email id on page

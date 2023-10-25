@@ -1,3 +1,4 @@
+import { type } from 'os';
 import { asyncHandler } from '../../utils/asyncHandler';
 
 const handleConfirmActionBtnClick = async (ev: MouseEvent, onConfirmClick: () => Promise<void>) => {
@@ -14,6 +15,15 @@ const handleCancelActionBtnClick = (ev: MouseEvent) => {
   hideConfirmModal();
 };
 
+const handleCheckboxClick = (ev: Event) => {
+  // update checkbox state
+  // if(ev.currentTarget.checked){
+  //   // checked
+  // } else {
+  //   // not  checked
+  // }
+};
+
 type ShowConfirmModalParams = {
   msg: string;
   email: string;
@@ -24,18 +34,28 @@ const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams
   // modal elements
   const modalContainer = document.createElement('div');
   const backdrop = document.createElement('div');
+  // modal card
   const modalCard = document.createElement('div');
   const modalTitle = document.createElement('p');
   const modalMessage = document.createElement('p');
+  // checkbox
+  const checkboxWrapper = document.createElement('div');
+  const checkboxLabel = document.createElement('label');
+  const checkbox = document.createElement('input');
   const buttonContainer = document.createElement('div');
+  //  buttons
   const confirmAction = document.createElement('button');
   const cancelAction = document.createElement('button');
 
-  // add content to the elements
+  // set inner content
   modalTitle.innerText = 'Confirm Action';
   modalMessage.innerHTML = `${msg} <br /> <strong>${email}</strong>`;
   confirmAction.innerText = 'Delete';
   cancelAction.innerText = 'Cancel';
+
+  // set checkbox type & label
+  checkbox.type = 'checkbox';
+  checkboxLabel.innerText = "Don't show this message again";
 
   // add class to elements
   modalContainer.id = 'freshInbox-confirmModal';
@@ -43,6 +63,8 @@ const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams
   modalCard.id = 'confirmModal-card';
   modalTitle.id = 'confirmModal-modalTitle';
   modalMessage.id = 'confirmModal-modalMessage';
+  checkboxWrapper.id = 'confirmModal-checkboxWrapper';
+  checkbox.id = 'confirmModal-checkbox';
   buttonContainer.id = 'confirmModal-btnContainer';
   confirmAction.id = 'confirmModal-confirmActionBtn';
   cancelAction.id = 'confirmModal-cancelActionBtn';
@@ -50,7 +72,10 @@ const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams
   // add on click lister
   // backdrop click listener
   backdrop.addEventListener('click', handleCancelActionBtnClick);
-  //
+
+  //TODO: don't show again checkbox
+
+  checkbox.addEventListener('change', handleCheckboxClick);
 
   confirmAction.addEventListener('click', (ev: MouseEvent) => {
     asyncHandler(async () => {
@@ -61,9 +86,11 @@ const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams
   // disable btn
   cancelAction.addEventListener('click', handleCancelActionBtnClick);
 
+  checkboxWrapper.append(checkbox, checkboxLabel);
+
   buttonContainer.append(cancelAction, confirmAction);
 
-  modalCard.append(modalTitle, modalMessage, buttonContainer);
+  modalCard.append(modalTitle, modalMessage, checkboxWrapper, buttonContainer);
 
   modalContainer.append(backdrop, modalCard);
 
