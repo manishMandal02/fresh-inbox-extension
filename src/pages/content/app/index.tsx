@@ -14,7 +14,7 @@ import { getEmailIdFromPage } from '../utils/getEmailIdFromPage';
 import { onURLChange } from '../utils/onURLChange';
 import { asyncHandler } from '../utils/asyncHandler';
 import { getSyncStorageByKey } from '../view/settingsModal/helpers/getStorageByKey';
-import { showConfirmModal } from '../view/elements/confirmModal';
+import { showLoadingSnackbar, showSnackbar } from '../view/elements/snackbar';
 
 // react root
 const root = document.createElement('div');
@@ -96,15 +96,6 @@ refreshOnUpdate('pages/content');
   // wait 2s
   await wait(2000);
 
-  showConfirmModal({
-    msg: 'Are you sure your want to delete all mails',
-    email: 'flipkart-newsletter@flipkar.com',
-    onConfirmClick: async () => {},
-  });
-
-  // TODO: testing
-  return;
-
   // query for user email id on page
   freshInboxGlobalVariables.userEmail = await getEmailIdFromPage();
 
@@ -115,11 +106,11 @@ refreshOnUpdate('pages/content');
 
   freshInboxGlobalVariables.isAppEnabled = appStatus;
 
-  //    TODO: uncomment this code to show settings modal
-  // createRoot(root).render(<SettingsModal isAppEnabled={appStatus} />);
-
   // get client id from evn variables
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+  // show settings modal based on app status
+  createRoot(root).render(<SettingsModal isAppEnabled={appStatus} />);
 
   // is user Authed or not? (handle multiple user) send email id from the content script
   const isTokenValid = await chrome.runtime.sendMessage<IMessageBody>({

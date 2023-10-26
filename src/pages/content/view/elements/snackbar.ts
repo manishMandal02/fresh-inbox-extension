@@ -74,7 +74,7 @@ const showSnackbar = <IsError>(params: SnackbarParams<IsError>) => {
 
   let emojiIcon = '✅';
 
-  let emails: string[] = [];
+  let emailMessage: string = '';
 
   if ('isError' in params) {
     // error emoji icon
@@ -82,15 +82,20 @@ const showSnackbar = <IsError>(params: SnackbarParams<IsError>) => {
     // error class
     container.classList.add('error');
   } else {
-    emails = params.emails;
+    const emails = params.emails;
+    emailMessage = emails.length > 1 ? `${emails.length} emails` : limitCharLength(emails[0]);
     // success class
     container.classList.add('success');
   }
 
-  const emailMessage = emails.length > 1 ? `${emails.length} emails` : limitCharLength(emails[0]);
-
   // add label text
-  label.innerHTML = `<b>${emojiIcon}</b>  <span>${title} <br/> <strong>${emailMessage}</strong></span>`;
+  label.innerHTML = `
+  <b>${emojiIcon}</b>  
+  <span>
+  ${title} 
+  ${emailMessage && `<br/> <span>${emailMessage}</span>`}
+  </span>
+  `;
 
   container.classList.add('freshInbox-snackbar');
 
@@ -104,14 +109,15 @@ const showSnackbar = <IsError>(params: SnackbarParams<IsError>) => {
   document.body.appendChild(container);
 
   // remove snackbar after 3.5s
-  setTimeout(
-    asyncHandler(async () => {
-      container.classList.remove('show');
-      await wait(500);
-      container.remove();
-    }),
-    3500
-  );
+  // TODO: uncomment
+  // setTimeout(
+  //   asyncHandler(async () => {
+  //     container.classList.remove('show');
+  //     await wait(500);
+  //     container.remove();
+  //   }),
+  //   3500
+  // );
 };
 
 export { showLoadingSnackbar, hideLoadingSnackbar, showSnackbar };

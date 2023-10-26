@@ -5,7 +5,7 @@
 //colors
 $primary-color: #10b981;
 $light-gray-color: #dde3ea95;
-$danger-color: #ee4242;
+$danger-color: #e74d3e;
 $text-dark: #282828;
 $text-mid-gray: #505050;
 
@@ -279,10 +279,11 @@ $text-mid-gray: #505050;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 14px 14px;
-  border-radius: 6px;
+  padding: 14px 24px 14px 16px;
+  border-radius: 4px;
   transform: translateX(-120%) translateY(0);
   height: 3.2vh;
+  min-width: 7vw;
   width: fit-content;
   z-index: 10000;
   background-color: #eef0f1;
@@ -290,25 +291,23 @@ $text-mid-gray: #505050;
 
   > span {
     margin: 0;
-    font-size: 12.5px;
-    font-weight: 400;
-    color: #202121;
-    margin-right: 22px;
-    margin-bottom: 2px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #212020;
     display: flex;
     align-items: center;
     justify-content: center;
     > b {
-      margin-right: 10px;
+      margin-right: 14px;
       font-size: 20px;
     }
     > span {
       text-align: start;
-      > strong {
-        font-size: 12.5px;
+      > span {
+        font-size: 12px;
         color: #2c2c2c;
-        font-weight: 600;
-        margin-bottom: -2px;
+        font-weight: 400;
+        margin-top: -4px;
       }
     }
   }
@@ -319,33 +318,18 @@ $text-mid-gray: #505050;
 }
 
 .freshInbox-snackbar.success {
-  > span {
-    &::after {
-      content: ' ';
-      width: 98%;
-      height: 4px;
-      background-color: #09c681;
-      position: absolute;
-      left: 0.25px;
-      bottom: 0px;
-      margin-left: 2px;
-      border-radius: 2px;
-    }
-  }
+  background-color: #b8dec6;
+  border-bottom: 4px solid #0aa949;
 }
 
 .freshInbox-snackbar.error {
+  background-color: #fde3de;
+  border-bottom: 4px solid $danger-color;
   > span {
-    &::after {
-      content: ' ';
-      width: 98.5%;
-      height: 4px;
-      background-color: #f17575;
-      position: absolute;
-      left: 0.25px;
-      bottom: 0px;
-      border-radius: 2px;
-    }
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #343434;
   }
 }
 
@@ -357,12 +341,12 @@ $text-mid-gray: #505050;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 14px 14px;
+  padding: 14px 20px;
   border-radius: 6px;
   height: 3.2vh;
   width: fit-content;
   z-index: 10000;
-  background-color: #eef0f1;
+  background-color: #e8f3f6;
   > span {
     margin: 0;
     font-size: 12.5px;
@@ -403,11 +387,11 @@ $text-mid-gray: #505050;
     flex-direction: column;
     box-shadow: #64646f33 0px 7px 29px 0px;
     background-color: #f3f1f1;
-    height: 20vh;
-    width: fit-content;
+    height: 22vh;
+    width: calc(fit-content + 150px);
     position: absolute;
-    padding: 18px 28px;
-    border-radius: 16px;
+    padding: 18px 36px 18px 24px;
+    border-radius: 12px;
     top: 25%;
     left: 32%;
     z-index: 10000;
@@ -435,15 +419,30 @@ $text-mid-gray: #505050;
     // TODO:
     #confirmModal-checkboxWrapper {
       display: flex;
+      user-select: none;
+      margin-top: 16px;
+      > input {
+        border-radius: 2px;
+        padding: 1px 2px;
+        cursor: pointer;
+      }
+      > label {
+        margin-left: 6px;
+        font-weight: 400;
+        font-size: 14px;
+        color: $text-mid-gray;
+        cursor: pointer;
+      }
     }
 
     #confirmModal-btnContainer {
       display: flex;
       width: 100%;
-      margin-top: 1.75rem;
       align-items: center;
       justify-content: flex-end;
-
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
       > button {
         font-size: 16px;
         align-items: center;

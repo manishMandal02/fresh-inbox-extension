@@ -251,7 +251,7 @@ export const handleDeleteAllMailsAction = async ({
 }: IEmailActionParams) => {
   // render loading spinner if btnContainerId is provided
 
-  showConfirmModal({
+  await showConfirmModal({
     email: emails.length > 1 ? `${emails.length} emails` : emails[0],
     msg: 'Are you sure you want to delete all mails from',
     onConfirmClick: async () => {
@@ -272,7 +272,7 @@ export const handleUnsubscribeAndDeleteAction = async ({
   isWhitelisted,
 }: IEmailActionParams) => {
   // render loading spinner if btnContainerId is provided
-  showConfirmModal({
+  await showConfirmModal({
     email: emails.length > 1 ? `${emails.length} emails` : emails[0],
     msg: 'Are you sure you want to delete all mails and unsubscribe from',
     onConfirmClick: async () => {

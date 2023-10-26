@@ -1,3 +1,2 @@
-// run react app
+// run the app
 import('./app/index');
-

@@ -1,10 +1,15 @@
-import { type } from 'os';
+import { storageKeys } from '../../constants/app.constants';
 import { asyncHandler } from '../../utils/asyncHandler';
+import { getSyncStorageByKey } from '../settingsModal/helpers/getStorageByKey';
+
+// checkbox state: don't show this message again
+let isChecked: boolean | null = null;
 
 const handleConfirmActionBtnClick = async (ev: MouseEvent, onConfirmClick: () => Promise<void>) => {
   ev.stopPropagation();
   // execute callback
   hideConfirmModal();
+  //
   await onConfirmClick();
   // hide modal
 };
@@ -15,13 +20,15 @@ const handleCancelActionBtnClick = (ev: MouseEvent) => {
   hideConfirmModal();
 };
 
-const handleCheckboxClick = (ev: Event) => {
+const handleCheckboxUpdate = async (ev: Event) => {
+  //@ts-ignore
+  const isChecked = ev.target.checked;
+
+  console.log('🚀 ~ file: confirmModal.ts:27 ~ handleCheckboxUpdate ~ isChecked:', isChecked);
+
   // update checkbox state
-  // if(ev.currentTarget.checked){
-  //   // checked
-  // } else {
-  //   // not  checked
-  // }
+  // if checked, update storage (sync) to save preference (checked = user doesn't want to see this message again)
+  await chrome.storage.sync.set({ [storageKeys.SHOW_DELETE_CONFIRM_MSG]: isChecked! });
 };
 
 type ShowConfirmModalParams = {
@@ -30,7 +37,18 @@ type ShowConfirmModalParams = {
   onConfirmClick: () => Promise<void>;
 };
 
-const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams) => {
+const showConfirmModal = async ({ msg, email, onConfirmClick }: ShowConfirmModalParams) => {
+  // TODO: check user preference , if the user want's to see the delete confirmation message or not
+
+  const showDeleteConfirmMsg = await getSyncStorageByKey<boolean>('SHOW_DELETE_CONFIRM_MSG');
+
+  if (typeof showDeleteConfirmMsg === 'boolean' && showDeleteConfirmMsg === false) {
+    // user has opted not to see the confirm action msg again
+    // don't show confirm delete action msg
+    await onConfirmClick();
+    return;
+  }
+
   // modal elements
   const modalContainer = document.createElement('div');
   const backdrop = document.createElement('div');
@@ -56,6 +74,7 @@ const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams
   // set checkbox type & label
   checkbox.type = 'checkbox';
   checkboxLabel.innerText = "Don't show this message again";
+  checkboxLabel.setAttribute('for', 'confirmModal-checkbox');
 
   // add class to elements
   modalContainer.id = 'freshInbox-confirmModal';
@@ -75,7 +94,7 @@ const showConfirmModal = ({ msg, email, onConfirmClick }: ShowConfirmModalParams
 
   //TODO: don't show again checkbox
 
-  checkbox.addEventListener('change', handleCheckboxClick);
+  checkbox.addEventListener('change', handleCheckboxUpdate);
 
   confirmAction.addEventListener('click', (ev: MouseEvent) => {
     asyncHandler(async () => {

@@ -216,8 +216,8 @@ export const Newsletter = () => {
         <ActionButton
           text={'🗑️'}
           tooltipLabel='Delete all mails'
-          onClick={() =>
-            showConfirmModal({
+          onClick={async () =>
+            await showConfirmModal({
               email,
               msg: 'Are you sure you want to delete all mails from',
               onConfirmClick: async () => {
@@ -230,8 +230,8 @@ export const Newsletter = () => {
         <ActionButton
           text={'❌ + 🗑️'}
           tooltipLabel='Unsubscribe & Delete all'
-          onClick={() =>
-            showConfirmModal({
+          onClick={async() =>
+            await showConfirmModal({
               email,
               msg: 'Are you sure you want to delete all mails and unsubscribe from',
               onConfirmClick: async () => {

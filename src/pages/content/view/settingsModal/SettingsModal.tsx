@@ -57,6 +57,7 @@ const SettingsModal = ({ isAppEnabled }: Props) => {
         ✉️ Fresh Inbox
       </button>
       {/* Modal */}
+      {/* // TODO: show auth modal if the app is disabled when settings btn is clicked */}
       {isModalOpen ? (
         <div className='fixed top-0 left-0 w-screen h-screen flex items-center justify-center'>
           {/* backdrop */}
