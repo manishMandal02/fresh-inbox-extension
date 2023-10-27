@@ -23,10 +23,11 @@ const showLoadingSnackbar = ({ title, emails }: ShowLoadingSnackbarParams) => {
   const container = document.createElement('div');
   const label = document.createElement('span');
 
-  const emailMessage = emails.length > 1 ? `${emails.length} emails` : limitCharLength(emails[0]);
+  let emailMessage = '';
+  if (emails && emails.length > 0) emails.length > 1 ? `${emails.length} emails` : limitCharLength(emails[0]);
 
   // add label text
-  label.innerHTML = `${title} <br/> <strong>${emailMessage}</strong>`;
+  label.innerHTML = `${title} <br/> ${emailMessage && `<strong>${emailMessage}</strong>`}`;
 
   // add classes
   container.id = LoadingSnackbarId;
@@ -81,7 +82,7 @@ const showSnackbar = <IsError>(params: SnackbarParams<IsError>) => {
     emojiIcon = '❌';
     // error class
     container.classList.add('error');
-  } else {
+  } else if (params.emails && params.emails.length > 0) {
     const emails = params.emails;
     emailMessage = emails.length > 1 ? `${emails.length} emails` : limitCharLength(emails[0]);
     // success class

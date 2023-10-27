@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import refreshOnUpdate from 'virtual:reload-on-update-in-view';
 
-import SettingsModal from '../view/settingsModal/SettingsModal';
+import AppModal from '../view/appModal/AppModal';
 
 import '../style.scss';
 
@@ -13,7 +13,7 @@ import wait from '../utils/wait';
 import { getEmailIdFromPage } from '../utils/getEmailIdFromPage';
 import { onURLChange } from '../utils/onURLChange';
 import { asyncHandler } from '../utils/asyncHandler';
-import { getSyncStorageByKey } from '../view/settingsModal/helpers/getStorageByKey';
+import { getSyncStorageByKey } from '../view/appModal/helpers/getStorageByKey';
 import { showLoadingSnackbar, showSnackbar } from '../view/elements/snackbar';
 
 // react root
@@ -102,15 +102,12 @@ refreshOnUpdate('pages/content');
   //TODO: confirm modal don't show again checkbox
 
   // check if app is enabled or not
-  const appStatus = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
+  const isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
 
-  freshInboxGlobalVariables.isAppEnabled = appStatus;
+  freshInboxGlobalVariables.isAppEnabled = isAppEnabled;
 
   // get client id from evn variables
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
-  // show settings modal based on app status
-  createRoot(root).render(<SettingsModal isAppEnabled={appStatus} />);
 
   // is user Authed or not? (handle multiple user) send email id from the content script
   const isTokenValid = await chrome.runtime.sendMessage<IMessageBody>({
@@ -119,13 +116,11 @@ refreshOnUpdate('pages/content');
     userEmail: freshInboxGlobalVariables.userEmail,
   });
 
-  if (!isTokenValid) {
-    // Auth token is not present
-    // show auth modal to allow users to give app access to gmail service
-    renderAuthModal();
-  } else {
-    // embed assistant button
+  // show settings modal based on app status & auth status
+  createRoot(root).render(<AppModal isAppEnabled={isAppEnabled} isTokenValid={isTokenValid}  />);
 
+  if (isTokenValid) {
+    // embed assistant button
     await embedAssistantBtn();
 
     // watch url change:  re-embed assistant button on url changes (if url supported)

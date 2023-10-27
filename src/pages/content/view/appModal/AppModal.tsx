@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Tabs } from '../elements/Tabs';
 import { General } from './tabs/General';
 import { Newsletter } from './tabs/Newsletter';
+import AuthCard from './AuthCard';
 
 const tabs = ['General', 'Search', 'Newsletter', 'Unsubscribed', 'Whitelisted'] as const;
 
@@ -9,16 +10,19 @@ export type Tabs = (typeof tabs)[number];
 
 type Props = {
   isAppEnabled: boolean;
+  isTokenValid: boolean;
 };
 
-const SettingsModal = ({ isAppEnabled }: Props) => {
+const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
   //
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<Tabs>('Newsletter');
 
   useEffect(() => {
-    console.log('React view loaded');
-  }, []);
+    if (isAppEnabled && !isTokenValid) {
+      setIsModalOpen(true);
+    }
+  }, [isAppEnabled, isTokenValid]);
 
   const handleOpenSettings = () => {
     console.log('🚀 ~ file: App.tsx:14 ~ handleOpenSettings ~ handleOpenSettings: 🔥');
@@ -57,7 +61,6 @@ const SettingsModal = ({ isAppEnabled }: Props) => {
         ✉️ Fresh Inbox
       </button>
       {/* Modal */}
-      {/* // TODO: show auth modal if the app is disabled when settings btn is clicked */}
       {isModalOpen ? (
         <div className='fixed top-0 left-0 w-screen h-screen flex items-center justify-center'>
           {/* backdrop */}
@@ -67,9 +70,20 @@ const SettingsModal = ({ isAppEnabled }: Props) => {
           ></div>
           {/* modal card */}
           <div className='w-[60%] h-4/6 rounded-md shadow-lg z-50 shadow-slate-600 bg-slate-100'>
-            <Tabs tabs={[...tabs]} activeTab={activeTab} setActiveTab={setActiveTab}>
-              {renderActiveTab(activeTab)}
-            </Tabs>
+            {isAppEnabled && isTokenValid ? (
+              // {/* all tabs */}
+              <Tabs tabs={[...tabs]} activeTab={activeTab} setActiveTab={setActiveTab}>
+                {renderActiveTab(activeTab)}
+              </Tabs>
+            ) : (
+              // {/* auth card */}
+              <AuthCard
+                isAppEnabled={isAppEnabled}
+                onClose={() => {
+                  setIsModalOpen(false);
+                }}
+              />
+            )}
           </div>
         </div>
       ) : null}
@@ -77,4 +91,4 @@ const SettingsModal = ({ isAppEnabled }: Props) => {
   );
 };
 
-export default SettingsModal;
+export default AppModal;

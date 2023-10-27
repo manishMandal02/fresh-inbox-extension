@@ -1,4 +1,4 @@
-import { IMessageEvent } from '../types/content.types';
+import { IMessageBody, IMessageEvent } from '../types/content.types';
 import { asyncHandler } from '../utils/asyncHandler';
 import { disableApp } from '../utils/disableApp';
 import { embedAssistantBtn } from './assistantButton';
@@ -11,7 +11,7 @@ const handleAuthBtnClick = async () => {
   const res = await chrome.runtime.sendMessage<IMessageBody>({
     clientId,
     event: IMessageEvent.LAUNCH_AUTH_FLOW,
-    email: freshInboxGlobalVariables.userEmail,
+    emails: [freshInboxGlobalVariables.userEmail],
   });
   if (res) {
     // auth success
