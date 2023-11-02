@@ -1,6 +1,6 @@
 import { storageKeys } from '../../constants/app.constants';
 import { asyncHandler } from '../../utils/asyncHandler';
-import { getSyncStorageByKey } from '../appModal/helpers/getStorageByKey';
+import { getSyncStorageByKey } from '../../utils/getStorageByKey';
 
 // checkbox state: don't show this message again
 let isChecked: boolean | null = null;

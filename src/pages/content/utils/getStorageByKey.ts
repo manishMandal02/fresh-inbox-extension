@@ -1,4 +1,4 @@
-import type { storageKeys } from '../../../constants/app.constants';
+import type { storageKeys } from '../constants/app.constants';
 
 type StorageKey = keyof typeof storageKeys;
 

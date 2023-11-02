@@ -3,6 +3,7 @@ import { Tabs } from '../elements/Tabs';
 import { General } from './tabs/General';
 import { Newsletter } from './tabs/Newsletter';
 import AuthCard from './AuthCard';
+import Unsubscribed from './tabs/Unsubscribed';
 
 const tabs = ['General', 'Search', 'Newsletter', 'Unsubscribed', 'Whitelisted'] as const;
 
@@ -42,7 +43,7 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
       case 'Newsletter':
         return <Newsletter />;
       case 'Unsubscribed':
-        return <div>Unsubscribed</div>;
+        return <Unsubscribed />;
       case 'Whitelisted':
         return <div>Whitelisted</div>;
       default:

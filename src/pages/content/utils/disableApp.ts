@@ -28,6 +28,5 @@ export const disableApp = async () => {
   } else {
     showSnackbar<true>({ title: 'Failed to disable Fresh Inbox', isError: true });
 
-    logger.dev('❌ Failed to disable Fresh Inbox', 'authModal.ts:33 ~ handleDisableBtnClick()');
-  }
+    logger.dev('❌ Failed to disable Fresh Inbox', 'authModal.ts:33 ~ handleDisableBtnClick()'); }
 };

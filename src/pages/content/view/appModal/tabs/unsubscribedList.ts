@@ -122,7 +122,7 @@ const renderTable = async (unsubscribedEmails: string[]) => {
 
         // handle whitelist action
         const isSuccess = await handleReSubscribeAction({
-          email,
+          emails: [email],
           btnContainerId: 'unsubscribedListTab-actionBtn',
         });
 

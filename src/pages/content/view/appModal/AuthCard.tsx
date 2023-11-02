@@ -19,7 +19,7 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
     const res = await chrome.runtime.sendMessage<IMessageBody>({
       clientId,
       event: IMessageEvent.LAUNCH_AUTH_FLOW,
-      emails: [freshInboxGlobalVariables.userEmail],
+      userEmail: freshInboxGlobalVariables.userEmail,
     });
     if (res) {
       // auth success
@@ -82,25 +82,27 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
         <div className='mt-6 flex flex-col items-center  '>
           {/* connect to gmail */}
           <div className='flex flex-col items-center justify-center'>
-            <span className=' text-slate-700 font-light tracking-wide mb-4'>
+            <span className=' text-slate-700 text-[1.3rem] font-light mb-5'>
               Allow FreshInbox to access your Gmail securely
             </span>
 
             <button
-              className='px-10 py-2.5 w-fit border-none rounded-sm bg-brand-primary text-base text-slate-50  hover:scale-110 transition-all duration-200 cursor-pointer'
+              className='px-10 py-2.5 w-fit border-none rounded-sm bg-brand-primary text-base text-slate-50  hover:bg-brand-primary/90 transition-all duration-200 cursor-pointer'
               onClick={handleConnectBtnClick}
             >
               Connect to Gmail
             </button>
-            <span className='mt-4 text-slate-500 font-light text-[0.5rem] leading-5'>
+            <span className='mt-3 text-slate-500 font-light text-[0.7rem] leading-5'>
               FreshInbox runs completely in your browser, no data leaves your browser.
             </span>
             {/* auth error message */}
-            {errorMsg && <span className='mt-2 text-sm text-red-500'>{errorMsg}</span>}
+            {errorMsg && (
+              <span className='mt-2.5 text-sm font-light text-red-500 opacity-70'>{errorMsg}</span>
+            )}
           </div>
           {/* disable app button */}
           <button
-            className='absolute bottom-4 text-sm text-slate-600 underline border-none outline-none bg-transparent cursor-pointer'
+            className='absolute bottom-4 text-sm text-slate-500 underline border-none outline-none bg-transparent cursor-pointer'
             onClick={handleDisableBtnClick}
           >
             {!isAppEnabled ? 'Fresh Inbox is currently disabled' : 'Disable Fresh Inbox'}

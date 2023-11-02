@@ -1,6 +1,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  box-sizing: border-box;
+}
+
 // theme
 //colors
 $primary-color: #10b981;

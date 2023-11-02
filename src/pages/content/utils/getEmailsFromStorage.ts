@@ -1,4 +1,4 @@
-import { IMessageEvent } from '../types/content.types';
+import { IMessageBody, IMessageEvent } from '../types/content.types';
 import { logger } from './logger';
 
 // get list of unsubscribed emails

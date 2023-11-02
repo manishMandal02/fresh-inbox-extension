@@ -13,7 +13,7 @@ import wait from '../utils/wait';
 import { getEmailIdFromPage } from '../utils/getEmailIdFromPage';
 import { onURLChange } from '../utils/onURLChange';
 import { asyncHandler } from '../utils/asyncHandler';
-import { getSyncStorageByKey } from '../view/appModal/helpers/getStorageByKey';
+import { getSyncStorageByKey } from '../utils/getStorageByKey';
 import { showLoadingSnackbar, showSnackbar } from '../view/elements/snackbar';
 
 // react root
@@ -99,6 +99,8 @@ refreshOnUpdate('pages/content');
   // query for user email id on page
   freshInboxGlobalVariables.userEmail = await getEmailIdFromPage();
 
+  console.log('🚀 ~ file: index.tsx:102 ~ freshInboxGlobalVariables:', freshInboxGlobalVariables.userEmail);
+
   //TODO: confirm modal don't show again checkbox
 
   // check if app is enabled or not
@@ -117,7 +119,7 @@ refreshOnUpdate('pages/content');
   });
 
   // show settings modal based on app status & auth status
-  createRoot(root).render(<AppModal isAppEnabled={isAppEnabled} isTokenValid={isTokenValid}  />);
+  createRoot(root).render(<AppModal isAppEnabled={isAppEnabled} isTokenValid={isTokenValid} />);
 
   if (isTokenValid) {
     // embed assistant button

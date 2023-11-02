@@ -13,7 +13,7 @@ import { getLoadingSpinner } from '../../elements/loadingSpinner';
 import { renderTextMsg } from '../../elements/text';
 import { IMessageEvent } from '@src/pages/content/types/content.types';
 import wait from '@src/pages/content/utils/wait';
-import { getLocalStorageByKey } from '@src/pages/content/view/appModal/helpers/getStorageByKey';
+import { getLocalStorageByKey } from '@src/pages/content/utils/getStorageByKey';
 import { logger } from '@src/pages/content/utils/logger';
 import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 

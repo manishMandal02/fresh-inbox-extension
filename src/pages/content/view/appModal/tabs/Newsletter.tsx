@@ -12,6 +12,7 @@ import {
   handleWhitelistAction,
 } from '@src/pages/content/utils/emailActions';
 import { showConfirmModal } from '../../elements/confirmModal';
+import { getLocalStorageByKey } from '@src/pages/content/utils/getStorageByKey';
 
 type NewsletterData = {
   email: string;
@@ -21,18 +22,6 @@ type NewsletterData = {
 type ActionInProgress = {
   emails: string[];
   action: EmailAction;
-};
-
-type StorageKey = keyof typeof storageKeys;
-
-const getLocalStorageByKey = async <T = string[],>(key: StorageKey): Promise<T> => {
-  const localStorage = await chrome.storage.local.get(key);
-
-  if (localStorage && localStorage[key]) {
-    return localStorage[key];
-  } else {
-    return null;
-  }
 };
 
 const getNewsletterEmailsData = async (shouldRefreshData = false) => {
@@ -53,7 +42,6 @@ const getNewsletterEmailsData = async (shouldRefreshData = false) => {
     } else {
       //T check if the newsletter emails data is already stored in chrome.storage.local
       // get local storage data
-
       const storageData = await getLocalStorageByKey<NewsletterData[]>(storageKeys.NEWSLETTER_EMAILS);
 
       // check if newsletters data already exists
@@ -195,6 +183,8 @@ export const Newsletter = () => {
     }),
     [actionInProgressFor]
   );
+
+  // render newsletter table
   const renderTable = () => {
     // action buttons for each email
     const actionButtons = (email: string) => (
@@ -230,7 +220,7 @@ export const Newsletter = () => {
         <ActionButton
           text={'❌ + 🗑️'}
           tooltipLabel='Unsubscribe & Delete all'
-          onClick={async() =>
+          onClick={async () =>
             await showConfirmModal({
               email,
               msg: 'Are you sure you want to delete all mails and unsubscribe from',
@@ -263,10 +253,9 @@ export const Newsletter = () => {
         {/* emails table */}
         {/* table container */}
         <div className='w-full  h-[90%] overflow-x-hidden overflow-y-auto z-20'>
-          <table className='w-full h-full px-4 py-2 bg-slate-50 relative  z-30'>
+          <table className='w-full h-full bg-slate-50 relative  z-30'>
             {/* table header */}
-            <tr className='w-full sticky top-0 left-0 text-sm font-medium text-slate-600 bg-slate-200 flex items-center justify-between px-6 py-1.5 z-20'>
-              {/* left container */}
+            <tr className='w-full sticky top-0 left-0 text-sm font-medium text-slate-600 bg-slate-200 flex items-center justify-between px-4 py-1.5 z-20'>
               <td className='w-[5%]'>
                 <Checkbox
                   isChecked={selectedEmails.length === newsletterEmails.length}
@@ -290,9 +279,8 @@ export const Newsletter = () => {
             {newsletterEmails.map(({ email, name }, idx) => (
               <tr
                 key={email + name}
-                className='w-full flex items-center  justify-between px-6 odd:bg-slate-100 py-1.5 hover:bg-slate-200/60 transition-all duration-150 z-20'
+                className='w-full flex items-center  justify-between px-4 odd:bg-slate-100 py-1.5 hover:bg-slate-200/60 transition-all duration-150 z-20'
               >
-                {/* left container */}
                 <td className='w-[5%]'>
                   <Checkbox
                     isChecked={selectedEmails.includes(email)}
@@ -311,7 +299,6 @@ export const Newsletter = () => {
                 <td className='text-sm w-[5%]'>{idx + 1}.</td>
                 <td className='text-sm ml-1 w-[30%]'>{name.replaceAll(`\\`, '').trim()}</td>
                 <td className='text-sm w-[30%]'>{email}</td>
-                {/* right container */}
                 <td className='text-sm w-[30%] flex items-center justify-between pl-8 pr-6'>
                   {/* render action button or loading spinner (if action in progress) */}
                   {renderActionButtons(email)}
@@ -326,71 +313,73 @@ export const Newsletter = () => {
         </div>
 
         {/* selected emails */}
-        <div className='h-[10%] z-50 w-full bg-slate-200 flex justify-between items-center px-6 border-t border-slate-500/50'>
-          {selectedEmails.length < 1 ? (
-            // no email selected
-            <span className='text-xs text-slate-600 font-extralight'>
-              Select multiple emails to perform bulk actions or click on action button for individual email
-              actions
-            </span>
-          ) : (
-            <>
-              {/* email selected  */}
-              <span className='text-sm text-slate-600 font-extralight w-[75%]'>
-                {selectedEmails.length} {selectedEmails.length > 1 ? 'Emails' : 'Email'} selected
+        <div className='h-[10%] max-w-full overflow-hidden z-50 w-full bg-slate-200 flex justify-between items-center border-t border-slate-500/50'>
+          <div className='px-4'>
+            {selectedEmails.length < 1 ? (
+              // no email selected
+              <span className='text-xs text-slate-600 font-extralight'>
+                Select multiple emails to perform bulk actions or click on action button for individual email
+                actions
               </span>
-              {/*  email action  */}
-              <div className='mr-10 w-[25%]  '>
-                {actionInProgressFor?.emails.length > 0 ? (
-                  <Spinner size='sm' />
-                ) : (
-                  <div className='flex items-centers justify-between min-w-fit z-50'>
-                    <ActionButton
-                      text={'✅'}
-                      tooltipLabel='Keep/Whitelist'
-                      onClick={() =>
-                        setEmailActionsInProgressFor({
-                          emails: [...selectedEmails],
-                          action: 'whitelistEmail',
-                        })
-                      }
-                    />
-                    <ActionButton
-                      text={'❌'}
-                      tooltipLabel='Unsubscribe'
-                      onClick={() =>
-                        setEmailActionsInProgressFor({
-                          emails: [...selectedEmails],
-                          action: 'unsubscribe',
-                        })
-                      }
-                    />
+            ) : (
+              <>
+                {/* email selected  */}
+                <span className='text-sm text-slate-600 font-extralight w-[75%]'>
+                  {selectedEmails.length} {selectedEmails.length > 1 ? 'Emails' : 'Email'} selected
+                </span>
+                {/*  email action  */}
+                <div className='mr-10 w-[25%]  '>
+                  {actionInProgressFor?.emails.length > 0 ? (
+                    <Spinner size='sm' />
+                  ) : (
+                    <div className='flex items-centers justify-between min-w-fit z-50'>
+                      <ActionButton
+                        text={'✅'}
+                        tooltipLabel='Keep/Whitelist'
+                        onClick={() =>
+                          setEmailActionsInProgressFor({
+                            emails: [...selectedEmails],
+                            action: 'whitelistEmail',
+                          })
+                        }
+                      />
+                      <ActionButton
+                        text={'❌'}
+                        tooltipLabel='Unsubscribe'
+                        onClick={() =>
+                          setEmailActionsInProgressFor({
+                            emails: [...selectedEmails],
+                            action: 'unsubscribe',
+                          })
+                        }
+                      />
 
-                    <ActionButton
-                      text={'🗑️'}
-                      tooltipLabel='Delete all mails'
-                      onClick={() =>
-                        setEmailActionsInProgressFor({
-                          emails: [...selectedEmails],
-                          action: 'deleteAllMails',
-                        })
-                      }
-                    />
-                    <ActionButton
-                      text={'❌ + 🗑️'}
-                      tooltipLabel='Unsubscribe & Delete all'
-                      onClick={() =>
-                        setEmailActionsInProgressFor({
-                          emails: [...selectedEmails],
-                          action: 'unsubscribeAndDeeAllMails',
-                        })
-                      }
-                    />
-                  </div>
-                )}
-              </div>
-            </>
-          )}
+                      <ActionButton
+                        text={'🗑️'}
+                        tooltipLabel='Delete all mails'
+                        onClick={() =>
+                          setEmailActionsInProgressFor({
+                            emails: [...selectedEmails],
+                            action: 'deleteAllMails',
+                          })
+                        }
+                      />
+                      <ActionButton
+                        text={'❌ + 🗑️'}
+                        tooltipLabel='Unsubscribe & Delete all'
+                        onClick={() =>
+                          setEmailActionsInProgressFor({
+                            emails: [...selectedEmails],
+                            action: 'unsubscribeAndDeeAllMails',
+                          })
+                        }
+                      />
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </>
     ) : (
@@ -407,7 +396,7 @@ export const Newsletter = () => {
 
   return (
     <div className='w-full h-full max-h-full'>
-      <h2 className=' text-slate-700 text-center mb-[.4rem] font-light text-sm'>
+      <p className='m-0 text-slate-700 text-center mb-[.4rem] font-light text-sm'>
         Fresh Inbox has identified{' '}
         <u id='newsletterTab-numNewsletterEmails'>
           {newsletterEmails.length}
@@ -415,9 +404,9 @@ export const Newsletter = () => {
           <strong>{newsletterEmails.length > 100 ? '+' : null}</strong>
         </u>{' '}
         emails as newsletters or as part of a mailing list.
-      </h2>
+      </p>
 
-      <hr className='h-px w-full bg-slate-400' />
+      <div className='h-px w-full bg-slate-300' />
 
       {/* bottom container */}
       <div className='w-full h-full flex flex-col justify-center items-start'>
