@@ -2,7 +2,6 @@ import { IMessageBody, IMessageEvent } from '../types/content.types';
 import { showConfirmModal } from '../view/elements/confirmModal';
 import { hideLoadingSnackbar, showLoadingSnackbar, showSnackbar } from '../view/elements/snackbar';
 import { logger } from './logger';
-import { renderLoadingSpinnerInsteadOfButtons } from './renderLoadingSpinnerInsteadOfButtons';
 
 // handle unsubscribe
 const handleUnsubscribeEmail = async (emails: string[], isWhitelisted = false): Promise<boolean> => {
@@ -198,59 +197,27 @@ const handleWhitelistEmail = async (emails: string[]): Promise<boolean> => {
 interface IEmailActionParams {
   emails: string[];
   name?: string;
-  btnContainerId?: string;
   onSuccess?: () => Promise<void>;
   isWhitelisted?: boolean;
 }
 
 // export handle whitelist action handler
-export const handleWhitelistAction = async ({
-  emails,
-  btnContainerId,
-}: IEmailActionParams): Promise<boolean> => {
-  // render loading spinner if btnContainerId is provided
-  if (btnContainerId) {
-    const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
-    const isSuccess = await handleWhitelistEmail(emails);
-
-    hideLoadingSpinner(!isSuccess);
-    return isSuccess;
-  } else {
-    const isSuccess = await handleWhitelistEmail(emails);
-    return isSuccess;
-  }
+export const handleWhitelistAction = async ({ emails }: IEmailActionParams): Promise<boolean> => {
+  const isSuccess = await handleWhitelistEmail(emails);
+  return isSuccess;
 };
 
 // export handle unsubscribe action handler
 export const handleUnsubscribeAction = async ({
   emails,
-  btnContainerId,
   isWhitelisted,
 }: IEmailActionParams): Promise<boolean> => {
-  // render loading spinner if btnContainerId is provided
-  if (btnContainerId) {
-    const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
-
-    const isSuccess = await handleUnsubscribeEmail(emails, isWhitelisted);
-
-    hideLoadingSpinner(!isSuccess);
-
-    return isSuccess;
-  } else {
-    const isSuccess = await handleUnsubscribeEmail(emails, isWhitelisted);
-
-    return isSuccess;
-  }
+  const isSuccess = await handleUnsubscribeEmail(emails, isWhitelisted);
+  return isSuccess;
 };
 
 // export delete-all-mails-action handler
-export const handleDeleteAllMailsAction = async ({
-  emails,
-  btnContainerId,
-  onSuccess,
-}: IEmailActionParams) => {
-  // render loading spinner if btnContainerId is provided
-
+export const handleDeleteAllMailsAction = async ({ emails, onSuccess }: IEmailActionParams) => {
   await showConfirmModal({
     email: emails.length > 1 ? `${emails.length} emails` : emails[0],
     msg: 'Are you sure you want to delete all mails from',
@@ -267,45 +234,26 @@ export const handleDeleteAllMailsAction = async ({
 // export unsubscribe--and--delete--all--mails action handler
 export const handleUnsubscribeAndDeleteAction = async ({
   emails,
-  btnContainerId,
   onSuccess,
   isWhitelisted,
 }: IEmailActionParams) => {
-  // render loading spinner if btnContainerId is provided
   await showConfirmModal({
     email: emails.length > 1 ? `${emails.length} emails` : emails[0],
     msg: 'Are you sure you want to delete all mails and unsubscribe from',
     onConfirmClick: async () => {
-      const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
       const isSuccess = await handleUnsubscribeAndDeleteAllMails({
         emails,
 
         isWhitelisted,
       });
-      hideLoadingSpinner(!isSuccess);
       // call onSuccess callback fn
       await onSuccess();
     },
   });
 };
 
-export const handleReSubscribeAction = async ({
-  emails,
-  btnContainerId,
-}: IEmailActionParams): Promise<boolean> => {
-  // render loading spinner if btnContainerId is provided
-  if (btnContainerId) {
-    // show loading spinner
-    const hideLoadingSpinner = renderLoadingSpinnerInsteadOfButtons(btnContainerId);
-
-    // handle whitelist action
-    const isSuccess = await handleReSubscribeEmail(emails);
-
-    hideLoadingSpinner(!isSuccess);
-    return isSuccess;
-  } else {
-    // handle whitelist action
-    const isSuccess = await handleReSubscribeEmail(emails);
-    return isSuccess;
-  }
+export const handleReSubscribeAction = async ({ emails }: IEmailActionParams): Promise<boolean> => {
+  // handle whitelist action
+  const isSuccess = await handleReSubscribeEmail(emails);
+  return isSuccess;
 };

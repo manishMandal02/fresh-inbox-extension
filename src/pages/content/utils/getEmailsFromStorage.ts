@@ -19,7 +19,7 @@ export const getUnsubscribedEmails = async (): Promise<string[]> => {
       msg: 'Failed to get unsubscribe emails',
       fileTrace: 'content/utils/getEmailsFromStorage.ts:19 ~ getUnsubscribedEmails()',
     });
-    return [];
+    return null;
   }
 };
 
@@ -41,6 +41,6 @@ export const getWhitelistedEmails = async (): Promise<string[]> => {
       msg: 'Failed to get whitelisted emails',
       fileTrace: 'content/utils/getEmailsFromStorage.ts:38 ~ getWhitelistedEmails()',
     });
-    return [];
+    return null;
   }
 };

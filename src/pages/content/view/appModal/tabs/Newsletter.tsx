@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Spinner } from '../../elements/Spinner';
 import { Checkbox } from '../../elements/Checkbox';
-import { IMessageEvent, type EmailAction, IMessageBody } from '../../../types/content.types';
+import {
+  IMessageEvent,
+  type EmailAction,
+  IMessageBody,
+  IActionInProgress,
+} from '../../../types/content.types';
 import { storageKeys } from '../../../constants/app.constants';
 import ActionButton from '../../elements/ActionButton';
 import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
@@ -17,11 +22,6 @@ import { getLocalStorageByKey } from '@src/pages/content/utils/getStorageByKey';
 type NewsletterData = {
   email: string;
   name: string;
-};
-
-type ActionInProgress = {
-  emails: string[];
-  action: EmailAction;
 };
 
 const getNewsletterEmailsData = async (shouldRefreshData = false) => {
@@ -61,51 +61,25 @@ const getNewsletterEmailsData = async (shouldRefreshData = false) => {
     return newsletterEmails;
   } catch (error) {
     console.log('🚀 ~ file: Newsletter.tsx:35 ~ getNewsletterEmailsData ~ error:', error);
-    return [];
+    return null;
   }
 };
 
-// TODO: move all utils/helper of settings modal closer to it
-
-//TODO: dummy data, remove later
-const data: NewsletterData[] = [
-  { email: 'test1@gmail.com', name: 'test mandal' },
-  { email: 'test2@gmail.com', name: 'test mandal' },
-  { email: 'test3@gmail.com', name: 'test mandal' },
-  { email: 'test4@gmail.com', name: 'test mandal' },
-  { email: 'test5@gmail.com', name: 'test mandal' },
-  { email: 'test6@gmail.com', name: 'test mandal' },
-  { email: 'test7@gmail.com', name: 'test mandal' },
-  { email: 'test8@gmail.com', name: 'test mandal' },
-  { email: 'test9@gmail.com', name: 'test mandal' },
-  { email: 'test10@gmail.com', name: 'test mandal' },
-  { email: 'test11@gmail.com', name: 'test mandal' },
-  { email: 'test12@gmail.com', name: 'test mandal' },
-  { email: 'test13@gmail.com', name: 'test mandal' },
-  { email: 'test14@gmail.com', name: 'test mandal' },
-];
-
 // TODO: take out the common fn/cmp to reuse for other tabs
-
-// TODO: fire actions👇
-
-// TODO: build other tabs
-
-// TODO: confirm modal  - bit design update
-
-// TODO: snackbar - bit design update
 
 export const Newsletter = () => {
   // newsletter emails
   const [newsletterEmails, setNewsletterEmails] = useState<NewsletterData[]>([]);
   // selected emails
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
-  // loading state while fetching emails
+  // loading state
   const [isFetchingNewsletterEmails, setIsFetchingNewsletterEmails] = useState(false);
+  // error state for data fetching
+  const [errorMsg, setErrorMsg] = useState('');
 
   // email actions states
   // current email/emails that are being unsubscribed, deleted, whitelisted, etc.
-  const [actionInProgressFor, setEmailActionsInProgressFor] = useState<ActionInProgress | null>(null);
+  const [actionInProgressFor, setEmailActionsInProgressFor] = useState<IActionInProgress | null>(null);
 
   // get newsletter emails data
   useEffect(() => {
@@ -113,13 +87,15 @@ export const Newsletter = () => {
       setIsFetchingNewsletterEmails(true);
       const data = await getNewsletterEmailsData();
 
+      if (!data) setErrorMsg('❌ Failed to fetch newsletter emails');
+
       setNewsletterEmails(data);
       setIsFetchingNewsletterEmails(false);
     })();
   }, []);
 
   // handle refresh table/data
-  const refreshTable = async (isSuccess = false) => {
+  const refreshTable = async () => {
     // reset state
     setEmailActionsInProgressFor(null);
     setSelectedEmails([]);
@@ -330,8 +306,10 @@ export const Newsletter = () => {
                 {/*  email action  */}
                 <div className='mr-10 w-[25%]  '>
                   {actionInProgressFor?.emails.length > 0 ? (
+                    // show loading spinner if action in progress
                     <Spinner size='sm' />
                   ) : (
+                    // show possible actions for selected emails
                     <div className='flex items-centers justify-between min-w-fit z-50'>
                       <ActionButton
                         text={'✅'}
@@ -410,7 +388,14 @@ export const Newsletter = () => {
 
       {/* bottom container */}
       <div className='w-full h-full flex flex-col justify-center items-start'>
-        {isFetchingNewsletterEmails ? <Spinner size='lg' /> : renderTable()}
+        {/* render table after loading or show error msg if failed */}
+        {isFetchingNewsletterEmails ? (
+          <Spinner size='lg' />
+        ) : !errorMsg ? (
+          renderTable()
+        ) : (
+          <p className='text-red-400 bg-red-100/75 px-8  py-2 text font-light '>{errorMsg}</p>
+        )}
       </div>
     </div>
   );

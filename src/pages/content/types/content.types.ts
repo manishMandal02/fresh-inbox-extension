@@ -48,6 +48,11 @@ export interface IMessageBody {
   dataOnPage?: DataOnPage;
 }
 
+export interface IActionInProgress {
+  emails: string[];
+  action: EmailAction;
+}
+
 // email action types
 
-export type EmailAction = 'unsubscribe' | 'deleteAllMails' | 'unsubscribeAndDeeAllMails' | 'whitelistEmail';
+export type EmailAction = 'unsubscribe' | 'deleteAllMails' | 'unsubscribeAndDeeAllMails' | 'whitelistEmail' | 'resubscribe';
