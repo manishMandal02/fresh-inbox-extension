@@ -1,5 +1,5 @@
 import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
-import { getUnsubscribedEmails } from '@src/pages/content/utils/getEmailsFromStorage';
+import { getWhitelistedEmails } from '@src/pages/content/utils/getEmailsFromStorage';
 import { useEffect, useState } from 'react';
 import ActionButton from '../../elements/ActionButton';
 import { Checkbox } from '../../elements/Checkbox';
@@ -7,6 +7,7 @@ import { Spinner } from '../../elements/Spinner';
 import type { IActionInProgress } from '@src/pages/content/types/content.types';
 import { handleReSubscribeAction } from '@src/pages/content/utils/emailActions';
 import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
+import { showConfirmModal } from '../../elements/confirmModal';
 
 //TODO: dummy data, remove later
 const data = [
@@ -26,9 +27,9 @@ const data = [
   'test14@gmail.com',
 ];
 
-const Unsubscribed = () => {
+const Whitelisted = () => {
   // unsubscribed emails
-  const [unsubscribedEmails, setUnsubscribedEmails] = useState([...data]);
+  const [whitelistedEmails, setWhitelistedEmails] = useState([...data]);
   const [errorMsg, setErrorMsg] = useState('');
   // loading state
   const [isFetchingNewsletterEmails, setIsFetchingNewsletterEmails] = useState(false);
@@ -46,10 +47,10 @@ const Unsubscribed = () => {
   //       // set loading sta
   //       setIsFetchingNewsletterEmails(true);
   //       // get unsubscribed emails from background
-  //       const unsubscribedEmails = await getUnsubscribedEmails();
+  //       const whitelistedEmails = await getWhitelistedEmails();
 
-  //       if (unsubscribedEmails) {
-  //         setUnsubscribedEmails(unsubscribedEmails);
+  //       if (whitelistedEmails) {
+  //         setWhitelistedEmails(whitelistedEmails);
   //       } else {
   //         setErrorMsg('❌ Failed to get unsubscribed emails list');
   //       }
@@ -71,9 +72,9 @@ const Unsubscribed = () => {
 
         if (isSuccess) {
           // reset state
-          const unsubscribedEmails = await getUnsubscribedEmails();
-          if (unsubscribedEmails) {
-            setUnsubscribedEmails(unsubscribedEmails);
+          const whitelistedEmails = await getWhitelistedEmails();
+          if (whitelistedEmails) {
+            setWhitelistedEmails(whitelistedEmails);
           } else {
             setErrorMsg('❌ Failed to get unsubscribed emails list');
           }
@@ -90,14 +91,39 @@ const Unsubscribed = () => {
     const actionButton = (email: string) => (
       <>
         <ActionButton
-          text={'✅'}
-          tooltipLabel='ReSubscribe'
-          onClick={() =>
-            setEmailActionsInProgressFor({
-              emails: [email],
-              action: 'resubscribe',
+          text={'❌'}
+          tooltipLabel='Unsubscribe'
+          onClick={() => setEmailActionsInProgressFor({ emails: [email], action: 'unsubscribe' })}
+          isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
+        />
+
+        <ActionButton
+          text={'🗑️'}
+          tooltipLabel='Delete all mails'
+          onClick={async () =>
+            await showConfirmModal({
+              email,
+              msg: 'Are you sure you want to delete all mails from',
+              onConfirmClick: async () => {
+                setEmailActionsInProgressFor({ emails: [email], action: 'deleteAllMails' });
+              },
             })
           }
+          isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
+        />
+        <ActionButton
+          text={'❌ + 🗑️'}
+          tooltipLabel='Unsubscribe & Delete all'
+          onClick={async () =>
+            await showConfirmModal({
+              email,
+              msg: 'Are you sure you want to delete all mails and unsubscribe from',
+              onConfirmClick: async () => {
+                setEmailActionsInProgressFor({ emails: [email], action: 'unsubscribeAndDeeAllMails' });
+              },
+            })
+          }
+          isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
         />
       </>
     );
@@ -116,7 +142,7 @@ const Unsubscribed = () => {
       return actionButton(email);
     };
 
-    return unsubscribedEmails.length > 0 ? (
+    return whitelistedEmails.length > 0 ? (
       <>
         {/* emails table */}
         {/* table container */}
@@ -126,7 +152,7 @@ const Unsubscribed = () => {
             <tr className='w-full sticky top-0 left-0 text-sm font-medium text-slate-600 bg-slate-200 flex items-center justify-between px-4 py-1.5 z-20'>
               <td className='w-[5%]'>
                 <Checkbox
-                  isChecked={selectedEmails.length === unsubscribedEmails.length}
+                  isChecked={selectedEmails.length === whitelistedEmails.length}
                   onChange={isChecked => {
                     if (!isChecked) {
                       // handle deselect all
@@ -135,17 +161,17 @@ const Unsubscribed = () => {
                     }
 
                     // handle select all
-                    setSelectedEmails([...unsubscribedEmails]);
+                    setSelectedEmails([...whitelistedEmails]);
                   }}
                 />{' '}
               </td>
               <td className='w-[5%]'>#</td>
-              <td className='w-[50%] ml-1'>Email</td>
-              <td className='w-[40%] text-center'>Action </td>
+              <td className='w-[60%] ml-1'>Email</td>
+              <td className='w-[30%] text-center'>Action </td>
             </tr>
-            {unsubscribedEmails.map((email, idx) => (
+            {whitelistedEmails.map((email, idx) => (
               <tr
-                key={email + name}
+                key={email}
                 className='w-full flex items-center  justify-between px-4 odd:bg-slate-100 py-1.5 hover:bg-slate-200/60 transition-all duration-150 z-20'
               >
                 <td className='w-[5%]'>
@@ -164,8 +190,8 @@ const Unsubscribed = () => {
                   />
                 </td>
                 <td className='text-sm w-[5%]'>{idx + 1}.</td>
-                <td className='text-sm w-[50%]'>{limitCharLength(email, 32)}</td>
-                <td className='text-sm w-[40%] flex items-center justify-center'>
+                <td className='text-sm w-[60%]'>{limitCharLength(email, 32)}</td>
+                <td className='text-sm w-[30%] flex items-center justify-evenly '>
                   {/* render action button or loading spinner (if action in progress) */}
                   {renderActionButtons(email)}
                 </td>
@@ -190,7 +216,7 @@ const Unsubscribed = () => {
               <>
                 {/* email selected  */}
                 <span className='text-sm text-slate-600 font-extralight w-[75%]'>
-                  {selectedEmails.length}{' '}
+                {selectedEmails.length}{' '}
                   {selectedEmails.length > 1 ? 'Emails' : `Email (${selectedEmails[0]})`} selected
                 </span>
                 <div className='mr-10 w-[25%]  '>
@@ -201,12 +227,33 @@ const Unsubscribed = () => {
                     // show possible actions for selected emails
                     <div className='flex items-centers justify-between min-w-fit z-50'>
                       <ActionButton
-                        text={'✅'}
-                        tooltipLabel='ReSubscribe'
+                        text={'❌'}
+                        tooltipLabel='Unsubscribe'
                         onClick={() =>
                           setEmailActionsInProgressFor({
                             emails: [...selectedEmails],
-                            action: 'resubscribe',
+                            action: 'unsubscribe',
+                          })
+                        }
+                      />
+
+                      <ActionButton
+                        text={'🗑️'}
+                        tooltipLabel='Delete all mails'
+                        onClick={() =>
+                          setEmailActionsInProgressFor({
+                            emails: [...selectedEmails],
+                            action: 'deleteAllMails',
+                          })
+                        }
+                      />
+                      <ActionButton
+                        text={'❌ + 🗑️'}
+                        tooltipLabel='Unsubscribe & Delete all'
+                        onClick={() =>
+                          setEmailActionsInProgressFor({
+                            emails: [...selectedEmails],
+                            action: 'unsubscribeAndDeeAllMails',
                           })
                         }
                       />
@@ -220,7 +267,7 @@ const Unsubscribed = () => {
       </>
     ) : (
       <div className='text-slate-800 w-full text-center font-light'>
-        📭 No Unsubscribed emails found, Start unsubscribing unwanted emails to see them here.
+        📭 No whitelisted emails found, You can whitelist emails to keep them coming to your Inbox.
       </div>
     );
   };
@@ -228,8 +275,8 @@ const Unsubscribed = () => {
   return (
     <div className='w-full h-full max-h-full'>
       <p className='h-[5%] m-0 text-slate-700 mb-[.4rem] font-light text-sm flex items-center justify-center'>
-        Fresh Inbox has unsubscribed <u className='mx-1'>{unsubscribedEmails.length}</u> emails to keep your
-        📨 inbox clean
+        You have whitelisted <u className='mx-1'>{whitelistedEmails.length}</u> emails to keep them coming to
+        your inbox.
       </p>
 
       <div className='h-px w-full bg-slate-300' />
@@ -249,4 +296,4 @@ const Unsubscribed = () => {
   );
 };
 
-export default Unsubscribed;
+export default Whitelisted;

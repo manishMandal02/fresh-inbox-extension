@@ -18,6 +18,7 @@ import {
 } from '@src/pages/content/utils/emailActions';
 import { showConfirmModal } from '../../elements/confirmModal';
 import { getLocalStorageByKey } from '@src/pages/content/utils/getStorageByKey';
+import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
 
 type NewsletterData = {
   email: string;
@@ -101,12 +102,13 @@ export const Newsletter = () => {
     setSelectedEmails([]);
 
     // refresh/refetch newsletter data if current data is below 60
-    const shouldRefreshData = newsletterEmails.length - selectedEmails.length >= 60;
+    const shouldRefreshData = newsletterEmails.length - selectedEmails.length < 60;
 
     if (shouldRefreshData) {
       // show loading spinner only if refetching data from gmail (as it could take some time)
       setIsFetchingNewsletterEmails(true);
     }
+
     const data = await getNewsletterEmailsData(shouldRefreshData);
 
     console.log('🚀 ~ file: Newsletter.tsx:147 ~ refreshTable ~ data:', data);
@@ -115,7 +117,9 @@ export const Newsletter = () => {
     if (isFetchingNewsletterEmails) setIsFetchingNewsletterEmails(false);
 
     // set data
-    setNewsletterEmails(data);
+    if (data && data.length > 0) {
+      setNewsletterEmails(data);
+    }
   };
 
   // email action
@@ -237,12 +241,12 @@ export const Newsletter = () => {
                   isChecked={selectedEmails.length === newsletterEmails.length}
                   onChange={isChecked => {
                     if (!isChecked) {
-                      // handle select all
+                      // handle deselect all
                       setSelectedEmails([]);
                       return;
                     }
 
-                    // handle deselect all
+                    // handle select all
                     setSelectedEmails([...newsletterEmails.map(email => email.email)]);
                   }}
                 />{' '}
@@ -250,7 +254,7 @@ export const Newsletter = () => {
               <td className='w-[5%]'>#</td>
               <td className='w-[30%] ml-1'>Name</td>
               <td className='w-[30%] ml-1'>Email</td>
-              <td className='w-[30%] text-center'>Action </td>
+              <td className='w-[30%] text-center pr-4'>Action </td>
             </tr>
             {newsletterEmails.map(({ email, name }, idx) => (
               <tr
@@ -273,9 +277,11 @@ export const Newsletter = () => {
                   />
                 </td>
                 <td className='text-sm w-[5%]'>{idx + 1}.</td>
-                <td className='text-sm ml-1 w-[30%]'>{name.replaceAll(`\\`, '').trim()}</td>
-                <td className='text-sm w-[30%]'>{email}</td>
-                <td className='text-sm w-[30%] flex items-center justify-between pl-8 pr-6'>
+                <td className='text-sm ml-1 w-[30%]'>
+                  {limitCharLength(name.replaceAll(`\\`, '').trim(), 22)}
+                </td>
+                <td className='text-sm w-[30%]'>{limitCharLength(email, 32)}</td>
+                <td className='text-sm w-[30%] flex items-center justify-evenly  pr-4'>
                   {/* render action button or loading spinner (if action in progress) */}
                   {renderActionButtons(email)}
                 </td>
@@ -289,8 +295,8 @@ export const Newsletter = () => {
         </div>
 
         {/* selected emails */}
-        <div className='h-[10%] max-w-full overflow-hidden z-50 w-full bg-slate-200 flex justify-between items-center border-t border-slate-500/50'>
-          <div className='px-4'>
+        <div className='h-[10%] w-full overflow-hidden z-50 max-w-full bg-slate-200 border-t border-slate-500/50'>
+          <div className='px-4 w-full h-full flex justify-between items-center'>
             {selectedEmails.length < 1 ? (
               // no email selected
               <span className='text-xs text-slate-600 font-extralight'>
@@ -301,7 +307,8 @@ export const Newsletter = () => {
               <>
                 {/* email selected  */}
                 <span className='text-sm text-slate-600 font-extralight w-[75%]'>
-                  {selectedEmails.length} {selectedEmails.length > 1 ? 'Emails' : 'Email'} selected
+                  {selectedEmails.length}{' '}
+                  {selectedEmails.length > 1 ? 'Emails' : `Email (${selectedEmails[0]})`} selected
                 </span>
                 {/*  email action  */}
                 <div className='mr-10 w-[25%]  '>
@@ -361,7 +368,7 @@ export const Newsletter = () => {
         </div>
       </>
     ) : (
-      <div className='text-slate-800 mt-16 font-light'>
+      <div className='text-slate-800 w-full text-center font-light'>
         📭 No Newsletter or mailing list emails found in your Inbox.
         <br />
         <p className='ml-2 mt-3 opacity-60 font-extralight text-sm'>
@@ -374,20 +381,20 @@ export const Newsletter = () => {
 
   return (
     <div className='w-full h-full max-h-full'>
-      <p className='m-0 text-slate-700 text-center mb-[.4rem] font-light text-sm'>
-        Fresh Inbox has identified{' '}
-        <u id='newsletterTab-numNewsletterEmails'>
+      <p className='h-[5%] m-0 text-slate-700 mb-[.4rem] font-light text-sm flex items-center justify-center'>
+        Fresh Inbox has identified
+        <u className='mx-1'>
           {newsletterEmails.length}
           {/* show + if more than 100 emails */}
           <strong>{newsletterEmails.length > 100 ? '+' : null}</strong>
-        </u>{' '}
+        </u>
         emails as newsletters or as part of a mailing list.
       </p>
 
       <div className='h-px w-full bg-slate-300' />
 
       {/* bottom container */}
-      <div className='w-full h-full flex flex-col justify-center items-start'>
+      <div className='w-full h-[95%] flex flex-col justify-center items-start'>
         {/* render table after loading or show error msg if failed */}
         {isFetchingNewsletterEmails ? (
           <Spinner size='lg' />

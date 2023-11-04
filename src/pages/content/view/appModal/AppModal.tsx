@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { Tabs } from '../elements/Tabs';
 import { General } from './tabs/General';
 import { Newsletter } from './tabs/Newsletter';
 import AuthCard from './AuthCard';
 import Unsubscribed from './tabs/Unsubscribed';
+import Whitelisted from './tabs/Whitelisted';
 
 const tabs = ['General', 'Search', 'Newsletter', 'Unsubscribed', 'Whitelisted'] as const;
 
@@ -17,6 +18,7 @@ type Props = {
 const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
   //
   const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isAuthed, setIsAuthed] = useState(false);
   const [activeTab, setActiveTab] = useState<Tabs>('Newsletter');
 
   useEffect(() => {
@@ -24,6 +26,10 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
       setIsModalOpen(true);
     }
   }, [isAppEnabled, isTokenValid]);
+
+  useEffect(() => {
+    setIsAuthed(isTokenValid);
+  }, [isTokenValid]);
 
   const handleOpenSettings = () => {
     console.log('🚀 ~ file: App.tsx:14 ~ handleOpenSettings ~ handleOpenSettings: 🔥');
@@ -45,9 +51,9 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
       case 'Unsubscribed':
         return <Unsubscribed />;
       case 'Whitelisted':
-        return <div>Whitelisted</div>;
+        return <Whitelisted />;
       default:
-        return <div>General</div>;
+        return <General />;
     }
   };
 
@@ -83,6 +89,7 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
                 onClose={() => {
                   setIsModalOpen(false);
                 }}
+                onAuthSuccess={() => setIsAuthed(true)}
               />
             )}
           </div>

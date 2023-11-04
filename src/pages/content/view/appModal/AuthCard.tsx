@@ -6,9 +6,10 @@ import { disableApp } from '../../utils/disableApp';
 type Props = {
   isAppEnabled: boolean;
   onClose: () => void;
+  onAuthSuccess: () => void;
 };
 
-const AuthCard = ({ isAppEnabled, onClose }: Props) => {
+const AuthCard = ({ isAppEnabled, onClose, onAuthSuccess }: Props) => {
   const [errorMsg, setErrorMsg] = useState('');
 
   // handle connect button click
@@ -29,6 +30,8 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
 
       // embed assistant button
       await embedAssistantBtn();
+      // sets auth state in app modal
+      onAuthSuccess();
 
       // run checks after successful auth
       await chrome.runtime.sendMessage<IMessageBody>({

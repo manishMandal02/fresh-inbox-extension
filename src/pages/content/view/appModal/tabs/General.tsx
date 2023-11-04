@@ -1,8 +1,8 @@
 export const General = () => {
   return (
-    <div className='flex flex-col  w-full h-full  py-12 px-6'>
-      <h2 className='text-xl font-bold m-0 mb-2 '>
-        Fresh Inbox is <strong className='bg-emerald-300 px-2 rounded-sm py-px text-slate-800'>Active</strong>
+    <div className='flex flex-col  py-12 px-6 '>
+      <h2 className='text-lg font-medium m-0 mb-1.5 '>
+        Fresh Inbox is <span className='bg-emerald-300 px-2 rounded-sm py-px text-slate-800'>Active</span>
       </h2>
 
       <p className='  my-4 leading-6'>
@@ -44,7 +44,7 @@ export const General = () => {
         </a>
       </p>
 
-      <button className='w-max px-2 py-px mt-12 underline font-light text-center mx-auto text-base text-slate-700 hover:text-slate-950 transition-all duration-150'>
+      <button className='w-max mt-36  px-2 py-px  underline font-light text-center cursor-pointer rounded-sm border-0 bg-transparent mx-auto text-sm text-slate-700 hover:text-slate-950 transition-all duration-150'>
         Disable Fresh Inbox
       </button>
     </div>
