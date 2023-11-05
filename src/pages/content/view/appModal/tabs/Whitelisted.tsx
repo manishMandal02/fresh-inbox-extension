@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import ActionButton from '../../elements/ActionButton';
 import { Checkbox } from '../../elements/Checkbox';
 import { Spinner } from '../../elements/Spinner';
-import type { IActionInProgress } from '@src/pages/content/types/content.types';
+import { EmailAction, type IActionInProgress } from '@src/pages/content/types/content.types';
 import { handleReSubscribeAction } from '@src/pages/content/utils/emailActions';
 import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
 import { showConfirmModal } from '../../elements/confirmModal';
@@ -91,14 +91,14 @@ const Whitelisted = () => {
     const actionButton = (email: string) => (
       <>
         <ActionButton
-          text={'❌'}
+          action={EmailAction.unsubscribe}
           tooltipLabel='Unsubscribe'
           onClick={() => setEmailActionsInProgressFor({ emails: [email], action: 'unsubscribe' })}
           isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
         />
 
         <ActionButton
-          text={'🗑️'}
+          action={EmailAction.deleteAllMails}
           tooltipLabel='Delete all mails'
           onClick={async () =>
             await showConfirmModal({
@@ -112,7 +112,7 @@ const Whitelisted = () => {
           isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
         />
         <ActionButton
-          text={'❌ + 🗑️'}
+          action={EmailAction.unsubscribeAndDeeAllMails}
           tooltipLabel='Unsubscribe & Delete all'
           onClick={async () =>
             await showConfirmModal({
@@ -216,7 +216,7 @@ const Whitelisted = () => {
               <>
                 {/* email selected  */}
                 <span className='text-sm text-slate-600 font-extralight w-[75%]'>
-                {selectedEmails.length}{' '}
+                  {selectedEmails.length}{' '}
                   {selectedEmails.length > 1 ? 'Emails' : `Email (${selectedEmails[0]})`} selected
                 </span>
                 <div className='mr-10 w-[25%]  '>
@@ -227,7 +227,7 @@ const Whitelisted = () => {
                     // show possible actions for selected emails
                     <div className='flex items-centers justify-between min-w-fit z-50'>
                       <ActionButton
-                        text={'❌'}
+                        action={EmailAction.unsubscribe}
                         tooltipLabel='Unsubscribe'
                         onClick={() =>
                           setEmailActionsInProgressFor({
@@ -238,7 +238,7 @@ const Whitelisted = () => {
                       />
 
                       <ActionButton
-                        text={'🗑️'}
+                        action={EmailAction.deleteAllMails}
                         tooltipLabel='Delete all mails'
                         onClick={() =>
                           setEmailActionsInProgressFor({
@@ -248,7 +248,7 @@ const Whitelisted = () => {
                         }
                       />
                       <ActionButton
-                        text={'❌ + 🗑️'}
+                        action={EmailAction.unsubscribeAndDeeAllMails}
                         tooltipLabel='Unsubscribe & Delete all'
                         onClick={() =>
                           setEmailActionsInProgressFor({

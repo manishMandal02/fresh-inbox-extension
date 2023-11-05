@@ -101,7 +101,11 @@ refreshOnUpdate('pages/content');
 
   console.log('🚀 ~ file: index.tsx:102 ~ freshInboxGlobalVariables:', freshInboxGlobalVariables.userEmail);
 
-  //TODO: confirm modal don't show again checkbox
+  //TODO: testing...
+
+  showSnackbar<true>({ title: 'Failed to unsubscribed', isError: true });
+
+  return;
 
   // check if app is enabled or not
   const isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');

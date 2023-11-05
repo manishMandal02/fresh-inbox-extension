@@ -1,13 +1,38 @@
+import { EmailAction } from '../../types/content.types';
 import Tooltip from './TooltipReact';
+import unsubscribeIcon from '../../../../assets/icons/block.svg';
+import whitelistIcon from '../../../../assets/icons/whitelist.svg';
+import deleteIcon from '../../../../assets/icons/delete.svg';
 
 type Props = {
-  text: string;
+  action: EmailAction;
   tooltipLabel: string;
   onClick: () => void;
   isDisabled?: boolean;
 };
 
-const ActionButton = ({ text, tooltipLabel, onClick, isDisabled }: Props) => {
+const actionIcon = {
+  [EmailAction.unsubscribe]: unsubscribeIcon,
+  [EmailAction.deleteAllMails]: deleteIcon,
+  [EmailAction.whitelistEmail]: whitelistIcon,
+  [EmailAction.resubscribe]: whitelistIcon,
+};
+
+const ActionButton = ({ action, tooltipLabel, onClick, isDisabled }: Props) => {
+  // render icon based on actions
+  const renderIcon = () => {
+    // render 2 icons for unsubscribe & delete action
+    if (action === EmailAction.unsubscribeAndDeeAllMails) {
+      return (
+        <>
+          <img src={unsubscribeIcon} />
+          <img src={deleteIcon} />
+        </>
+      );
+    }
+    // render 1 icon for other actions
+    return <img src={actionIcon[action]} />;
+  };
   return (
     <>
       <Tooltip label={!isDisabled ? tooltipLabel : ''}>
@@ -16,7 +41,7 @@ const ActionButton = ({ text, tooltipLabel, onClick, isDisabled }: Props) => {
           onClick={onClick}
           disabled={isDisabled}
         >
-          {text}
+          {renderIcon()}
         </button>
       </Tooltip>
     </>

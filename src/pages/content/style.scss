@@ -283,7 +283,7 @@ $text-mid-gray: #505050;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 14px 24px 14px 16px;
+  padding: 14px 12px 14px 8px;
   border-radius: 4px;
   transform: translateX(-120%) translateY(0);
   height: 3.2vh;
@@ -301,9 +301,13 @@ $text-mid-gray: #505050;
     display: flex;
     align-items: center;
     justify-content: center;
-    > b {
-      margin-right: 14px;
-      font-size: 20px;
+    .icon-wrapper {
+      margin-right: 4px;
+      > svg {
+        width: 30px;
+        height: 30px;
+        opacity: 0.9;
+      }
     }
     > span {
       text-align: start;

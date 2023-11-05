@@ -6,7 +6,7 @@ import AuthCard from './AuthCard';
 import Unsubscribed from './tabs/Unsubscribed';
 import Whitelisted from './tabs/Whitelisted';
 
-const tabs = ['General', 'Search', 'Newsletter', 'Unsubscribed', 'Whitelisted'] as const;
+const tabs = ['General', 'Newsletter', 'Unsubscribed', 'Whitelisted'] as const;
 
 export type Tabs = (typeof tabs)[number];
 
@@ -44,8 +44,6 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
     switch (activeTab) {
       case 'General':
         return <General />;
-      case 'Search':
-        return <div>Search</div>;
       case 'Newsletter':
         return <Newsletter />;
       case 'Unsubscribed':

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import ActionButton from '../../elements/ActionButton';
 import { Checkbox } from '../../elements/Checkbox';
 import { Spinner } from '../../elements/Spinner';
-import type { IActionInProgress } from '@src/pages/content/types/content.types';
+import { EmailAction, type IActionInProgress } from '@src/pages/content/types/content.types';
 import { handleReSubscribeAction } from '@src/pages/content/utils/emailActions';
 import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
 
@@ -90,7 +90,7 @@ const Unsubscribed = () => {
     const actionButton = (email: string) => (
       <>
         <ActionButton
-          text={'✅'}
+          action={EmailAction.whitelistEmail}
           tooltipLabel='ReSubscribe'
           onClick={() =>
             setEmailActionsInProgressFor({
@@ -98,6 +98,7 @@ const Unsubscribed = () => {
               action: 'resubscribe',
             })
           }
+          isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
         />
       </>
     );
@@ -199,9 +200,9 @@ const Unsubscribed = () => {
                     <Spinner size='sm' />
                   ) : (
                     // show possible actions for selected emails
-                    <div className='flex items-centers justify-between min-w-fit z-50'>
+                    <div className='flex items-centers justify-center min-w-fit z-50'>
                       <ActionButton
-                        text={'✅'}
+                        action={EmailAction.whitelistEmail}
                         tooltipLabel='ReSubscribe'
                         onClick={() =>
                           setEmailActionsInProgressFor({
