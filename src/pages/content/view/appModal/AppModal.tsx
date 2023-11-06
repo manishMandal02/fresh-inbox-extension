@@ -19,7 +19,7 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
   //
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isAuthed, setIsAuthed] = useState(false);
-  const [activeTab, setActiveTab] = useState<Tabs>('Newsletter');
+  const [activeTab, setActiveTab] = useState<Tabs>('General');
 
   useEffect(() => {
     if (isAppEnabled && !isTokenValid) {
@@ -74,7 +74,7 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
             onClick={handleCloseModal}
           ></div>
           {/* modal card */}
-          <div className='w-[60%] h-4/6 rounded-md shadow-lg z-50 shadow-slate-600 bg-slate-100'>
+          <div className='w-[65rem] h-[40rem] rounded-md shadow-lg z-50 shadow-slate-600 bg-slate-100'>
             {isAppEnabled && isTokenValid ? (
               // {/* all tabs */}
               <Tabs tabs={[...tabs]} activeTab={activeTab} setActiveTab={setActiveTab}>

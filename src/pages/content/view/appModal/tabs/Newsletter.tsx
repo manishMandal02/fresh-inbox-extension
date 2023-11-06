@@ -3,7 +3,6 @@ import { Spinner } from '../../elements/Spinner';
 import { Checkbox } from '../../elements/Checkbox';
 import { IMessageEvent, IMessageBody, IActionInProgress, EmailAction } from '../../../types/content.types';
 import { storageKeys } from '../../../constants/app.constants';
-import ActionButton from '../../elements/ActionButton';
 import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 import {
   handleDeleteAllMailsAction,
@@ -14,6 +13,7 @@ import {
 import { showConfirmModal } from '../../elements/confirmModal';
 import { getLocalStorageByKey } from '@src/pages/content/utils/getStorageByKey';
 import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
+import ActionButton from '../../elements/action-buttons';
 
 type NewsletterData = {
   email: string;

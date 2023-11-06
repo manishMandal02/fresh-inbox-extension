@@ -1,4 +1,4 @@
-import { getAnchorIdFromURL } from '@src/pages/content/view/assistantButton/helper/getAnchorIdFromURL';
+import { getAnchorIdFromURL } from '@src/pages/content/view/assistant-button/helper/getAnchorIdFromURL';
 
 // checks if the current url is supported (inbox, starred, all, spam)
 export const isSupportedURL = () => {

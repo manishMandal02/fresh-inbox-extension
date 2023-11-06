@@ -5,7 +5,7 @@ import AppModal from '../view/appModal/AppModal';
 
 import '../style.scss';
 
-import { embedAssistantBtn } from '../view/assistantButton';
+import { embedAssistantBtn } from '../view/assistant-button';
 import { renderAuthModal } from '../view/authModal';
 import { IMessageBody, IMessageEvent } from '../types/content.types';
 
@@ -100,12 +100,6 @@ refreshOnUpdate('pages/content');
   freshInboxGlobalVariables.userEmail = await getEmailIdFromPage();
 
   console.log('🚀 ~ file: index.tsx:102 ~ freshInboxGlobalVariables:', freshInboxGlobalVariables.userEmail);
-
-  //TODO: testing...
-
-  showSnackbar<true>({ title: 'Failed to unsubscribed', isError: true });
-
-  return;
 
   // check if app is enabled or not
   const isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');

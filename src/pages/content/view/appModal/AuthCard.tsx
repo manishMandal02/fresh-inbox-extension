@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { IMessageEvent, type IMessageBody } from '../../types/content.types';
-import { embedAssistantBtn } from '../assistantButton';
+import { embedAssistantBtn } from '../assistant-button';
 import { disableApp } from '../../utils/disableApp';
 
 type Props = {

@@ -1,7 +1,7 @@
 import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 import { getWhitelistedEmails } from '@src/pages/content/utils/getEmailsFromStorage';
 import { useEffect, useState } from 'react';
-import ActionButton from '../../elements/ActionButton';
+import ActionButton from '../../elements/action-buttons';
 import { Checkbox } from '../../elements/Checkbox';
 import { Spinner } from '../../elements/Spinner';
 import { EmailAction, type IActionInProgress } from '@src/pages/content/types/content.types';
@@ -9,27 +9,9 @@ import { handleReSubscribeAction } from '@src/pages/content/utils/emailActions';
 import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
 import { showConfirmModal } from '../../elements/confirmModal';
 
-//TODO: dummy data, remove later
-const data = [
-  'test1@gmail.com',
-  'test2@gmail.com',
-  'test3@gmail.com',
-  'test4@gmail.com',
-  'test5@gmail.com',
-  'test6@gmail.com',
-  'test7@gmail.com',
-  'test8@gmail.com',
-  'test9@gmail.com',
-  'test10@gmail.com',
-  'test11@gmail.com',
-  'test12@gmail.com',
-  'test13@gmail.com',
-  'test14@gmail.com',
-];
-
 const Whitelisted = () => {
   // unsubscribed emails
-  const [whitelistedEmails, setWhitelistedEmails] = useState([...data]);
+  const [whitelistedEmails, setWhitelistedEmails] = useState([]);
   const [errorMsg, setErrorMsg] = useState('');
   // loading state
   const [isFetchingNewsletterEmails, setIsFetchingNewsletterEmails] = useState(false);
@@ -41,25 +23,24 @@ const Whitelisted = () => {
   const [actionInProgressFor, setEmailActionsInProgressFor] = useState<IActionInProgress | null>(null);
 
   // get unsubscribed emails
-  //   TODO: uncomment
-  //   useEffect(
-  //     asyncHandler(async () => {
-  //       // set loading sta
-  //       setIsFetchingNewsletterEmails(true);
-  //       // get unsubscribed emails from background
-  //       const whitelistedEmails = await getWhitelistedEmails();
+  useEffect(
+    asyncHandler(async () => {
+      // set loading sta
+      setIsFetchingNewsletterEmails(true);
+      // get unsubscribed emails from background
+      const whitelistedEmails = await getWhitelistedEmails();
 
-  //       if (whitelistedEmails) {
-  //         setWhitelistedEmails(whitelistedEmails);
-  //       } else {
-  //         setErrorMsg('❌ Failed to get unsubscribed emails list');
-  //       }
+      if (whitelistedEmails) {
+        setWhitelistedEmails(whitelistedEmails);
+      } else {
+        setErrorMsg('❌ Failed to get unsubscribed emails list');
+      }
 
-  //       // reset loading state
-  //       setIsFetchingNewsletterEmails(false);
-  //     }),
-  //     []
-  //   );
+      // reset loading state
+      setIsFetchingNewsletterEmails(false);
+    }),
+    []
+  );
 
   // handle email action (re-subscribe)
   useEffect(

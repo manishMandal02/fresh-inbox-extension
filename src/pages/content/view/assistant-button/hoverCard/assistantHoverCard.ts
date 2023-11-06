@@ -1,7 +1,7 @@
 import {
   goBackToInbox,
   refreshEmailsTable,
-} from '@src/pages/content/view/assistantButton/helper/dispatchClickEvents';
+} from '@src/pages/content/view/assistant-button/helper/dispatchClickEvents';
 import {
   handleUnsubscribeAction,
   handleDeleteAllMailsAction,

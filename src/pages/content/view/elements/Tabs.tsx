@@ -16,10 +16,10 @@ export const Tabs = ({ tabs, activeTab, setActiveTab, children }: Props) => {
   return (
     <div className='max-w-full h-full'>
       {/* tabs */}
-      <div className='w-full h-[10%] relative flex items-start justify-between bg-slate-800 rounded-tr-md rounded-tl-md p-0 select-none'>
+      <div className='w-full h-[8%] relative flex items-start justify-between bg-slate-800 rounded-tr-md rounded-tl-md p-0 select-none'>
         {tabs.map(tab => (
           <span
-            key={tab}
+            key={tab}s
             className={` text-slate-50 transition-all w-full h-full flex font-light tracking-wide justify-center items-center duration-200  rounded-md cursor-pointer 
             hover:bg-slate-700 hover:bg-opacity-60 hover:text-slate-100 
              ${isActive(tab)} 
@@ -37,7 +37,7 @@ export const Tabs = ({ tabs, activeTab, setActiveTab, children }: Props) => {
       </div>
 
       {/* tab content */}
-      <div className='max-w-full h-[90%] flex flex-col py-2 bg-slate-100'>{children}</div>
+      <div className='max-w-full h-[92%] flex flex-col py-2 bg-slate-100'>{children}</div>
     </div>
   );
 };

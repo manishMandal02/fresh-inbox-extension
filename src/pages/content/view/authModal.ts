@@ -1,7 +1,7 @@
 import { IMessageBody, IMessageEvent } from '../types/content.types';
 import { asyncHandler } from '../utils/asyncHandler';
 import { disableApp } from '../utils/disableApp';
-import { embedAssistantBtn } from './assistantButton';
+import { embedAssistantBtn } from './assistant-button';
 import { updateFreshInboxSettingsBtn } from './freshInboxSettingsBtn';
 
 const handleAuthBtnClick = async () => {

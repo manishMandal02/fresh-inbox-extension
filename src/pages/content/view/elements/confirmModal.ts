@@ -38,8 +38,8 @@ type ShowConfirmModalParams = {
 };
 
 const showConfirmModal = async ({ msg, email, onConfirmClick }: ShowConfirmModalParams) => {
-  // TODO: check user preference , if the user want's to see the delete confirmation message or not
-
+  //
+  // check user preference , if the user want's to see the delete confirmation message or not
   const showDeleteConfirmMsg = await getSyncStorageByKey<boolean>('SHOW_DELETE_CONFIRM_MSG');
 
   if (typeof showDeleteConfirmMsg === 'boolean' && showDeleteConfirmMsg === false) {
@@ -92,8 +92,7 @@ const showConfirmModal = async ({ msg, email, onConfirmClick }: ShowConfirmModal
   // backdrop click listener
   backdrop.addEventListener('click', handleCancelActionBtnClick);
 
-  //TODO: don't show again checkbox
-
+  // checkbox event listener
   checkbox.addEventListener('change', handleCheckboxUpdate);
 
   confirmAction.addEventListener('click', (ev: MouseEvent) => {
