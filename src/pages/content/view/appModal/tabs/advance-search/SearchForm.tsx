@@ -3,14 +3,16 @@ import InfoIcon from '../../../elements/InfoIcon';
 import Switch from '../../../elements/Switch';
 import Tooltip from '../../../elements/TooltipReact';
 import { Checkbox } from '../../../elements/Checkbox';
-import Datepicker, { DateRangeType } from 'react-tailwindcss-datepicker';
+import DatePicker from 'react-date-picker';
+import 'react-date-picker/dist/DatePicker.css';
+import 'react-calendar/dist/Calendar.css';
 
 const SearchForm = () => {
   // form state
   const [keyword, setKeyword] = useState('');
   const [isRead, setIsRead] = useState(false);
   const [isUnRead, setIsUnRead] = useState(false);
-  const [dateRange, setDateRange] = useState<DateRangeType>({ startDate: '', endDate: '' });
+  const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
 
   console.log('🚀 ~ file: SearchForm.tsx:15 ~ SearchForm ~ dateRange:', dateRange);
 
@@ -87,7 +89,12 @@ const SearchForm = () => {
             <Switch value={isDateRangeActive} onChange={value => setIsDateRangeActive(value)} />
           </label>
           {isDateRangeActive ? (
-            <Datepicker value={dateRange} onChange={value => setDateRange(value)} primaryColor='emerald' />
+            <DatePicker
+              onChange={value => {
+                console.log('🚀 ~ file: SearchForm.tsx:91 ~ SearchForm ~ value:', value);
+              }}
+              value={''}
+            />
           ) : null}
         </div>
       </div>
