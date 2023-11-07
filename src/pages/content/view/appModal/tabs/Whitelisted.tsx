@@ -1,7 +1,7 @@
 import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 import { getWhitelistedEmails } from '@src/pages/content/utils/getEmailsFromStorage';
 import { useEffect, useState } from 'react';
-import ActionButton from '../../elements/action-buttons';
+import ActionButton from '../../elements/action-button';
 import { Checkbox } from '../../elements/Checkbox';
 import { Spinner } from '../../elements/Spinner';
 import { EmailAction, type IActionInProgress } from '@src/pages/content/types/content.types';
@@ -126,8 +126,8 @@ const Whitelisted = () => {
     return whitelistedEmails.length > 0 ? (
       <>
         {/* emails table */}
-        {/* table container */}
         <div className='w-full  h-[90%] overflow-x-hidden overflow-y-auto z-20'>
+        {/* table container */}
           <table className='w-full h-full bg-slate-50 relative  z-30'>
             {/* table header */}
             <tr className='w-full sticky top-0 left-0 text-sm font-medium text-slate-600 bg-slate-200 flex items-center justify-between px-4 py-1.5 z-20'>

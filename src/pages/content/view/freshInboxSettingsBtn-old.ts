@@ -1,5 +1,5 @@
 import { asyncHandler } from '../utils/asyncHandler';
-import { renderAuthModal } from './authModal';
+import { renderAuthModal } from './authModal-old';
 import { addTooltip } from './elements/tooltip';
 import { renderSettingsModal } from './appModal/index-old';
 

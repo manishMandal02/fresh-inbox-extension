@@ -6,7 +6,6 @@ import AppModal from '../view/appModal/AppModal';
 import '../style.scss';
 
 import { embedAssistantBtn } from '../view/assistant-button';
-import { renderAuthModal } from '../view/authModal';
 import { IMessageBody, IMessageEvent } from '../types/content.types';
 
 import wait from '../utils/wait';

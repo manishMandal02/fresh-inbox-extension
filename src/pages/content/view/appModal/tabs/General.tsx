@@ -1,5 +1,5 @@
 import { EmailAction } from '@src/pages/content/types/content.types';
-import { ActionIcons } from '../../elements/action-buttons/ActionIcons';
+import { ActionIcons } from '../../elements/action-button/ActionIcons';
 
 export const General = () => {
   const UnsubscribeIcon = ActionIcons[EmailAction.unsubscribe];
@@ -12,7 +12,7 @@ export const General = () => {
       <div className='text-lg font-medium m-0 mb-1 '>
         Fresh Inbox is
         <span
-          className='rounded-sm ml-2 px-3  py-1  relative bg-slate-800 text-slate-100'
+          className='rounded-sm ml-2 px-[10px]  py-[2px] text-base relative bg-slate-800 text-slate-100'
           style={{
             borderRadius: '3px',
           }}
@@ -27,22 +27,25 @@ export const General = () => {
       </div>
 
       <span className='  my-2 leading-6'>
-        Fresh Inbox helps you keep your inbox clean, it can{' '}
-        <span className='bg-emerald-100 px-2 rounded-sm py-1 font-medium'>
-          unsubscribe to unwanted emails
+        Fresh Inbox helps you keep your inbox clean, it can &nbsp;
+        <span className='bg-emerald-100 px-1 rounded-sm py-1 font-medium'>
+          unsubscribe from unwanted emails
         </span>
-        {'  '} like newsletter and bulk <br />
-        <span className='bg-emerald-100 px-2 rounded-sm py-1 font-medium'>
-          delete 🧹 100s of emails in a single click
+        &nbsp; like newsletters, promotional mails, etc. <br /> and &nbsp;
+        <span className='bg-emerald-100 px-1 rounded-sm py-1 font-medium'>
+          bulk 🧹 delete 100s of emails in a single click
         </span>
         .
       </span>
 
       <span className='text-slate-900  my-1 leading-7'>
-        <span className='bg-emerald-100 px-2 rounded-sm py-1 font-medium'>
-          The best part is that no data ever leaves your browser
+        {' '}
+        The best part? &nbsp;
+        <span className='bg-emerald-100 px-1 rounded-sm py-1 font-medium'>
+          Your data never leaves your browser
         </span>
-        , all the actions are executed on your system. I've open-sourced the code on 🔗{' '}
+        —every action is executed securely on your system. You can explore the open-source code on 🔗 GitHub
+        to get an inside look at how Fresh Inbox operates.{' '}
         <a
           href='https://github.com/manishMandal02/fresh-Inbox'
           target='_blank'
@@ -53,6 +56,8 @@ export const General = () => {
         </a>
         for you to see how Fresh Inbox works.
       </span>
+
+      {/* app walkthrough yt link */}
       <span className='text-slate-700  mt-2 leading-6'>
         A quick walkthrough of Fresh Inbox can help you get started, if you're having trouble understanding
         it's features 🔗{' '}

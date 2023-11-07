@@ -2,7 +2,7 @@ import { IMessageBody, IMessageEvent } from '../types/content.types';
 import { asyncHandler } from '../utils/asyncHandler';
 import { disableApp } from '../utils/disableApp';
 import { embedAssistantBtn } from './assistant-button';
-import { updateFreshInboxSettingsBtn } from './freshInboxSettingsBtn';
+import { updateFreshInboxSettingsBtn } from './freshInboxSettingsBtn-old';
 
 const handleAuthBtnClick = async () => {
   // get client id from evn variables

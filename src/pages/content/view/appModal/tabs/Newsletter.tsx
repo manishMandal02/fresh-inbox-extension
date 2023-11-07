@@ -13,7 +13,7 @@ import {
 import { showConfirmModal } from '../../elements/confirmModal';
 import { getLocalStorageByKey } from '@src/pages/content/utils/getStorageByKey';
 import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
-import ActionButton from '../../elements/action-buttons';
+import ActionButton from '../../elements/action-button';
 
 type NewsletterData = {
   email: string;
@@ -386,7 +386,7 @@ export const Newsletter = () => {
         emails as newsletters or as part of a mailing list.
       </p>
 
-      <div className='h-px w-full bg-slate-300' />
+      <div className='h-px w-full bg-slate-300'></div>
 
       {/* bottom container */}
       <div className='w-full h-[95%] flex flex-col justify-center items-start'>

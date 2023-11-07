@@ -5,8 +5,9 @@ import { Newsletter } from './tabs/Newsletter';
 import AuthCard from './AuthCard';
 import Unsubscribed from './tabs/Unsubscribed';
 import Whitelisted from './tabs/Whitelisted';
+import AdvanceSearch from './tabs/advance-search';
 
-const tabs = ['General', 'Newsletter', 'Unsubscribed', 'Whitelisted'] as const;
+const tabs = ['General', 'Newsletter', 'Unsubscribed', 'Whitelisted', 'Advance Search'] as const;
 
 export type Tabs = (typeof tabs)[number];
 
@@ -19,7 +20,7 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
   //
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isAuthed, setIsAuthed] = useState(false);
-  const [activeTab, setActiveTab] = useState<Tabs>('General');
+  const [activeTab, setActiveTab] = useState<Tabs>('Advance Search');
 
   useEffect(() => {
     if (isAppEnabled && !isTokenValid) {
@@ -40,7 +41,7 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
     setIsModalOpen(false);
   };
 
-  const renderActiveTab = (activeTab: string) => {
+  const renderActiveTab = (activeTab: Tabs) => {
     switch (activeTab) {
       case 'General':
         return <General />;
@@ -50,6 +51,8 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
         return <Unsubscribed />;
       case 'Whitelisted':
         return <Whitelisted />;
+      case 'Advance Search':
+        return <AdvanceSearch />;
       default:
         return <General />;
     }
