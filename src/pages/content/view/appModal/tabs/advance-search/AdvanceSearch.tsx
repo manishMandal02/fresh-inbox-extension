@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import { Spinner } from '../../../elements/Spinner';
-import Tooltip from '../../../elements/TooltipReact';
-import InfoIcon from '../../../elements/InfoIcon';
-import Switch from '../../../elements/Switch';
 import SearchForm, { SearchFormData } from './SearchForm';
 
 const AdvanceSearch = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [searchResultCount, setSearchResultCount] = useState('');
-  const [isLoadingSearchRes, setIsLoadingSearchRes] = useState<null | number>(null);
+  const [isLoadingSearchRes, setIsLoadingSearchRes] = useState(false);
 
   // handle search click
-  const handleSearch = async ({}: SearchFormData) => {
+  const handleSearch = async (formData: SearchFormData) => {
+    console.log('🚀 ~ file: AdvanceSearch.tsx:16 ~ handleSearch ~ formData:', formData);
+
     //TODO: handle search
   };
 
@@ -26,7 +25,7 @@ const AdvanceSearch = () => {
       {/* search input container (filter options) */}
       <div className='flex flex-col px-12 py-4'>
         {/* search form */}
-        <SearchForm onSubmit={handleSearch} />
+        <SearchForm onSubmit={handleSearch} isSubmitting={true} />
       </div>
 
       {/* search result container */}

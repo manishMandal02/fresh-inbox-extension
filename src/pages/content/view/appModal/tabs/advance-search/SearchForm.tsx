@@ -4,26 +4,28 @@ import Switch from '../../../elements/Switch';
 import Tooltip from '../../../elements/TooltipReact';
 import { Checkbox } from '../../../elements/Checkbox';
 import DatePicker from '../../../elements/DatePicker';
+import { Spinner } from '../../../elements/Spinner';
 
 export interface SearchFormData {
   keyword?: string;
   isRead?: boolean;
   isUnRead?: boolean;
-  fromDate?: string;
-  toDate?: string;
+  afterDate?: string;
+  beforeDate?: string;
 }
 
 type Props = {
   onSubmit: (formData: SearchFormData) => void;
+  isSubmitting: boolean;
 };
 
-const SearchForm = ({ onSubmit }: Props) => {
+const SearchForm = ({ onSubmit, isSubmitting }: Props) => {
   // form state
   const [keyword, setKeyword] = useState('');
   const [isRead, setIsRead] = useState(false);
   const [isUnRead, setIsUnRead] = useState(false);
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
+  const [afterDate, setAfterDate] = useState('');
+  const [beforeDate, setBeforeDate] = useState('');
 
   // toggle states
   const [isFromDateActive, setIsFromDateActive] = useState(false);
@@ -31,12 +33,12 @@ const SearchForm = ({ onSubmit }: Props) => {
 
   // handle search
   const handleSearch = () => {
-    onSubmit({ keyword, isUnRead, isRead, fromDate, toDate });
+    onSubmit({ keyword, isUnRead, isRead, afterDate, beforeDate });
   };
   return (
-    <div>
+    <div className='w-full flex flex-col items-center justify-center'>
       {/* top line inputs */}
-      <div className='flex px-12 py-2 items-end'>
+      <div className='flex px-8 py-2 items-end'>
         {/* search keyword */}
         <div className='flex items-start flex-col justify-center'>
           <label
@@ -56,10 +58,12 @@ const SearchForm = ({ onSubmit }: Props) => {
             type='text'
             id='search-keyword'
             placeholder='unsubscribe'
+            value={keyword}
+            onChange={ev => setKeyword(ev.target.value)}
             className='appearance-none px-2 py-px text-base font-light text-slate-800 border  border-slate-400 rounded w-48'
           />
         </div>
-        {/* from date */}
+        {/* after date */}
         <div className='flex items-center flex-col relative ml-6'>
           <label className='font-light text-sm text-slate-700 flex items-center mb-2'>
             After Date
@@ -70,10 +74,10 @@ const SearchForm = ({ onSubmit }: Props) => {
             <Switch value={isFromDateActive} onChange={value => setIsFromDateActive(value)} />
           </label>
           <div className='absolute  -bottom-full left-auto mt-2 ml-1'>
-            {isFromDateActive ? <DatePicker value={fromDate} onChange={setFromDate} /> : null}
+            {isFromDateActive ? <DatePicker value={afterDate} onChange={setAfterDate} /> : null}
           </div>
         </div>
-        {/* to date */}
+        {/* before date */}
         <div className='flex items-center flex-col relative ml-6'>
           <label className='font-light text-sm text-slate-700 flex items-center mb-2'>
             Before Date
@@ -84,7 +88,7 @@ const SearchForm = ({ onSubmit }: Props) => {
             <Switch value={isToDateActive} onChange={value => setIsToDateActive(value)} />
           </label>
           <div className='absolute  -bottom-full left-auto mt-2 ml-1'>
-            {isToDateActive ? <DatePicker value={toDate} onChange={setToDate} /> : null}
+            {isToDateActive ? <DatePicker value={beforeDate} onChange={setBeforeDate} /> : null}
           </div>
         </div>
 
@@ -133,10 +137,11 @@ const SearchForm = ({ onSubmit }: Props) => {
         </div>
       </div>
       <button
-        className='bg-brand-primary mx-auto mt-8 w-32 px-3 py-1.5 font-medium rounded-md border-none text-slate-50 text-sm cursor-pointer  transition-all duration-200 hover:bg-opacity-90'
+        className={`bg-brand-primary mx-auto mt-12 w-32 px-3 py-2 
+        font-medium rounded-md border-none text-slate-50 text-sm cursor-pointer  transition-all duration-200 hover:bg-opacity-90`}
         onClick={handleSearch}
       >
-        Search
+        {!isSubmitting ? 'Search' : <Spinner size='sm' />}
       </button>
     </div>
   );

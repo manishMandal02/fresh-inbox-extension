@@ -14,6 +14,7 @@ import { showConfirmModal } from '../../elements/confirmModal';
 import { getLocalStorageByKey } from '@src/pages/content/utils/getStorageByKey';
 import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
 import ActionButton from '../../elements/action-button';
+import wait from '@src/pages/content/utils/wait';
 
 type NewsletterData = {
   email: string;
@@ -22,6 +23,7 @@ type NewsletterData = {
 
 const getNewsletterEmailsData = async (shouldRefreshData = false) => {
   try {
+    await wait(4000);
     let newsletterEmails: NewsletterData[] = [];
     const getNewsletterEmailsFromBackground = async () => {
       // send message to background to get data
