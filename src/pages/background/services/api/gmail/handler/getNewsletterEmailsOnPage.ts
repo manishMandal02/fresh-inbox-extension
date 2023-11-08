@@ -29,9 +29,7 @@ export const getNewsletterEmailsOnPage = async ({
     ${folder === 'all' ? '' : `in:${folder}`}
     `;
 
-    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:32 ~ searchQuery:', searchQuery);
-
-    // call to gmail api
+    // call gmail api
     const res = await fetch(
       `https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${searchQuery}&maxResults=${API_MAX_RESULT}`,
       fetchOptions

@@ -13,6 +13,8 @@ export enum IMessageEvent {
   WHITELIST_EMAIL = 'whitelistEmail',
   GET_APP_STATUS = 'getAppStatus',
   CHECKS_AFTER_AUTH = 'checksAfterAuth',
+  ADVANCE_SEARCH = 'advanceSearch',
+  BULK_DELETE = 'bulkDelete',
 }
 
 export type EmailId = {
@@ -46,6 +48,8 @@ export interface IMessageBody {
   isWhitelisted?: boolean;
   // for getting the newsletter emails on the page
   dataOnPage?: DataOnPage;
+  // for advance search event
+  advanceSearch?: SearchFormData;
 }
 
 // email action types
@@ -60,4 +64,12 @@ export enum EmailAction {
 export interface IActionInProgress {
   emails: string[];
   action: `${EmailAction}`;
+}
+// search inputs data
+export interface SearchFormData {
+  keyword?: string;
+  isRead?: boolean;
+  isUnRead?: boolean;
+  afterDate?: string;
+  beforeDate?: string;
 }

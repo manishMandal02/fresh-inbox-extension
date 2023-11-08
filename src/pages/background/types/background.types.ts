@@ -13,6 +13,8 @@ export enum IMessageEvent {
   WHITELIST_EMAIL = 'whitelistEmail',
   GET_APP_STATUS = 'getAppStatus',
   CHECKS_AFTER_AUTH = 'checksAfterAuth',
+  ADVANCE_SEARCH = 'advanceSearch',
+  BULK_DELETE = 'bulkDelete',
 }
 
 export enum FILTER_ACTION {
@@ -59,6 +61,8 @@ export interface IMessageBody {
   isWhitelisted?: boolean;
   // for getting the newsletter emails on the page
   dataOnPage?: DataOnPage;
+  // for advance search event
+  advanceSearch?: SearchFormData;
 }
 
 export type GetMsgAPIResponseSuccess = {
@@ -96,3 +100,12 @@ export type NewsletterEmails = {
   email: string;
   name: string;
 };
+
+// data for advance search event
+export interface SearchFormData {
+  keyword?: string;
+  isRead?: boolean;
+  isUnRead?: boolean;
+  afterDate?: string;
+  beforeDate?: string;
+}

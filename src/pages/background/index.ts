@@ -17,6 +17,8 @@ import { logger } from './utils/logger';
 import { storageKeys } from './constants/app.constants';
 import { getFilterId } from './services/api/gmail/helper/getFilterId';
 import { getSyncStorageByKey } from './utils/getStorageByKey';
+import { advanceSearch } from './services/api/gmail/handler/advance-search/advanceSearch';
+import { bulkDelete } from './services/api/gmail/handler/advance-search/bulkDelete';
 
 reloadOnUpdate('pages/background');
 
@@ -101,7 +103,7 @@ chrome.runtime.onMessage.addListener(
     logger.info(`received event: ${request.event}`);
     // switch case
     switch (request.event) {
-      // event cases
+      // check for user token
       case IMessageEvent.CHECK_AUTH_TOKEN: {
         const res = await getAuthToken(request.userEmail, request.clientId);
 
@@ -115,6 +117,7 @@ chrome.runtime.onMessage.addListener(
         }
       }
 
+      // launch google auth
       case IMessageEvent.LAUNCH_AUTH_FLOW: {
         const res = await launchGoogleAuthFlow(request.userEmail, request.clientId);
 
@@ -171,28 +174,39 @@ chrome.runtime.onMessage.addListener(
         }
       }
 
-      // handle whitelist email
+      //  whitelist email
       case IMessageEvent.WHITELIST_EMAIL: {
         return await whitelistEmail({ token, emails: request.emails });
       }
 
-      // handle check for newsletter emails on page
+      //  re-subscribe
+      case IMessageEvent.RE_SUBSCRIBE: {
+        return await resubscribeEmail({ token, emails: request.emails });
+      }
+
+      //  check for newsletter emails on page
       case IMessageEvent.GET_NEWSLETTER_EMAILS_ON_PAGE: {
         return await getNewsletterEmailsOnPage({ token, dataOnPage: request.dataOnPage });
       }
 
+      // get unsubscribed emails
       case IMessageEvent.GET_UNSUBSCRIBED_EMAILS: {
         return await getUnsubscribedEmails(token);
       }
 
-      // handle get whitelisted emails
+      //  get whitelisted emails
       case IMessageEvent.GET_WHITELISTED_EMAILS: {
         return await getWhitelistedEmails(token);
       }
 
-      // handle re-subscribe
-      case IMessageEvent.RE_SUBSCRIBE: {
-        return await resubscribeEmail({ token, emails: request.emails });
+      // advance search: search number of emails that match the filters
+      case IMessageEvent.ADVANCE_SEARCH: {
+        return await advanceSearch(token, request.advanceSearch);
+      }
+
+      // advance search: bulk delete emails
+      case IMessageEvent.BULK_DELETE: {
+        return await bulkDelete(token, request.emails);
       }
 
       // disable app

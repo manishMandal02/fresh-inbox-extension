@@ -23,7 +23,6 @@ type NewsletterData = {
 
 const getNewsletterEmailsData = async (shouldRefreshData = false) => {
   try {
-    await wait(4000);
     let newsletterEmails: NewsletterData[] = [];
     const getNewsletterEmailsFromBackground = async () => {
       // send message to background to get data
@@ -52,10 +51,6 @@ const getNewsletterEmailsData = async (shouldRefreshData = false) => {
       }
     }
 
-    console.log(
-      '🚀 ~ file: Newsletter.tsx:65 ~ getNewsletterEmailsData ~ newsletterEmails:',
-      newsletterEmails
-    );
     return newsletterEmails;
   } catch (error) {
     console.log('🚀 ~ file: Newsletter.tsx:35 ~ getNewsletterEmailsData ~ error:', error);

@@ -1,36 +1,7 @@
 import { logger } from './../../../../utils/logger';
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
 import type { APIHandleParams, GetMsgAPIResponseSuccess } from '@src/pages/background/types/background.types';
-
-// delete all mails in batches for faster processing
-const batchDeleteMails = async (token: string, ids: string[]) => {
-  // added TRASH label, remove INBOX label for all the emails/messages
-  const reqBody = {
-    ids,
-    addLabelIds: ['TRASH'],
-    removeLabelIds: ['INBOX'],
-  };
-
-  const fetchOptions: Partial<RequestInit> = {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(reqBody),
-  };
-
-  try {
-    // batch delete emails
-    await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/batchModify', fetchOptions);
-  } catch (error) {
-    logger.error({
-      error,
-      msg: 'Error while batch deleting emails',
-      fileTrace: 'background/services/api/gmail/handler/deeAllMails.ts:30 batchDeleteMails() catch block',
-    });
-  }
-};
+import { batchDeleteMails } from '../helper/batchDelete';
 
 // delete all mails
 export const deleteAllMails = async ({ token, emails }: APIHandleParams) => {

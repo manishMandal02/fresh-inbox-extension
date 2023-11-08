@@ -1,9 +1,10 @@
 type Props = {
   size: 'sm' | 'md' | 'lg';
+  color?: string;
 };
 
-export const Spinner = ({ size }: Props) => {
-  const getSize = () => (size === 'sm' ? 'h-6 w-6' : size === 'md' ? 'h-8 w-8' : 'h-12 w-12');
+export const Spinner = ({ size, color = '#10b981' }: Props) => {
+  const getSize = () => (size === 'sm' ? 'h-4 w-4' : size === 'md' ? 'h-8 w-8' : 'h-12 w-12');
   const getBorderSize = () => (size === 'sm' ? '2.5px' : size === 'md' ? '5px' : '8px');
 
   return (
@@ -12,7 +13,7 @@ export const Spinner = ({ size }: Props) => {
         className={`${getSize()}  animate-spin  rounded-full border-2! border-slate-500! relative `}
         style={{
           border: `${getBorderSize()} solid #f2f0f0`,
-          borderTopColor: '#10b981',
+          borderTopColor: color,
         }}
       ></div>
     </div>

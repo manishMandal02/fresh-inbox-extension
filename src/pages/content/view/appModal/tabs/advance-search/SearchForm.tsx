@@ -5,14 +5,7 @@ import Tooltip from '../../../elements/TooltipReact';
 import { Checkbox } from '../../../elements/Checkbox';
 import DatePicker from '../../../elements/DatePicker';
 import { Spinner } from '../../../elements/Spinner';
-
-export interface SearchFormData {
-  keyword?: string;
-  isRead?: boolean;
-  isUnRead?: boolean;
-  afterDate?: string;
-  beforeDate?: string;
-}
+import type { SearchFormData } from '@src/pages/content/types/content.types';
 
 type Props = {
   onSubmit: (formData: SearchFormData) => void;
@@ -24,8 +17,8 @@ const SearchForm = ({ onSubmit, isSubmitting }: Props) => {
   const [keyword, setKeyword] = useState('');
   const [isRead, setIsRead] = useState(false);
   const [isUnRead, setIsUnRead] = useState(false);
-  const [afterDate, setAfterDate] = useState('');
-  const [beforeDate, setBeforeDate] = useState('');
+  const [afterDate, setAfterDate] = useState<string | null>(null);
+  const [beforeDate, setBeforeDate] = useState<string | null>(null);
 
   // toggle states
   const [isFromDateActive, setIsFromDateActive] = useState(false);
@@ -46,11 +39,7 @@ const SearchForm = ({ onSubmit, isSubmitting }: Props) => {
             className='font-light text-sm mb-1 text-slate-700 flex items-center justify-start'
           >
             Keywords
-            <Tooltip
-              label={`Enter keyword to search for specific terms in the email subjects or body`}
-              top={220}
-              right={1000}
-            >
+            <Tooltip label={`Enter keyword to search for specific terms in the email subjects or body`}>
               <InfoIcon />
             </Tooltip>
           </label>
@@ -109,7 +98,7 @@ const SearchForm = ({ onSubmit, isSubmitting }: Props) => {
               className='font-light text-sm ml-1.5 text-slate-700 flex items-center justify-start'
             >
               Read
-              <Tooltip label={`Search emails that have been read.`} top={220} right={1000}>
+              <Tooltip label={`Search emails that have been read.`}>
                 <InfoIcon />
               </Tooltip>
             </label>
@@ -129,7 +118,7 @@ const SearchForm = ({ onSubmit, isSubmitting }: Props) => {
               className='font-light text-sm ml-1.5 text-slate-700 flex items-center justify-start'
             >
               Unread
-              <Tooltip label={`Search emails that has not been read.`} top={220} right={1000}>
+              <Tooltip label={`Search emails that has not been read.`}>
                 <InfoIcon />
               </Tooltip>
             </label>
@@ -137,12 +126,18 @@ const SearchForm = ({ onSubmit, isSubmitting }: Props) => {
         </div>
       </div>
       <button
-        className={`bg-brand-primary mx-auto mt-12 w-32 px-3 py-2 
+        className={`bg-brand-primary mx-auto mt-12 w-32 px-6 py-2
         font-medium rounded-md border-none text-slate-50 text-sm cursor-pointer  transition-all duration-200 hover:bg-opacity-90`}
         onClick={handleSearch}
       >
         {!isSubmitting ? 'Search' : <Spinner size='sm' />}
       </button>
+      {/* show alert info searching is in process, as it takes time */}
+      {isSubmitting ? (
+        <span className='text-xs text-slate-500 font-extralight text-center mt-1.5 flex items-center'>
+          <InfoIcon /> This may take few seconds, do not close or refresh the page.
+        </span>
+      ) : null}
     </div>
   );
 };
