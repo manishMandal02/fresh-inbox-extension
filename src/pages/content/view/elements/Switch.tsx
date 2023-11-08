@@ -7,7 +7,7 @@ const Switch = ({ value, onChange }: Props) => {
   return (
     <>
       <div
-        className={`relative w-10 h-5 rounded-xl mx-2 bg-slate-500  z-10 cursor-pointer transition-all duration-300`}
+        className={`relative w-10 h-5 rounded-xl mx-1.5 bg-slate-500  z-10 cursor-pointer transition-all duration-300`}
         style={{
           backgroundColor: value ? '#10b981' : '#9e9d9d',
         }}

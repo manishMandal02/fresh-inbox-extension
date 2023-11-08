@@ -3,7 +3,7 @@ import { Spinner } from '../../../elements/Spinner';
 import Tooltip from '../../../elements/TooltipReact';
 import InfoIcon from '../../../elements/InfoIcon';
 import Switch from '../../../elements/Switch';
-import SearchForm from './SearchForm';
+import SearchForm, { SearchFormData } from './SearchForm';
 
 const AdvanceSearch = () => {
   const [errorMsg, setErrorMsg] = useState('');
@@ -11,7 +11,9 @@ const AdvanceSearch = () => {
   const [isLoadingSearchRes, setIsLoadingSearchRes] = useState<null | number>(null);
 
   // handle search click
-  const handleSearch = async () => {};
+  const handleSearch = async ({}: SearchFormData) => {
+    //TODO: handle search
+  };
 
   return (
     <div className='w-full h-full max-h-full'>
@@ -24,14 +26,7 @@ const AdvanceSearch = () => {
       {/* search input container (filter options) */}
       <div className='flex flex-col px-12 py-4'>
         {/* search form */}
-        <SearchForm />
-
-        <button
-          className='bg-brand-primary mx-auto mt-8 w-32 px-3 py-1.5 font-medium rounded-md border-none text-slate-50 text-sm cursor-pointer  transition-all duration-200 hover:bg-opacity-90'
-          onClick={handleSearch}
-        >
-          Search
-        </button>
+        <SearchForm onSubmit={handleSearch} />
       </div>
 
       {/* search result container */}

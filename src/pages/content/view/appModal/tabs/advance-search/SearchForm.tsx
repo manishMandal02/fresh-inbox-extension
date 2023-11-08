@@ -3,23 +3,36 @@ import InfoIcon from '../../../elements/InfoIcon';
 import Switch from '../../../elements/Switch';
 import Tooltip from '../../../elements/TooltipReact';
 import { Checkbox } from '../../../elements/Checkbox';
-import DatePicker from 'react-date-picker';
-import 'react-date-picker/dist/DatePicker.css';
-import 'react-calendar/dist/Calendar.css';
+import DatePicker from '../../../elements/DatePicker';
 
-const SearchForm = () => {
+export interface SearchFormData {
+  keyword?: string;
+  isRead?: boolean;
+  isUnRead?: boolean;
+  fromDate?: string;
+  toDate?: string;
+}
+
+type Props = {
+  onSubmit: (formData: SearchFormData) => void;
+};
+
+const SearchForm = ({ onSubmit }: Props) => {
   // form state
   const [keyword, setKeyword] = useState('');
   const [isRead, setIsRead] = useState(false);
   const [isUnRead, setIsUnRead] = useState(false);
-  const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
-
-  console.log('🚀 ~ file: SearchForm.tsx:15 ~ SearchForm ~ dateRange:', dateRange);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
 
   // toggle states
-  const [isDateRangeActive, setIsDateRangeActive] = useState(false);
-  const [isAfterDateActive, setIsAfterDateActive] = useState(false);
-  const [isBeforeDateActive, setIsBeforeDateActive] = useState(false);
+  const [isFromDateActive, setIsFromDateActive] = useState(false);
+  const [isToDateActive, setIsToDateActive] = useState(false);
+
+  // handle search
+  const handleSearch = () => {
+    onSubmit({ keyword, isUnRead, isRead, fromDate, toDate });
+  };
   return (
     <div>
       {/* top line inputs */}
@@ -43,14 +56,50 @@ const SearchForm = () => {
             type='text'
             id='search-keyword'
             placeholder='unsubscribe'
-            className='appearance-none px-2 py-px text-base font-light text-slate-800 border  border-slate-500 rounded w-48'
+            className='appearance-none px-2 py-px text-base font-light text-slate-800 border  border-slate-400 rounded w-48'
           />
         </div>
+        {/* from date */}
+        <div className='flex items-center flex-col relative ml-6'>
+          <label className='font-light text-sm text-slate-700 flex items-center mb-2'>
+            After Date
+            <Tooltip label={`Search emails after this date.`}>
+              <InfoIcon />
+            </Tooltip>
+            {/* switch (toggle this input on/off) */}
+            <Switch value={isFromDateActive} onChange={value => setIsFromDateActive(value)} />
+          </label>
+          <div className='absolute  -bottom-full left-auto mt-2 ml-1'>
+            {isFromDateActive ? <DatePicker value={fromDate} onChange={setFromDate} /> : null}
+          </div>
+        </div>
+        {/* to date */}
+        <div className='flex items-center flex-col relative ml-6'>
+          <label className='font-light text-sm text-slate-700 flex items-center mb-2'>
+            Before Date
+            <Tooltip label={`Search emails before this date.`}>
+              <InfoIcon />
+            </Tooltip>
+            {/* switch (toggle this input on/off) */}
+            <Switch value={isToDateActive} onChange={value => setIsToDateActive(value)} />
+          </label>
+          <div className='absolute  -bottom-full left-auto mt-2 ml-1'>
+            {isToDateActive ? <DatePicker value={toDate} onChange={setToDate} /> : null}
+          </div>
+        </div>
+
         {/* labels checkboxes */}
-        <div className=' flex items-center justify-start mb-1 ml-4'>
+        <div className=' flex items-center justify-start mb-2 ml-4'>
           {/* is-read */}
           <div className='flex items-center mr-6'>
-            <Checkbox id='isReadCheckbox' isChecked={isRead} onChange={value => setIsRead(value)} />
+            <Checkbox
+              id='isReadCheckbox'
+              isChecked={isRead}
+              onChange={value => {
+                setIsUnRead(false);
+                setIsRead(value);
+              }}
+            />
             <label
               htmlFor='isReadCheckbox'
               className='font-light text-sm ml-1.5 text-slate-700 flex items-center justify-start'
@@ -63,7 +112,14 @@ const SearchForm = () => {
           </div>
           {/* is-unRead */}
           <div className='flex items-center '>
-            <Checkbox id='isUnReadCheckbox' isChecked={isUnRead} onChange={value => setIsUnRead(value)} />
+            <Checkbox
+              id='isUnReadCheckbox'
+              isChecked={isUnRead}
+              onChange={value => {
+                setIsRead(false);
+                setIsUnRead(value);
+              }}
+            />
             <label
               htmlFor='isUnReadCheckbox'
               className='font-light text-sm ml-1.5 text-slate-700 flex items-center justify-start'
@@ -76,28 +132,12 @@ const SearchForm = () => {
           </div>
         </div>
       </div>
-      {/* bottom line inputs */}
-      <div className='flex mt-4 px-12 py-2'>
-        {/* date range */}
-        <div className='flex items-center flex-col'>
-          <label className='font-light text-sm text-slate-700 flex items-center mb-2'>
-            Date Range
-            <Tooltip label={`Search emails from a specific date range (form & to)`} top={200} right={700}>
-              <InfoIcon />
-            </Tooltip>
-            {/* switch (toggle this input on/off) */}
-            <Switch value={isDateRangeActive} onChange={value => setIsDateRangeActive(value)} />
-          </label>
-          {isDateRangeActive ? (
-            <DatePicker
-              onChange={value => {
-                console.log('🚀 ~ file: SearchForm.tsx:91 ~ SearchForm ~ value:', value);
-              }}
-              value={''}
-            />
-          ) : null}
-        </div>
-      </div>
+      <button
+        className='bg-brand-primary mx-auto mt-8 w-32 px-3 py-1.5 font-medium rounded-md border-none text-slate-50 text-sm cursor-pointer  transition-all duration-200 hover:bg-opacity-90'
+        onClick={handleSearch}
+      >
+        Search
+      </button>
     </div>
   );
 };

@@ -1080,18 +1080,6 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.11.tgz#d421b6c527a3037f7c84433fd2c4229e016863d3"
   integrity sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==
 
-"@types/lodash.memoize@^4.1.7":
-  version "4.1.9"
-  resolved "https://registry.yarnpkg.com/@types/lodash.memoize/-/lodash.memoize-4.1.9.tgz#9f8912d39b6e450c0d342a2b74c99d331bf2016b"
-  integrity sha512-glY1nQuoqX4Ft8Uk+KfJudOD7DQbbEDF6k9XpGncaohW3RW4eSWBlx6AA0fZCrh40tZcQNH4jS/Oc59J6Eq+aw==
-  dependencies:
-    "@types/lodash" "*"
-
-"@types/lodash@*":
-  version "4.14.200"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.200.tgz#435b6035c7eba9cdf1e039af8212c9e9281e7149"
-  integrity sha512-YI/M/4HRImtNf3pJgbF+W6FrXovqj+T+/HpENLTooK9PnkacBsDpeP3IpHab40CClUfhNmdM2WTNP2sa2dni5Q==
-
 "@types/node@*":
   version "18.15.11"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.15.11.tgz#b3b790f09cb1696cffcec605de025b088fa4225f"
@@ -1296,11 +1284,6 @@
     "@babel/plugin-transform-react-jsx-self" "^7.22.5"
     "@babel/plugin-transform-react-jsx-source" "^7.22.5"
     react-refresh "^0.14.0"
-
-"@wojtekmaj/date-utils@^1.1.3":
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/@wojtekmaj/date-utils/-/date-utils-1.5.1.tgz#c3cd67177ac781cfa5736219d702a55a2aea5f2b"
-  integrity sha512-+i7+JmNiE/3c9FKxzWFi2IjRJ+KzZl1QPu6QNrsgaa2MuBgXvUy4gA1TVzf/JMdIIloB76xSKikTWuyYAIVLww==
 
 abab@^2.0.6:
   version "2.0.6"
@@ -1703,11 +1686,6 @@ cliui@^7.0.2:
     strip-ansi "^6.0.0"
     wrap-ansi "^7.0.0"
 
-clsx@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/clsx/-/clsx-2.0.0.tgz#12658f3fd98fafe62075595a5c30e43d18f3d00b"
-  integrity sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==
-
 co@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
@@ -1875,11 +1853,6 @@ delayed-stream@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
   integrity sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==
-
-detect-element-overflow@^1.4.0:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/detect-element-overflow/-/detect-element-overflow-1.4.2.tgz#2e48509e5aa07647f4335b5f4f52c146b92f99c5"
-  integrity sha512-4m6cVOtvm/GJLjo7WFkPfwXoEIIbM7GQwIh4WEa4g7IsNi1YzwUsGL5ApNLrrHL29bHeNeQ+/iZhw+YHqgE2Fw==
 
 detect-newline@^3.0.0:
   version "3.1.0"
@@ -2611,14 +2584,6 @@ get-symbol-description@^1.0.0:
   dependencies:
     call-bind "^1.0.2"
     get-intrinsic "^1.1.1"
-
-get-user-locale@^2.2.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/get-user-locale/-/get-user-locale-2.3.1.tgz#fc7319429c8a70fac01b3b2a0b08b0c71c1d3fe2"
-  integrity sha512-VEvcsqKYx7zhZYC1CjecrDC5ziPSpl1gSm0qFFJhHSGDrSC+x4+p1KojWC/83QX//j476gFhkVXP/kNUc9q+bQ==
-  dependencies:
-    "@types/lodash.memoize" "^4.1.7"
-    lodash.memoize "^4.1.1"
 
 glob-parent@^5.1.2, glob-parent@~5.1.2:
   version "5.1.2"
@@ -3603,11 +3568,6 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
-lodash.memoize@^4.1.1:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
-  integrity sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==
-
 lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
@@ -3640,11 +3600,6 @@ make-dir@^3.0.0:
   integrity sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==
   dependencies:
     semver "^6.0.0"
-
-make-event-props@^1.6.0:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/make-event-props/-/make-event-props-1.6.2.tgz#c8e0e48eb28b9b808730de38359f6341de7ec5a2"
-  integrity sha512-iDwf7mA03WPiR8QxvcVHmVWEPfMY1RZXerDVNCRYW7dUr2ppH3J58Rwb39/WG39yTZdRSxr3x+2v22tvI0VEvA==
 
 makeerror@1.0.12:
   version "1.0.12"
@@ -4173,7 +4128,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.6.0, prop-types@^15.8.1:
+prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -4197,31 +4152,6 @@ queue-microtask@^1.2.2:
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
-react-calendar@^4.6.0:
-  version "4.6.1"
-  resolved "https://registry.yarnpkg.com/react-calendar/-/react-calendar-4.6.1.tgz#23dbe4fcf6e3edd731ff8aa92e8e20b28c446fcb"
-  integrity sha512-MvCPdvxEvq7wICBhFxlYwxS2+IsVvSjTcmlr0Kl3yDRVhoX7btNg0ySJx5hy9rb1eaM4nDpzQcW5c87nfQ8n8w==
-  dependencies:
-    "@wojtekmaj/date-utils" "^1.1.3"
-    clsx "^2.0.0"
-    get-user-locale "^2.2.1"
-    prop-types "^15.6.0"
-    tiny-warning "^1.0.0"
-
-react-date-picker@^10.5.2:
-  version "10.5.2"
-  resolved "https://registry.yarnpkg.com/react-date-picker/-/react-date-picker-10.5.2.tgz#0cb819c80863acaba7a85478bbc12b94ef4a320a"
-  integrity sha512-EwLNYPy+/2p7VwsAWnitPhtkC2tesABkZNlAAIEPZeHucyMlO5KB6z55POdtamu6T6vs0RY2G5EVgxDaxlj0MQ==
-  dependencies:
-    "@wojtekmaj/date-utils" "^1.1.3"
-    clsx "^2.0.0"
-    get-user-locale "^2.2.1"
-    make-event-props "^1.6.0"
-    prop-types "^15.6.0"
-    react-calendar "^4.6.0"
-    react-fit "^1.7.0"
-    update-input-width "^1.4.0"
-
 react-dom@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmmirror.com/react-dom/-/react-dom-18.2.0.tgz#22aaf38708db2674ed9ada224ca4aa708d821e3d"
@@ -4229,15 +4159,6 @@ react-dom@18.2.0:
   dependencies:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
-
-react-fit@^1.7.0:
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/react-fit/-/react-fit-1.7.1.tgz#95259e90cfa9c4d243a8013d03ea59c9c5c51a6f"
-  integrity sha512-y/TYovCCBzfIwRJsbLj0rH4Es40wPQhU5GPPq9GlbdF09b0OdzTdMSkBza0QixSlgFzTm6dkM7oTFzaVvaBx+w==
-  dependencies:
-    detect-element-overflow "^1.4.0"
-    prop-types "^15.6.0"
-    tiny-warning "^1.0.0"
 
 react-is@^16.13.1:
   version "16.13.1"
@@ -4775,11 +4696,6 @@ thenify-all@^1.0.0:
   dependencies:
     any-promise "^1.0.0"
 
-tiny-warning@^1.0.0:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/tiny-warning/-/tiny-warning-1.0.3.tgz#94a30db453df4c643d0fd566060d60a875d84754"
-  integrity sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==
-
 tmpl@1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/tmpl/-/tmpl-1.0.5.tgz#8683e0b902bb9c20c4f726e3c0b69f36518c07cc"
@@ -4932,11 +4848,6 @@ update-browserslist-db@^1.0.9:
   dependencies:
     escalade "^3.1.1"
     picocolors "^1.0.0"
-
-update-input-width@^1.4.0:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/update-input-width/-/update-input-width-1.4.2.tgz#49d327a39395185b0fd440b9c3b1d6f81173655c"
-  integrity sha512-/p0XLhrQQQ4bMWD7bL9duYObwYCO1qGr8R19xcMmoMSmXuQ7/1//veUnCObQ7/iW6E2pGS6rFkS4TfH4ur7e/g==
 
 uri-js@^4.2.2:
   version "4.4.1"
