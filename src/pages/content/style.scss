@@ -9,7 +9,7 @@ html {
 //colors
 $primary-color: #10b981;
 $light-gray-color: #dde3ea95;
-$danger-color: #e74d3e;
+$danger-color: #f43f5e;
 $text-dark: #282828;
 $text-mid-gray: #505050;
 
@@ -17,8 +17,8 @@ $text-mid-gray: #505050;
 .freshInbox-tooltip {
   position: absolute;
   width: max-content;
-  background-color: black;
-  color: #e0e0e0;
+  background-color: #1f2937;
+  color: #f5f4f4;
   text-align: center;
   padding: 5px 10px;
   border-radius: 6px;
@@ -112,14 +112,14 @@ $text-mid-gray: #505050;
 }
 
 #freshInbox-hoverCard {
-  position: fixed;
-  transform: translate(1%, -104%);
+  position: absolute;
   width: 25rem;
   height: min-content;
   padding: 10px 0;
   z-index: 10000;
   display: none;
   visibility: hidden;
+  transform: translate(0, -102%);
   border-radius: 10px;
   margin-left: -2.8rem;
   background-color: #ffffff;
@@ -129,6 +129,7 @@ $text-mid-gray: #505050;
   align-items: center;
   flex-direction: column;
   cursor: auto;
+
   // children
   .hoverCard-label {
     display: flex;
@@ -206,121 +207,6 @@ $text-mid-gray: #505050;
   transform: translate(-44%, 0%);
 }
 
-#freshInbox-authModal {
-  // children
-  #authModal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 9000;
-    width: 100vw;
-    height: 100vw;
-    background-color: #242222;
-    opacity: 0.4;
-  }
-  #authModal-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 16px;
-    border-radius: 16px;
-    box-shadow: #64646f33 0px 7px 29px 0px;
-    background-color: #f3f1f1;
-    width: 40vw;
-    height: 50vh;
-    position: fixed;
-    top: 25%;
-    left: 30%;
-    z-index: 10000;
-    // children
-    #authModal-title {
-      color: #434242;
-      font-size: 1.4rem;
-      font-weight: 400;
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
-    #authModal-errorMsg {
-      color: #f04b4b;
-      font-weight: 300;
-      font-size: 14px;
-      text-align: center;
-      margin-bottom: 0.5rem;
-      visibility: hidden;
-    }
-    #authModal-authBtn {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 16px;
-      font-weight: 400;
-      background-color: #1d86d6;
-      color: #f3f1f1;
-      margin-top: 1rem;
-      border-radius: 6px;
-      outline: none;
-      border: none;
-      padding: 10px 20px;
-      cursor: pointer;
-    }
-    #authModal-disableBtn {
-      color: #777676;
-      font-weight: 300;
-      font-size: 10px;
-      text-align: center;
-      text-decoration: underline;
-      cursor: pointer;
-      margin-top: 0.5rem;
-    }
-  }
-}
-
-.freshInbox-snackbar {
-  position: fixed;
-  bottom: 16px;
-  left: 0px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 14px 12px 14px 8px;
-  border-radius: 4px;
-  transform: translateX(-120%) translateY(0);
-  height: 3.2vh;
-  min-width: 7vw;
-  width: fit-content;
-  z-index: 10000;
-  background-color: #eef0f1;
-  transition: transform 0.25s ease-in;
-
-  > span {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 500;
-    color: #212020;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .icon-wrapper {
-      margin-right: 4px;
-      > svg {
-        width: 30px;
-        height: 30px;
-        opacity: 0.9;
-      }
-    }
-    > span {
-      text-align: start;
-      > span {
-        font-size: 12px;
-        color: #2c2c2c;
-        font-weight: 400;
-        margin-top: -4px;
-      }
-    }
-  }
-}
-
 .freshInbox-snackbar.show {
   transform: translateX(2.5%) translateY(0);
 }
@@ -379,6 +265,7 @@ $text-mid-gray: #505050;
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 100000;
   // children
   #confirmModal-backdrop {
     position: absolute;
@@ -396,13 +283,13 @@ $text-mid-gray: #505050;
     box-shadow: #64646f33 0px 7px 29px 0px;
     background-color: #f3f1f1;
     height: 22vh;
-    width: calc(fit-content + 150px);
+    width: calc(fit-content + 250px);
     position: absolute;
     padding: 18px 36px 18px 24px;
     border-radius: 12px;
     top: 25%;
     left: 32%;
-    z-index: 10000;
+    z-index: 100000;
     // children
     #confirmModal-modalTitle {
       color: #252525;
@@ -412,14 +299,14 @@ $text-mid-gray: #505050;
       margin-bottom: 1rem;
     }
     #confirmModal-modalMessage {
-      color: #434242;
-      font-size: 16px;
+      color: #555555;
+      font-size: 14px;
       font-weight: 400;
       margin: 0;
       padding-right: 20px;
-      line-height: 1.5rem;
+      line-height: 1.25rem;
       > strong {
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 500;
       }
     }

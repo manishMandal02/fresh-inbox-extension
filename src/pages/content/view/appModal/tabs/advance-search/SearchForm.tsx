@@ -22,7 +22,7 @@ const SearchForm = ({ onSubmit, isSubmitting }: Props) => {
 
   // toggle states
   const [isFromDateActive, setIsFromDateActive] = useState(false);
-  const [isToDateActive, setIsToDateActive] = useState(false);
+  const [isBeforeDateActive, setIsBeforeDateActive] = useState(false);
 
   // handle search
   const handleSearch = () => {
@@ -39,7 +39,9 @@ const SearchForm = ({ onSubmit, isSubmitting }: Props) => {
             className='font-light text-sm mb-1 text-slate-700 flex items-center justify-start'
           >
             Keywords
-            <Tooltip label={`Enter keyword to search for specific terms in the email subjects or body`}>
+            <Tooltip
+              label={`Enter keywords to search for specific terms in the email subjects or body, \n multiple keywords must be separated by commas.`}
+            >
               <InfoIcon />
             </Tooltip>
           </label>
@@ -49,7 +51,7 @@ const SearchForm = ({ onSubmit, isSubmitting }: Props) => {
             placeholder='unsubscribe'
             value={keyword}
             onChange={ev => setKeyword(ev.target.value)}
-            className='appearance-none px-2 py-px text-base font-light text-slate-800 border  border-slate-400 rounded w-48'
+            className='appearance-none px-2 py-1 text-sm font-light text-slate-700 border  border-slate-400 rounded w-60'
           />
         </div>
         {/* after date */}
@@ -60,7 +62,13 @@ const SearchForm = ({ onSubmit, isSubmitting }: Props) => {
               <InfoIcon />
             </Tooltip>
             {/* switch (toggle this input on/off) */}
-            <Switch value={isFromDateActive} onChange={value => setIsFromDateActive(value)} />
+            <Switch
+              value={isFromDateActive}
+              onChange={value => {
+                setIsFromDateActive(value);
+                if (!value) setAfterDate(null);
+              }}
+            />
           </label>
           <div className='absolute  -bottom-full left-auto mt-2 ml-1'>
             {isFromDateActive ? <DatePicker value={afterDate} onChange={setAfterDate} /> : null}
@@ -74,10 +82,16 @@ const SearchForm = ({ onSubmit, isSubmitting }: Props) => {
               <InfoIcon />
             </Tooltip>
             {/* switch (toggle this input on/off) */}
-            <Switch value={isToDateActive} onChange={value => setIsToDateActive(value)} />
+            <Switch
+              value={isBeforeDateActive}
+              onChange={value => {
+                setIsBeforeDateActive(value);
+                if (!value) setBeforeDate(null);
+              }}
+            />
           </label>
           <div className='absolute  -bottom-full left-auto mt-2 ml-1'>
-            {isToDateActive ? <DatePicker value={beforeDate} onChange={setBeforeDate} /> : null}
+            {isBeforeDateActive ? <DatePicker value={beforeDate} onChange={setBeforeDate} /> : null}
           </div>
         </div>
 
@@ -135,7 +149,7 @@ const SearchForm = ({ onSubmit, isSubmitting }: Props) => {
       {/* show alert info searching is in process, as it takes time */}
       {isSubmitting ? (
         <span className='text-xs text-slate-500 font-extralight text-center mt-1.5 flex items-center'>
-          <InfoIcon /> This may take few seconds, do not close or refresh the page.
+          <InfoIcon /> This may take a few seconds, do not close or refresh the page.
         </span>
       ) : null}
     </div>

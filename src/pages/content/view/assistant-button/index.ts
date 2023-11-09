@@ -207,26 +207,17 @@ export const embedAssistantBtn = async (isReEmbedding = false) => {
   // check for container type & embed assistant button accordingly
   const containerType = getOpenedContainerType();
 
-  console.log('🚀 ~ file: index.ts:210 ~ embedAssistantBtn ~ containerType:', containerType);
-
   if (!containerType) {
     // not a supported container type
     logger.info('Not supported container type');
     return;
   }
-
+  // TODO: also support search links
   // check if current url is supported && current tab/page is inbox container
   // supported url/labels (inbox, starred, all, spam)
   if (isSupportedURL() && containerType === 'inbox') {
-    console.log('🚀 ~ file: index.ts:222 ~ embedAssistantBtn ~ isSupportedURL:', isSupportedURL());
-
     // re-embed the assistant button
     // this is a supported url
-
-    if (containerType === 'inbox') {
-      // this is inbox
-      // embed assistant buttons on newsletter emails
-    }
 
     // retry to check if the emails are found on page or not
     // if not, then retry it for 3 times with 2 seconds interval

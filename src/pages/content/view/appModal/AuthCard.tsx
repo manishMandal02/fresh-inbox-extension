@@ -6,19 +6,14 @@ import { disableApp } from '../../utils/disableApp';
 type Props = {
   isAppEnabled: boolean;
   onClose: () => void;
-  onAuthSuccess: () => void;
 };
 
-const AuthCard = ({ isAppEnabled, onClose, onAuthSuccess }: Props) => {
+const AuthCard = ({ isAppEnabled, onClose }: Props) => {
   const [errorMsg, setErrorMsg] = useState('');
 
   // handle connect button click
   const handleConnectBtnClick = async () => {
-    // get client id from evn variables
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
     const res = await chrome.runtime.sendMessage<IMessageBody>({
-      clientId,
       event: IMessageEvent.LAUNCH_AUTH_FLOW,
       userEmail: freshInboxGlobalVariables.userEmail,
     });
@@ -30,8 +25,6 @@ const AuthCard = ({ isAppEnabled, onClose, onAuthSuccess }: Props) => {
 
       // embed assistant button
       await embedAssistantBtn();
-      // sets auth state in app modal
-      onAuthSuccess();
 
       // run checks after successful auth
       await chrome.runtime.sendMessage<IMessageBody>({

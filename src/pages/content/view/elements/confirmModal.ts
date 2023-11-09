@@ -35,18 +35,21 @@ type ShowConfirmModalParams = {
   msg: string;
   email: string;
   onConfirmClick: () => Promise<void>;
+  isBulkDelete?: boolean;
 };
 
-const showConfirmModal = async ({ msg, email, onConfirmClick }: ShowConfirmModalParams) => {
-  //
-  // check user preference , if the user want's to see the delete confirmation message or not
-  const showDeleteConfirmMsg = await getSyncStorageByKey<boolean>('SHOW_DELETE_CONFIRM_MSG');
+const showConfirmModal = async ({ msg, email, onConfirmClick, isBulkDelete }: ShowConfirmModalParams) => {
+  // action modal is shown for all bulk delete action
+  if (!isBulkDelete) {
+    // check user preference , if the user want's to see the delete confirmation message or not
+    const showDeleteConfirmMsg = await getSyncStorageByKey<boolean>('SHOW_DELETE_CONFIRM_MSG');
 
-  if (typeof showDeleteConfirmMsg === 'boolean' && showDeleteConfirmMsg === false) {
-    // user has opted not to see the confirm action msg again
-    // don't show confirm delete action msg
-    await onConfirmClick();
-    return;
+    if (typeof showDeleteConfirmMsg === 'boolean' && showDeleteConfirmMsg === false) {
+      // user has opted not to see the confirm action msg again
+      // don't show confirm delete action msg
+      await onConfirmClick();
+      return;
+    }
   }
 
   // modal elements
@@ -68,7 +71,7 @@ const showConfirmModal = async ({ msg, email, onConfirmClick }: ShowConfirmModal
   // set inner content
   modalTitle.innerText = 'Confirm Action';
   modalMessage.innerHTML = `${msg} <br /> <strong>${email}</strong>`;
-  confirmAction.innerText = 'Delete';
+  confirmAction.innerText = 'Confirm';
   cancelAction.innerText = 'Cancel';
 
   // set checkbox type & label
@@ -109,6 +112,11 @@ const showConfirmModal = async ({ msg, email, onConfirmClick }: ShowConfirmModal
   buttonContainer.append(cancelAction, confirmAction);
 
   modalCard.append(modalTitle, modalMessage, checkboxWrapper, buttonContainer);
+
+  if (isBulkDelete) {
+    // if bulk delete action, then no checkbox option to update user preference for showing the modal
+    modalCard.removeChild(checkboxWrapper);
+  }
 
   modalContainer.append(backdrop, modalCard);
 

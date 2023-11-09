@@ -18,19 +18,16 @@ type Props = {
 
 const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
   //
-  const [isModalOpen, setIsModalOpen] = useState(true);
-  const [isAuthed, setIsAuthed] = useState(false);
-  const [activeTab, setActiveTab] = useState<Tabs>('Advance Search');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tabs>('General');
+
+  //TODO: - gmail api limit exceeded
 
   useEffect(() => {
     if (isAppEnabled && !isTokenValid) {
       setIsModalOpen(true);
     }
   }, [isAppEnabled, isTokenValid]);
-
-  useEffect(() => {
-    setIsAuthed(isTokenValid);
-  }, [isTokenValid]);
 
   const handleOpenSettings = () => {
     console.log('🚀 ~ file: App.tsx:14 ~ handleOpenSettings ~ handleOpenSettings: 🔥');
@@ -83,16 +80,15 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
               <Tabs tabs={[...tabs]} activeTab={activeTab} setActiveTab={setActiveTab}>
                 {renderActiveTab(activeTab)}
               </Tabs>
-            ) : (
+            ) : isAppEnabled && !isTokenValid ? (
               // {/* auth card */}
               <AuthCard
                 isAppEnabled={isAppEnabled}
                 onClose={() => {
                   setIsModalOpen(false);
                 }}
-                onAuthSuccess={() => setIsAuthed(true)}
               />
-            )}
+            ) : null}
           </div>
         </div>
       ) : null}

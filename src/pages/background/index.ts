@@ -27,8 +27,7 @@ reloadOnUpdate('pages/content/style.scss');
 
 logger.info('🏁 background script loaded');
 
-// TODO: handle token expire (if the user is logged in for more than 1 hour without closing or refreshing the tab)
-
+// TODO: fix: sometimes the token is empty
 // background service global variable
 let token = '';
 
@@ -88,6 +87,8 @@ const checkFreshInboxFilters = async () => {
   }
 };
 
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
 // extension install event listener
 chrome.runtime.onInstalled.addListener(({ reason }) => {
   (async () => {
@@ -105,7 +106,7 @@ chrome.runtime.onMessage.addListener(
     switch (request.event) {
       // check for user token
       case IMessageEvent.CHECK_AUTH_TOKEN: {
-        const res = await getAuthToken(request.userEmail, request.clientId);
+        const res = await getAuthToken(request.userEmail, googleClientId);
 
         console.log('🚀 ~ file: index.ts:110 ~ res:', res);
 
@@ -119,7 +120,7 @@ chrome.runtime.onMessage.addListener(
 
       // launch google auth
       case IMessageEvent.LAUNCH_AUTH_FLOW: {
-        const res = await launchGoogleAuthFlow(request.userEmail, request.clientId);
+        const res = await launchGoogleAuthFlow(request.userEmail, googleClientId);
 
         if (res) {
           token = res;

@@ -14,6 +14,7 @@ import { onURLChange } from '../utils/onURLChange';
 import { asyncHandler } from '../utils/asyncHandler';
 import { getSyncStorageByKey } from '../utils/getStorageByKey';
 import { showLoadingSnackbar, showSnackbar } from '../view/elements/snackbar';
+import { logger } from '../utils/logger';
 
 // react root
 const root = document.createElement('div');
@@ -66,6 +67,15 @@ const getTopMostTableContainer = () => {
 const reEmbedAssistantBtnOnContainerClick = () => {
   const emailsContainer = getTopMostTableContainer();
 
+  console.log(
+    '🚀 ~ file: index.tsx:69 ~ reEmbedAssistantBtnOnContainerClick ~ emailsContainer:',
+    emailsContainer
+  );
+
+  if (!emailsContainer) {
+    logger.info('Email Container not found', 'content/app/index.tsx:76');
+  }
+
   const handleContainerClick = async () => {
     await wait(750);
 
@@ -105,12 +115,8 @@ refreshOnUpdate('pages/content');
 
   freshInboxGlobalVariables.isAppEnabled = isAppEnabled;
 
-  // get client id from evn variables
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
   // is user Authed or not? (handle multiple user) send email id from the content script
   const isTokenValid = await chrome.runtime.sendMessage<IMessageBody>({
-    clientId,
     event: IMessageEvent.CHECK_AUTH_TOKEN,
     userEmail: freshInboxGlobalVariables.userEmail,
   });
@@ -124,8 +130,6 @@ refreshOnUpdate('pages/content');
 
     // watch url change:  re-embed assistant button on url changes (if url supported)
     onURLChange(async () => {
-      console.log('🚀 ~ file: index.ts:122 ~ onURLChange ~ onURLChange:');
-
       await embedAssistantBtn(true);
     });
 

@@ -1,5 +1,5 @@
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
-import type { GetMsgAPIResponseSuccess, SearchFormData } from '@src/pages/background/types/background.types';
+import type { GetMsgAPIResponse, SearchFormData } from '@src/pages/background/types/background.types';
 import { logger } from '@src/pages/background/utils/logger';
 
 export const advanceSearch = async (token: string, formData: SearchFormData) => {
@@ -30,6 +30,7 @@ export const advanceSearch = async (token: string, formData: SearchFormData) => 
     ${beforeDate ? `before:${beforeDate}` : ''} 
     ${isRead ? `is:read` : ''} 
     ${isUnRead ? `is:unread` : ''}
+    in:anywhere -in:trash
     `.replace(/\n/g, ' ');
 
   console.log('🚀 ~ file: advanceSearch.ts:24 ~ advanceSearch ~ searchQuery:', searchQuery);
@@ -51,15 +52,17 @@ export const advanceSearch = async (token: string, formData: SearchFormData) => 
       );
 
       // parse response
-      const parsedRes: GetMsgAPIResponseSuccess = await res.json();
+      const parsedRes: GetMsgAPIResponse = await res.json();
 
       console.log('🚀 ~ file: advanceSearch.ts:44 ~ parsedRes:', parsedRes);
 
-      if (!parsedRes.messages) {
-        logger.info(
-          '🙌 No newsletter emails found.',
-          'background/services/api/gmail/handler/getNewsletterEmailsOnPage.ts:44 ~ getNewsletterEmailsOnPage()'
-        );
+      if (parsedRes.error) {
+        logger.error({
+          error: parsedRes.error,
+          msg: parsedRes.error.message || '🙌 No newsletter emails found.',
+          fileTrace:
+            'background/services/api/gmail/handler/getNewsletterEmailsOnPage.ts:44 ~ getNewsletterEmailsOnPage()',
+        });
         return [];
       }
 

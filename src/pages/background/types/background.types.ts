@@ -1,3 +1,4 @@
+import { error } from 'console';
 export enum IMessageEvent {
   UNSUBSCRIBE = 'unsubscribe',
   DELETE_ALL_MAILS = 'deleteAllMails',
@@ -53,7 +54,6 @@ export interface DataOnPage {
 
 export interface IMessageBody {
   event: IMessageEvent;
-  clientId?: string;
   emails?: string[];
   userEmail?: string;
   name?: string;
@@ -65,10 +65,14 @@ export interface IMessageBody {
   advanceSearch?: SearchFormData;
 }
 
-export type GetMsgAPIResponseSuccess = {
+export type GetMsgAPIResponse = {
   messages: GmailMessage[];
   nextPageToken?: string;
   resultSizeEstimate: number;
+  error?: {
+    code: number;
+    message: string;
+  };
 };
 
 export type GmailFilter = {

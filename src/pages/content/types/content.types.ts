@@ -41,7 +41,6 @@ export interface DataOnPage {
 
 export interface IMessageBody {
   event: IMessageEvent;
-  clientId?: string;
   emails?: string[];
   userEmail?: string;
   // to remove the email from the whitelisted emails after unsubscribing (if true)

@@ -1,5 +1,5 @@
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
-import type { DataOnPage, GetMsgAPIResponseSuccess } from '@src/pages/background/types/background.types';
+import type { DataOnPage, GetMsgAPIResponse } from '@src/pages/background/types/background.types';
 import { getWhitelistedEmails } from './getWhitelistedEmails';
 import { logger } from '@src/pages/background/utils/logger';
 
@@ -36,7 +36,7 @@ export const getNewsletterEmailsOnPage = async ({
     );
 
     // parse response
-    const parsedRes: GetMsgAPIResponseSuccess = await res.json();
+    const parsedRes: GetMsgAPIResponse = await res.json();
 
     if (!parsedRes.messages) {
       logger.info(

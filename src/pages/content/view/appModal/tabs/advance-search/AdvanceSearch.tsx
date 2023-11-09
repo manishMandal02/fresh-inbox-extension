@@ -8,6 +8,7 @@ import {
 } from '@src/pages/content/types/content.types';
 import { logger } from '@src/pages/content/utils/logger';
 import InfoIcon from '../../../elements/InfoIcon';
+import { showConfirmModal } from '../../../elements/confirmModal';
 
 const AdvanceSearch = () => {
   const [errorMsg, setErrorMsg] = useState('');
@@ -56,14 +57,21 @@ const AdvanceSearch = () => {
 
   // handle bulk delete all matched emails
   const handleBulkDelete = async () => {
-    setIsDeleting(true);
-    // send bulk delete event to background script
-    const res = await chrome.runtime.sendMessage<IMessageBody, boolean>({
-      event: IMessageEvent.BULK_DELETE,
-      emails: searchResEmailIds,
-    });
+    showConfirmModal({
+      msg: `Are you sure you want to delete ${searchResEmailIds.length} emails? <br /> This action will move them to the trash.`,
+      email: '',
+      isBulkDelete: true,
+      onConfirmClick: async () => {
+        setIsDeleting(true);
+        // send bulk delete event to background script
+        const res = await chrome.runtime.sendMessage<IMessageBody, boolean>({
+          event: IMessageEvent.BULK_DELETE,
+          emails: searchResEmailIds,
+        });
 
-    setIsDeleting(false);
+        setIsDeleting(false);
+      },
+    });
   };
 
   return (
@@ -80,7 +88,7 @@ const AdvanceSearch = () => {
         <SearchForm onSubmit={handleSearch} isSubmitting={isLoadingSearchRes} />
 
         {/* search result container */}
-        <div className='w-full mt-8 flex flex-col justify-center items-start '>
+        <div className='w-full mt-10 flex flex-col justify-center items-start '>
           {/*  */}
           {searchResEmailIds ? (
             // search result count
@@ -91,7 +99,7 @@ const AdvanceSearch = () => {
               </span>
 
               <button
-                className={`bg-rose-500 mx-auto mt-4 w-36 px-6 py-2 -mr-5
+                className={`bg-rose-500 ml-1 mt-4 w-36 px-6 py-2
         font-medium rounded-md border-none text-slate-50 text-sm cursor-pointer  transition-all duration-200 hover:bg-opacity-90`}
                 onClick={handleBulkDelete}
               >
@@ -101,7 +109,7 @@ const AdvanceSearch = () => {
               {/* show alert info bulk delete is in process */}
               {isDeleting ? (
                 <span className='text-xs text-slate-500 font-extralight text-center mt-1.5 flex items-center'>
-                  <InfoIcon /> This may take few seconds, do not close or refresh the page.
+                  <InfoIcon /> This may take a few seconds, do not close or refresh the page.
                 </span>
               ) : null}
             </div>

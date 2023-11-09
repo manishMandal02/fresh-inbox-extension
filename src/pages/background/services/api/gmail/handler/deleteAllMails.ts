@@ -1,6 +1,6 @@
 import { logger } from './../../../../utils/logger';
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
-import type { APIHandleParams, GetMsgAPIResponseSuccess } from '@src/pages/background/types/background.types';
+import type { APIHandleParams, GetMsgAPIResponse } from '@src/pages/background/types/background.types';
 import { batchDeleteMails } from '../helper/batchDelete';
 
 // delete all mails
@@ -20,7 +20,7 @@ export const deleteAllMails = async ({ token, emails }: APIHandleParams) => {
       .map(email => `${email}`)
       .join(' OR ')}) &maxResults=${API_MAX_RESULT}${nextPageToken ? `&pageToken=${nextPageToken}` : ''}`;
 
-    let parsedRes: GetMsgAPIResponseSuccess | null = null;
+    let parsedRes: GetMsgAPIResponse | null = null;
 
     //* do... while() loop to  handle pagination delete if messages/gmail exceeds API max limit (500)
     //* keep fetching & deleting emails until nextPageToken is null

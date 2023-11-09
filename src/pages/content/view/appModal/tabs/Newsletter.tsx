@@ -58,8 +58,6 @@ const getNewsletterEmailsData = async (shouldRefreshData = false) => {
   }
 };
 
-// TODO: take out the common fn/cmp to reuse for other tabs
-
 export const Newsletter = () => {
   // newsletter emails
   const [newsletterEmails, setNewsletterEmails] = useState<NewsletterData[]>([]);
