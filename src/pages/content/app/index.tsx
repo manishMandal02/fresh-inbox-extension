@@ -67,13 +67,9 @@ const getTopMostTableContainer = () => {
 const reEmbedAssistantBtnOnContainerClick = () => {
   const emailsContainer = getTopMostTableContainer();
 
-  console.log(
-    '🚀 ~ file: index.tsx:69 ~ reEmbedAssistantBtnOnContainerClick ~ emailsContainer:',
-    emailsContainer
-  );
-
   if (!emailsContainer) {
     logger.info('Email Container not found', 'content/app/index.tsx:76');
+    return;
   }
 
   const handleContainerClick = async () => {
