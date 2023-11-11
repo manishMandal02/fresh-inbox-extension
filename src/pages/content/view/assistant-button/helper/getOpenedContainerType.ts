@@ -6,7 +6,7 @@ export const getOpenedContainerType = (): 'inbox' | 'singleEmail' => {
   // check if it has a print mail button
   const printEmailBtn = document.querySelector('button[aria-label="Print all"]');
 
-  if (printEmailBtn) {
+  if (printEmailBtn && printEmailBtn.checkVisibility()) {
     return 'singleEmail';
   }
 
@@ -14,7 +14,7 @@ export const getOpenedContainerType = (): 'inbox' | 'singleEmail' => {
   // check for row with sender email
   const emailRow = document.querySelector(MAIL_NODES_SELECTOR);
 
-  if (emailRow) {
+  if (emailRow && emailRow.checkVisibility()) {
     return 'inbox';
   }
 

@@ -204,8 +204,22 @@ export const embedSingleAssistantBtn = async () => {
 
 // embed assistant button with retry logic
 export const embedAssistantBtn = async (isReEmbedding = false) => {
-  // check for container type & embed assistant button accordingly
-  const containerType = getOpenedContainerType();
+  // check for container type & embed assistant button accordingly (single or inbox)
+  let containerType = null;
+
+  await retryAtIntervals<boolean>({
+    retries: 3,
+    interval: 2000,
+    callback: async () => {
+      const currentContainer = await getOpenedContainerType();
+      if (currentContainer) {
+        containerType = currentContainer;
+        return true;
+      }
+    },
+  });
+
+  console.log('🚀 ~ file: index.ts:210 ~ embedAssistantBtn ~ containerType:', containerType);
 
   if (!containerType) {
     // not a supported container type
