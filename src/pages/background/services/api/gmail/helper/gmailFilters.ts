@@ -66,6 +66,8 @@ export const createFilter = async ({
   // format the emails into a single query string for filter criteria
   const criteriaQuery = `from:(${emailsList.map(email => `${email}`).join(' OR ')})`;
 
+  console.log('🚀 ~ file: gmailFilters.ts:70 ~ criteriaQuery:', criteriaQuery);
+
   //* explanation of labels/action
   // addLabelIds adds label to the email present in the filter (here TRASH label will be added to the unsubscribed email)
 

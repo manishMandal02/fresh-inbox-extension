@@ -29,13 +29,14 @@ const handleMouseOver = async ({
 }: HandleMouseOverParams) => {
   ev?.stopPropagation();
 
+  // set global variable
+  freshInboxGlobalVariables.isMouseOverFreshInboxAssistantBtn = true;
+
   // if hover card is already shown, do nothing
   if (assistantBtnContainer.contains(document.getElementById('freshInbox-hoverCard'))) return;
 
   freshInboxGlobalVariables.assistantBtnContainerId = randomId();
   assistantBtnContainer.id = freshInboxGlobalVariables.assistantBtnContainerId;
-  //
-  freshInboxGlobalVariables.isMouseOverFreshInboxAssistantBtn = true;
 
   await wait(200);
 
@@ -165,10 +166,16 @@ const embedAssistantBtnLogic = async (isReEmbedding = false): Promise<boolean> =
     if (!newsletterEmails.includes(email)) {
       continue;
     }
+    console.log('🚀 ~ file: index.ts:165 ~ embedAssistantBtnLogic ~ name:', name);
 
     // embed assistant  button
     // container to add unsubscribe button
     const assistantBtnContainer = emailNode.closest('div');
+
+    console.log(
+      '🚀 ~ file: index.ts:173 ~ embedAssistantBtnLogic ~ assistantBtnContainer:',
+      assistantBtnContainer
+    );
 
     initializeAssistantBtn({ name, email, assistantBtnContainer });
   }
@@ -204,9 +211,11 @@ export const embedSingleAssistantBtn = async () => {
 
 // embed assistant button with retry logic
 export const embedAssistantBtn = async (isReEmbedding = false) => {
-  // check for container type & embed assistant button accordingly (single or inbox)
+  //
   let containerType = null;
 
+  // check for container type & embed assistant button accordingly (single or inbox)
+  // with a retry mechanism to try if container type not found the first time
   await retryAtIntervals<boolean>({
     retries: 3,
     interval: 2000,
@@ -232,6 +241,17 @@ export const embedAssistantBtn = async (isReEmbedding = false) => {
   if (isSupportedURL() && containerType === 'inbox') {
     // re-embed the assistant button
     // this is a supported url
+
+    // check if the assistant button is already embedded
+    const assistantBtn = document.getElementsByClassName('freshInbox-assistantBtn');
+
+    // check if assistant buttons is already present
+    if (assistantBtn && assistantBtn.length > 0) {
+      // if present, remove all buttons
+      for (const btn of assistantBtn) {
+        btn.remove();
+      }
+    }
 
     // retry to check if the emails are found on page or not
     // if not, then retry it for 3 times with 2 seconds interval

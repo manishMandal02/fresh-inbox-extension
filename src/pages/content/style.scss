@@ -23,8 +23,10 @@ $text-mid-gray: #505050;
   padding: 5px 10px;
   border-radius: 6px;
   left: 50%;
+  top: 0;
   transform: translate(-50%, -130%);
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 400;
   z-index: 100;
 }
 
@@ -195,7 +197,7 @@ $text-mid-gray: #505050;
       cursor: pointer;
       margin-top: 8px;
       transition: all ease-in-out;
-      animation-duration: 200ms;
+      animation-duration: 300ms;
       &:hover {
         box-shadow: #0000001a 0px 1px 3px 0px, #0000000f 0px 1px 2px 0px;
       }
@@ -204,7 +206,8 @@ $text-mid-gray: #505050;
 }
 
 #freshInbox-hoverCard.singleEmailHoverCard {
-  transform: translate(-44%, 0%);
+  transform: translate(-70%, 0%);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 .freshInbox-snackbar.show {
@@ -282,7 +285,7 @@ $text-mid-gray: #505050;
     flex-direction: column;
     box-shadow: #64646f33 0px 7px 29px 0px;
     background-color: #f3f1f1;
-    height: 22vh;
+    height: 21.5vh;
     width: calc(fit-content + 250px);
     position: absolute;
     padding: 18px 36px 18px 24px;

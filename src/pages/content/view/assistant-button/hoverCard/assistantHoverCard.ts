@@ -292,6 +292,10 @@ export const hideHoverCard = ({ parentElId, forceClose }: HideHoverCardParams) =
   )
     return;
 
+  console.log(
+    '🚀 ~ file: assistantHoverCard.ts:293 ~ hideHoverCard ~ freshInboxGlobalVariables.isMouseOverFreshInboxAssistantBtn:',
+    freshInboxGlobalVariables.isMouseOverFreshInboxAssistantBtn
+  );
   // get hover card el from id
   const hoverCard = document.getElementById(HOVER_CARD_ID);
 

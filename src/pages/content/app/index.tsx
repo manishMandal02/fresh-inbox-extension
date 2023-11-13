@@ -73,26 +73,18 @@ const reEmbedAssistantBtnOnContainerClick = () => {
   }
 
   const handleContainerClick = async () => {
-    await wait(750);
-
-    const assistantBtn = document.getElementsByClassName('freshInbox-assistantBtn');
-
-    // check if assistant button is already present
-    // if present, do nothing
-    if (assistantBtn && assistantBtn.length > 0 && !![...assistantBtn].find(btn => btn.checkVisibility()))
-      return;
+    await wait(1000);
 
     // assistant button not found
-
-    // embed assistant
+    // re-embed assistant button
     embedAssistantBtn(true);
   };
 
-  // list to on click
+  // // list to on click
   emailsContainer.addEventListener('click', asyncHandler(handleContainerClick));
 
   // list to mouse up
-  emailsContainer.addEventListener('mouseup', asyncHandler(handleContainerClick));
+  // emailsContainer.addEventListener('mouseup', asyncHandler(handleContainerClick));
 };
 
 refreshOnUpdate('pages/content');
