@@ -61,6 +61,8 @@ export const getNewsletterEmailsOnPage = async ({
     // remove whitelisted emails from newsletter emails
     const whitelistedEmails = await getWhitelistedEmails(token);
 
+    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:64 ~ whitelistedEmails:', whitelistedEmails);
+
     if (whitelistedEmails.length > 0) {
       newsletterEmails = newsletterEmails.filter(email => !whitelistedEmails.includes(email));
     }

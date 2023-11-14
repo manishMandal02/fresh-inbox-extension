@@ -7,6 +7,8 @@ import Unsubscribed from './tabs/Unsubscribed';
 import Whitelisted from './tabs/Whitelisted';
 import AdvanceSearch from './tabs/advance-search';
 
+import FreshInboxIcon from './../../assets/app-icon-128.png';
+
 const tabs = ['General', 'Newsletter', 'Unsubscribed', 'Whitelisted', 'Advance Search'] as const;
 
 export type Tabs = (typeof tabs)[number];
@@ -58,12 +60,13 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
   return (
     <>
       <button
-        className={`text-slate-50  py-1.5 px-2 rounded-md text-sm cursor-pointer  
-        ${isAppEnabled ? 'bg-brand-primary' : 'bg-slate-500'}
+        className={` bg-transparent py-1.5 px-2 rounded text-sm  flex items-center justify-center cursor-pointer appearance-none outline-none border border-slate-50  border-opacity-20 hover:border-opacity-50 hover:border-slate-600 focus:border-opacity-50 
+        ${isAppEnabled ? ' text-white' : 'text-slate-500 grayscale'}
         `}
         onClick={handleOpenSettings}
       >
-        ✉️ Fresh Inbox
+        <img src={FreshInboxIcon} alt='icon' className='w-5 h-5 mr-1.5 ' />
+        Fresh Inbox
       </button>
       {/* Modal */}
       {isModalOpen ? (

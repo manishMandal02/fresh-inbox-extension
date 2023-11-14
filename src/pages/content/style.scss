@@ -98,12 +98,21 @@ $text-mid-gray: #505050;
 
 // main button shown beside each email
 .freshInbox-assistantBtn {
-  border-radius: 50%;
-  background-color: #208dd0;
-  height: 16px;
-  width: 16px;
+  border-radius: 4px;
+  // padding: 1px 4px;
+  background-color: #f3f4f7;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 18px;
+  width: 22px;
   cursor: pointer;
   margin-left: auto;
+  transition: all;
+  animation-duration: 500ms;
+  &:hover {
+    opacity: 0.9;
+  }
 }
 
 .freshInbox-assistantBtn.singleEmailAssistantBtn {

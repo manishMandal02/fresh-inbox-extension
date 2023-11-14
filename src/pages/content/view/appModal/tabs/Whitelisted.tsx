@@ -127,7 +127,7 @@ const Whitelisted = () => {
       <>
         {/* emails table */}
         <div className='w-full  h-[90%] overflow-x-hidden overflow-y-auto z-20'>
-        {/* table container */}
+          {/* table container */}
           <table className='w-full h-full bg-slate-50 relative  z-30'>
             {/* table header */}
             <tr className='w-full sticky top-0 left-0 text-sm font-medium text-slate-600 bg-slate-200 flex items-center justify-between px-4 py-1.5 z-20'>
@@ -150,6 +150,12 @@ const Whitelisted = () => {
               <td className='w-[60%] ml-1'>Email</td>
               <td className='w-[30%] text-center'>Action </td>
             </tr>
+
+            {/* if only 1 data row then add extra margin on top before the fist row for the tooltip to be readable */}
+            {whitelistedEmails.length === 1 ? (
+              <tr className='w-full text-sm text-slate-600  flex items-center bg-slate-100 justify-center px-4 py-1 mt-3.5'></tr>
+            ) : null}
+            {/* table rows */}
             {whitelistedEmails.map((email, idx) => (
               <tr
                 key={email}
@@ -191,7 +197,8 @@ const Whitelisted = () => {
             {selectedEmails.length < 1 ? (
               // no email selected
               <span className='text-xs text-slate-600 font-extralight'>
-                Select one or more emails to reSubscribe them
+                Select multiple emails to perform bulk actions or click on action button for individual email
+                actions
               </span>
             ) : (
               <>

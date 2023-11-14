@@ -35,7 +35,6 @@ export const logger = {
     if (error && error.code && error.code === 401) {
       //TODO - invalid credentials
       //
-      //  const response = await chrome.tabs.sendMessage(tab.id, message);
     }
 
     if (error && error.code && error.code === 403) {

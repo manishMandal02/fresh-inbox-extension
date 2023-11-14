@@ -11,6 +11,8 @@ import { isSupportedURL } from './helper/isSupportedURL';
 import { getOpenedContainerType } from './helper/getOpenedContainerType';
 import { getAllMailsOnPage } from './helper/getMailsOnPage';
 
+import FreshInboxIcon from './../../assets/app-icon-128.png';
+
 type HandleMouseOverParams = {
   ev?: MouseEvent;
   assistantBtnContainer: Element;
@@ -81,6 +83,10 @@ const initializeAssistantBtn = ({
     assistantBtn.classList.add('singleEmailAssistantBtn');
   }
 
+  // add icon to assistant button
+
+  assistantBtn.style.backgroundImage = `url(${FreshInboxIcon})`;
+
   // append the button to container
   assistantBtnContainer.appendChild(assistantBtn);
 
@@ -103,20 +109,7 @@ const initializeAssistantBtn = ({
 };
 
 // fresh inbox assistant button
-const embedAssistantBtnLogic = async (isReEmbedding = false): Promise<boolean> => {
-  // remove the previous assistant buttons if the url changed
-  if (isReEmbedding) {
-    const assistantsButtons = document.getElementsByClassName('freshInbox-assistantBtn');
-
-    // while loop to check if the buttons are removed or not
-    // as the for loop below didn't remove all the buttons in one go
-    while (assistantsButtons.length > 0) {
-      // remove all the buttons
-      for (const btn of assistantsButtons) {
-        btn.remove();
-      }
-    }
-  }
+const embedAssistantBtnLogic = async (): Promise<boolean> => {
   // get all the mails with ids on the page
   const { emails, dateRange, allMailNodes } = getAllMailsOnPage();
 
@@ -210,7 +203,7 @@ export const embedSingleAssistantBtn = async () => {
 };
 
 // embed assistant button with retry logic
-export const embedAssistantBtn = async (isReEmbedding = false) => {
+export const embedAssistantBtn = async () => {
   //
   let containerType = null;
 
@@ -258,7 +251,7 @@ export const embedAssistantBtn = async (isReEmbedding = false) => {
     await retryAtIntervals<boolean>({
       retries: 3,
       interval: 2000,
-      callback: async () => await embedAssistantBtnLogic(isReEmbedding),
+      callback: async () => await embedAssistantBtnLogic(),
     });
 
     return;

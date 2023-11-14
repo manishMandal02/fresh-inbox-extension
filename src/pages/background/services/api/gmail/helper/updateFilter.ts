@@ -28,6 +28,8 @@ export const addEmailToFilter = async ({ token, emails, filterId, filterAction }
   // add email to existing filter emails
   const updatedFilterEmails = new Set([...filter.emails, ...emails]);
 
+  console.log('🚀 ~ file: updateFilter.ts:31 ~ addEmailToFilter ~ updatedFilterEmails:', updatedFilterEmails);
+
   // delete existing filter
   await deleteFilter(token, filterId);
 
@@ -37,7 +39,7 @@ export const addEmailToFilter = async ({ token, emails, filterId, filterAction }
   // save new filter id to sync storage
   await chrome.storage.sync.set({ [storageKey.sync]: newFilterId });
   // save updated emails to local storage
-  await chrome.storage.local.set({ [storageKey.local]: updatedFilterEmails });
+  await chrome.storage.local.set({ [storageKey.local]: [...updatedFilterEmails] });
 };
 
 // remove email from filter

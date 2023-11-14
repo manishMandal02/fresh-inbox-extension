@@ -7,19 +7,19 @@ const manifest: chrome.runtime.ManifestV3 = {
   manifest_version: 3,
   name: 'Fresh Inbox',
   version: packageJson.version,
-  description: 'Fresh Inbox: Clean. Simple. Private.',
+  description: 'Clean Inbox, Total Privacy: Fresh Inbox Delivers Both.',
   options_page: 'src/pages/options/index.html',
   background: {
     service_worker: 'src/pages/background/index.js',
     type: 'module',
   },
-  permissions: ['activeTab', 'tabs', 'identity', 'storage'],
+  permissions: ['activeTab', 'identity', 'storage'],
   action: {
     default_popup: 'src/pages/popup/index.html',
-    default_icon: 'icon-128.jpg',
+    default_icon: 'icon-128.png',
   },
   icons: {
-    '128': 'icon-128.jpg',
+    '128': 'icon-128.png',
   },
   content_scripts: [
     {

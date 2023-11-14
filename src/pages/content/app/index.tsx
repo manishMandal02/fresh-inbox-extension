@@ -5,7 +5,6 @@ import AppModal from '../view/appModal/AppModal';
 
 import '../style.scss';
 
-import { embedAssistantBtn } from '../view/assistant-button';
 import { IMessageBody, IMessageEvent } from '../types/content.types';
 
 import wait from '../utils/wait';
@@ -15,6 +14,7 @@ import { asyncHandler } from '../utils/asyncHandler';
 import { getSyncStorageByKey } from '../utils/getStorageByKey';
 import { showLoadingSnackbar, showSnackbar } from '../view/elements/snackbar';
 import { logger } from '../utils/logger';
+import { embedAssistantBtn } from '../view/assistant-button';
 
 // react root
 const root = document.createElement('div');
@@ -77,7 +77,7 @@ const reEmbedAssistantBtnOnContainerClick = () => {
 
     // assistant button not found
     // re-embed assistant button
-    embedAssistantBtn(true);
+    embedAssistantBtn();
   };
 
   // // list to on click
@@ -118,7 +118,7 @@ refreshOnUpdate('pages/content');
 
     // watch url change:  re-embed assistant button on url changes (if url supported)
     onURLChange(async () => {
-      await embedAssistantBtn(true);
+      await embedAssistantBtn();
     });
 
     // watch for container/page change:

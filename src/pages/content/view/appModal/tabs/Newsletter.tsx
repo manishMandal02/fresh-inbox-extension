@@ -246,6 +246,12 @@ export const Newsletter = () => {
               <td className='w-[30%] ml-1'>Email</td>
               <td className='w-[30%] text-center pr-4'>Action </td>
             </tr>
+            {/* if only 1 data row then add extra margin on top before the fist row for the tooltip to be readable */}
+            {newsletterEmails.length === 1 ? (
+              <tr className='w-full text-sm text-slate-600  flex items-center bg-slate-100 justify-center px-4 py-1 mt-3.5'></tr>
+            ) : null}
+
+            {/* table rows */}
             {newsletterEmails.map(({ email, name }, idx) => (
               <tr
                 key={email + name}
