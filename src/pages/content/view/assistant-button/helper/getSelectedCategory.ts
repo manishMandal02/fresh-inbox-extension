@@ -5,6 +5,7 @@ export const getSelectedCategory = () => {
     'tr[role="tablist"]>td>div[role="tab"][aria-selected="true"]'
   );
   // if not found return empty string
+  //@ts-ignore
   if (!activeCategoryNode?.checkVisibility()) return '';
   // get the category label
 };

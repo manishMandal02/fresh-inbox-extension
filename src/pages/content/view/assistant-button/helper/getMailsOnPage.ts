@@ -24,6 +24,7 @@ export const getAllMailsOnPage = (): GetAllMailsOnPageReturn => {
   }
 
   // select only the nodes that are currently visible on the page
+  //@ts-ignore
   allMailNodes = allMailNodes.filter(node => node.checkVisibility());
 
   // date range
