@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Tabs } from '../elements/Tabs';
 import { General } from './tabs/General';
 import { Newsletter } from './tabs/Newsletter';
@@ -32,7 +32,6 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
   }, [isAppEnabled, isTokenValid]);
 
   const handleOpenSettings = () => {
-    console.log('🚀 ~ file: App.tsx:14 ~ handleOpenSettings ~ handleOpenSettings: 🔥');
     setIsModalOpen(true);
   };
 
@@ -40,8 +39,8 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
     setIsModalOpen(false);
   };
 
-  const renderActiveTab = (activeTab: Tabs) => {
-    switch (activeTab) {
+  const renderActiveTab = (currentTab: Tabs) => {
+    switch (currentTab) {
       case 'General':
         return <General />;
       case 'Newsletter':
@@ -60,13 +59,13 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
   return (
     <>
       <button
-        className={` bg-transparent py-1.5 px-2 rounded text-sm  flex items-center justify-center cursor-pointer appearance-none outline-none border border-slate-50  border-opacity-20 hover:border-opacity-50 hover:border-slate-600 focus:border-opacity-50 
+        className={` bg-transparent py-1.5 px-2 rounded text-sm  flex items-center justify-center cursor-pointer appearance-none outline-none border
+         border-slate-50  border-opacity-20 hover:border-opacity-50 hover:border-slate-600 focus:border-opacity-50 
         ${isAppEnabled ? ' text-white' : 'text-slate-500 grayscale'}
         `}
         onClick={handleOpenSettings}
       >
-        <img src={FreshInboxIcon} alt='icon' className='w-5 h-5 mr-1.5 ' />
-        Fresh Inbox
+        <img src={FreshInboxIcon} alt='icon' className='w-5 h-5 mr-1.5 ' /> Fresh Inbox
       </button>
       {/* Modal */}
       {isModalOpen ? (

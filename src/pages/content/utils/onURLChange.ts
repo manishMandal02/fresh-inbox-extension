@@ -1,11 +1,11 @@
-type Callback = () => Promise<void>;
+import type { AsyncCallback } from '../types/content.types';
 
 // watch for url change
-export const onURLChange = (callback: Callback) => {
+export const onURLChange = (callback: AsyncCallback) => {
   // location/url change event listener
-  window.addEventListener('hashchange', () => {
+  window.addEventListener('hashchange', async () => {
     // call the callback fn, on url change
-    callback();
+    await callback();
   });
 
   // handle location/url change

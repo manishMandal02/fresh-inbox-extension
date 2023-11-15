@@ -108,10 +108,12 @@ const initializeAssistantBtn = ({
   assistantBtn.addEventListener('mouseout', handleMouseOut);
 };
 
-// fresh inbox assistant button
+// render assistant button render
 const embedAssistantBtnLogic = async (): Promise<boolean> => {
   // get all the mails with ids on the page
   const { emails, dateRange, allMailNodes } = getAllMailsOnPage();
+
+  // TODO: fix: multiple assistant buttons render
 
   if (emails.length < 1) return false;
 
@@ -159,17 +161,15 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
     if (!newsletterEmails.includes(email)) {
       continue;
     }
-    console.log('🚀 ~ file: index.ts:165 ~ embedAssistantBtnLogic ~ name:', name);
 
     // embed assistant  button
     // container to add unsubscribe button
     const assistantBtnContainer = emailNode.closest('div');
 
-    console.log(
-      '🚀 ~ file: index.ts:173 ~ embedAssistantBtnLogic ~ assistantBtnContainer:',
-      assistantBtnContainer
-    );
+    // check if assistant button is already embedded, if yes do nothing
+    if (assistantBtnContainer.querySelector('span.freshInbox-assistantBtn')) continue;
 
+    // embed assistant button
     initializeAssistantBtn({ name, email, assistantBtnContainer });
   }
   return true;
@@ -234,17 +234,6 @@ export const embedAssistantBtn = async () => {
   if (isSupportedURL() && containerType === 'inbox') {
     // re-embed the assistant button
     // this is a supported url
-
-    // check if the assistant button is already embedded
-    const assistantBtn = document.getElementsByClassName('freshInbox-assistantBtn');
-
-    // check if assistant buttons is already present
-    if (assistantBtn && assistantBtn.length > 0) {
-      // if present, remove all buttons
-      for (const btn of assistantBtn) {
-        btn.remove();
-      }
-    }
 
     // retry to check if the emails are found on page or not
     // if not, then retry it for 3 times with 2 seconds interval

@@ -31,6 +31,8 @@ logger.info('🏁 background script loaded');
 // background service global variable
 let token = '';
 
+console.log('🚀 ~ file: index.ts:34 ~ token:', token);
+
 const initializeStorage = async () => {
   try {
     const promises = [
@@ -141,6 +143,7 @@ chrome.runtime.onMessage.addListener(
         // check app (fresh inbox) custom filters
         return await checkFreshInboxFilters();
       }
+
       // unsubscribe email
       case IMessageEvent.UNSUBSCRIBE: {
         return await unsubscribeEmail({

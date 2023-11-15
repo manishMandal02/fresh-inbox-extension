@@ -72,3 +72,6 @@ export interface SearchFormData {
   afterDate?: string;
   beforeDate?: string;
 }
+
+// async callback
+export type AsyncCallback = () => Promise<void>;

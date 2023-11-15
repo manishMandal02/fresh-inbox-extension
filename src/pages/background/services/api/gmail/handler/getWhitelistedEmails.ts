@@ -1,5 +1,5 @@
 import { FILTER_ACTION } from '@src/pages/background/types/background.types';
-import { FRESH_INBOX_FILTER_EMAIL, storageKeys } from '@src/pages/background/constants/app.constants';
+import { storageKeys } from '@src/pages/background/constants/app.constants';
 import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';
 import { getFilterById } from '../helper/gmailFilters';
 import { getFilterId } from '../helper/getFilterId';
@@ -10,7 +10,7 @@ export const getWhitelistedEmails = async (token: string): Promise<string[]> => 
   try {
     // get whitelisted emails from local.storage
     const whitelistedEmails = await getLocalStorageByKey<string[]>(storageKeys.WHITELISTED_EMAILS);
-    if (whitelistedEmails) {
+    if (whitelistedEmails && whitelistedEmails.length > 0) {
       filterEmails = whitelistedEmails;
     } else {
       // if emails not present in local.storage get it from user's filter (gmail-api)
