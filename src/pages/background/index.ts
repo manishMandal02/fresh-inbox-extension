@@ -27,7 +27,7 @@ reloadOnUpdate('pages/content/style.scss');
 
 logger.info('🏁 background script loaded');
 
-// TODO: fix: sometimes the token is empty
+// TODO: fix: sometimes the token is empty (usually after staying sometime on the tab)
 // background service global variable
 let token = '';
 

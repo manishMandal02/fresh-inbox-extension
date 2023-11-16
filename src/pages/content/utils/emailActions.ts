@@ -204,6 +204,10 @@ interface IEmailActionParams {
 // export handle whitelist action handler
 export const handleWhitelistAction = async ({ emails }: IEmailActionParams): Promise<boolean> => {
   const isSuccess = await handleWhitelistEmail(emails);
+
+  // clear session storage, because
+  // it might confuse users if the assistant buttons are show for whitelisted emails
+  sessionStorage.clear();
   return isSuccess;
 };
 

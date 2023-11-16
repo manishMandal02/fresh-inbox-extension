@@ -1,6 +1,6 @@
 // check if  the gmail web app is loaded fully, (check for logo or some important btn) with retry mechanism
 
-import { retryAtIntervals } from './retryAtIntervals';
+import { retryAtIntervals } from '../../../utils/retryAtIntervals';
 
 const queryEmailId = (): Promise<string | null> => {
   return new Promise((resolve, reject) => {

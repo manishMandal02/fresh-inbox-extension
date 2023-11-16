@@ -8,7 +8,7 @@ import '../style.scss';
 import { AsyncCallback, IMessageBody, IMessageEvent } from '../types/content.types';
 
 import wait from '../utils/wait';
-import { getEmailIdFromPage } from '../utils/getEmailIdFromPage';
+import { getEmailIdFromPage } from '../view/assistant-button/helper/getEmailIdFromPage';
 import { onURLChange } from '../utils/onURLChange';
 import { asyncHandler } from '../utils/asyncHandler';
 import { getSyncStorageByKey } from '../utils/getStorageByKey';

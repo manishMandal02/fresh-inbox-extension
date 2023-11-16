@@ -12,6 +12,7 @@ import { getOpenedContainerType } from './helper/getOpenedContainerType';
 import { getAllMailsOnPage } from './helper/getMailsOnPage';
 
 import FreshInboxIcon from './../../assets/app-icon-128.png';
+import { identifyOnPageNewsletterEmails } from './helper/identifyOnPageNewsletterEmails';
 
 type HandleMouseOverParams = {
   ev?: MouseEvent;
@@ -133,14 +134,11 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
 
   // TODO: save emails on session storage with date as key to avoid re-fetching data on every page load
 
-  const res = await chrome.runtime.sendMessage<IMessageBody>({
-    event: IMessageEvent.GET_NEWSLETTER_EMAILS_ON_PAGE,
-    dataOnPage: {
-      emails,
-      dateRange,
-      category: selectedCategory || null,
-      folder: currentFolder,
-    },
+  const res = await identifyOnPageNewsletterEmails({
+    emails,
+    dateRange,
+    folder: currentFolder,
+    category: selectedCategory || null,
   });
 
   if (res) {
@@ -235,9 +233,8 @@ export const embedAssistantBtn = async () => {
     logger.info('Not supported container type');
     return;
   }
-  // TODO: also support search links
   // check if current url is supported && current tab/page is inbox container
-  // supported url/labels (inbox, starred, all, spam)
+  // supported url/labels (inbox, starred, all, spam, search)
   if (isSupportedURL() && containerType === 'inbox') {
     // re-embed the assistant button
     // this is a supported url
