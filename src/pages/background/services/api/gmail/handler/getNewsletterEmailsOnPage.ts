@@ -23,13 +23,11 @@ export const getNewsletterEmailsOnPage = async ({
     };
     // search query to check if the provided emails are newsletter emails or not
     // filter based on date range, category and folder (so that we get only the emails on the current page not all)
-    const searchQuery = `from:(${emails.map(email => `${email.email}`).join(' OR ')}) "unsubscribe"
+    const searchQuery = `from:(${emails.map(data => data.email).join(' OR ')}) "unsubscribe"
      after:${dateRange.startDate} before:${dateRange.endDate} 
     ${category ? `category:${category}` : ''} 
     ${folder === 'all' || folder === 'search' ? '' : `in:${folder}`}
     `;
-
-    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:32 ~ searchQuery:', searchQuery);
 
     // call gmail api
     const res = await fetch(
@@ -57,13 +55,12 @@ export const getNewsletterEmailsOnPage = async ({
         if (messages.find(message => message.id === email.id)) {
           return true;
         }
+        return false;
       })
       .map(email => email.email);
 
     // remove whitelisted emails from newsletter emails
     const whitelistedEmails = await getWhitelistedEmails(token);
-
-    console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:64 ~ whitelistedEmails:', whitelistedEmails);
 
     if (whitelistedEmails.length > 0) {
       newsletterEmails = newsletterEmails.filter(email => !whitelistedEmails.includes(email));

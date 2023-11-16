@@ -2,9 +2,24 @@ import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
 import type { GetMsgAPIResponse, SearchFormData } from '@src/pages/background/types/background.types';
 import { logger } from '@src/pages/background/utils/logger';
 
-export const advanceSearch = async (token: string, formData: SearchFormData) => {
-  const { keyword, afterDate, beforeDate, isRead, isUnRead } = formData;
+const buildSearchQuery = ({ keyword, afterDate, beforeDate, isRead, isUnRead }: SearchFormData) => {
+  // keyword query to search for emails that has this keyword in the subject or body
+  const keywordQuery = keyword
+    ? `(${keyword
+        .split(',')
+        .map((word, idx) => (idx === 0 ? `${word}` : ` ${word}`))
+        .join('')})`
+    : '';
+  return `${keywordQuery} 
+  ${afterDate ? `after:${afterDate}` : ''} 
+  ${beforeDate ? `before:${beforeDate}` : ''} 
+  ${isRead ? `is:read` : ''} 
+  ${isUnRead ? `is:unread` : ''}
+  in:anywhere -in:trash
+  `.replace(/\n/g, ' ');
+};
 
+export const advanceSearch = async (token: string, formData: SearchFormData) => {
   const fetchOptions: Partial<RequestInit> = {
     method: 'GET',
     headers: {
@@ -13,27 +28,10 @@ export const advanceSearch = async (token: string, formData: SearchFormData) => 
     },
   };
 
-  // keyword query to search for emails that has this keyword in the subject or body
-  const keywordQuery = keyword
-    ? `(${keyword
-        .split(',')
-        .map((word, idx) => (idx === 0 ? `${word}` : ` ${word}`))
-        .join('')})`
-    : '';
-
   // build a search query based from the data provided by the user
   // search operators for gmail (same as gmail web app):
   //LINK - https://support.google.com/mail/answer/7190?hl=en
-
-  const searchQuery = ` ${keywordQuery} 
-    ${afterDate ? `after:${afterDate}` : ''} 
-    ${beforeDate ? `before:${beforeDate}` : ''} 
-    ${isRead ? `is:read` : ''} 
-    ${isUnRead ? `is:unread` : ''}
-    in:anywhere -in:trash
-    `.replace(/\n/g, ' ');
-
-  console.log('🚀 ~ file: advanceSearch.ts:24 ~ advanceSearch ~ searchQuery:', searchQuery);
+  const searchQuery = buildSearchQuery(formData);
 
   let nextPageToken: string | null = null;
 
@@ -53,8 +51,6 @@ export const advanceSearch = async (token: string, formData: SearchFormData) => 
 
       // parse response
       const parsedRes: GetMsgAPIResponse = await res.json();
-
-      console.log('🚀 ~ file: advanceSearch.ts:44 ~ parsedRes:', parsedRes);
 
       if (parsedRes.error) {
         logger.error({
@@ -76,14 +72,10 @@ export const advanceSearch = async (token: string, formData: SearchFormData) => 
       // get email/message ids from the response
       const extractedIds = parsedRes.messages.map(msg => msg.id);
 
-      console.log('🚀 ~ file: advanceSearch.ts:75 ~ extractedIds:', extractedIds.length);
-
       // store new message ids
       messageIds.push(...extractedIds);
       // end of do white loop
     } while (nextPageToken !== null);
-
-    console.log('🚀 ~ file: advanceSearch.ts:66 ~ messageIds:', messageIds.length);
 
     return messageIds;
   } catch (error) {

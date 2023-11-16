@@ -5,16 +5,9 @@ export const getSelectedCategory = () => {
     'tr[role="tablist"]>td>div[role="tab"][aria-selected="true"]'
   );
 
-  console.log(
-    '🚀 ~ file: getSelectedCategory.ts:8 ~ getSelectedCategory ~ activeCategoryNode:',
-    activeCategoryNode
-  );
-
   // if not found return empty string
   //@ts-ignore
   if (!activeCategoryNode?.checkVisibility()) return '';
   // get the category label
-  const selectedCategory = activeCategoryNode.getAttribute('aria-label').toLowerCase().split(',')[0];
-
-  return selectedCategory;
+  return activeCategoryNode.getAttribute('aria-label').toLowerCase().split(',')[0];
 };

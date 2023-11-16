@@ -1,6 +1,5 @@
 import { getAnchorIdFromURL } from './helper/getAnchorIdFromURL';
 import { getSelectedCategory } from './helper/getSelectedCategory';
-import { IMessageBody, IMessageEvent } from '../../types/content.types';
 import { hideHoverCard, showHoverCard } from './hoverCard/assistantHoverCard';
 import { randomId } from '../../utils/randomId';
 import { retryAtIntervals } from '../../utils/retryAtIntervals';
@@ -115,10 +114,6 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
   // get all the mails with ids on the page
   const { emails, dateRange, allMailNodes } = getAllMailsOnPage();
 
-  console.log('🚀 ~ file: index.ts:117 ~ embedAssistantBtnLogic ~ emails:', emails);
-
-  console.log('🚀 ~ file: index.ts:117 ~ embedAssistantBtnLogic ~ allMailNodes:', allMailNodes);
-
   if (emails.length < 1) return false;
 
   // get current folder (anchor ids in url like inbox, spam, all, etc.)
@@ -127,12 +122,10 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
   // get current selected category
   const selectedCategory = getSelectedCategory();
 
-  console.log('🚀 ~ file: index.ts:125 ~ embedAssistantBtnLogic ~ selectedCategory:', selectedCategory);
-
   // newsletter emails
   let newsletterEmails = [''];
 
-  // TODO: save emails on session storage with date as key to avoid re-fetching data on every page load
+  // identify on page newsletter emails
 
   const res = await identifyOnPageNewsletterEmails({
     emails,
@@ -161,9 +154,9 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
 
     const name = emailNode.getAttribute('name');
 
-    //* skips the iteration if the current email is not a newsletter email
-    // assistant button won't be rendered
+    // skips the iteration if the current email is not a newsletter email
     if (!newsletterEmails.includes(email)) {
+      // assistant button won't be rendered
       continue;
     }
 
@@ -223,10 +216,9 @@ export const embedAssistantBtn = async () => {
         containerType = currentContainer;
         return true;
       }
+      return false;
     },
   });
-
-  console.log('🚀 ~ file: index.ts:210 ~ embedAssistantBtn ~ containerType:', containerType);
 
   if (!containerType) {
     // not a supported container type

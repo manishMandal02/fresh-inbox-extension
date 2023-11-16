@@ -2,9 +2,6 @@ import { storageKeys } from '../../constants/app.constants';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { getSyncStorageByKey } from '../../utils/getStorageByKey';
 
-// checkbox state: don't show this message again
-let isChecked: boolean | null = null;
-
 const handleConfirmActionBtnClick = async (ev: MouseEvent, onConfirmClick: () => Promise<void>) => {
   ev.stopPropagation();
   // execute callback
@@ -24,11 +21,9 @@ const handleCheckboxUpdate = async (ev: Event) => {
   //@ts-ignore
   const isChecked = ev.target.checked;
 
-  console.log('🚀 ~ file: confirmModal.ts:27 ~ handleCheckboxUpdate ~ isChecked:', isChecked);
-
   // update checkbox state
   // if checked, update storage (sync) to save preference (checked = user doesn't want to see this message again)
-  await chrome.storage.sync.set({ [storageKeys.SHOW_DELETE_CONFIRM_MSG]: isChecked! });
+  await chrome.storage.sync.set({ [storageKeys.SHOW_DELETE_CONFIRM_MSG]: isChecked });
 };
 
 type ShowConfirmModalParams = {
@@ -96,7 +91,11 @@ const showConfirmModal = async ({ msg, email, onConfirmClick, isBulkDelete }: Sh
   backdrop.addEventListener('click', handleCancelActionBtnClick);
 
   // checkbox event listener
-  checkbox.addEventListener('change', handleCheckboxUpdate);
+  checkbox.addEventListener('change', ev => {
+    asyncHandler(async () => {
+      await handleCheckboxUpdate(ev);
+    });
+  });
 
   confirmAction.addEventListener('click', (ev: MouseEvent) => {
     asyncHandler(async () => {

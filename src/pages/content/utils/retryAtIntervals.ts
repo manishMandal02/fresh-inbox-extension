@@ -14,13 +14,14 @@ export const retryAtIntervals = async <T>({ retries, interval, callback }: Retry
     while (retry < retries) {
       const success = await callback();
 
-
+      // stop the loop, if the callback is successful
       if (success) {
         return success;
       }
       await wait(interval);
       retry++;
     }
+    return true;
   } catch (error) {
     logger.error({
       error,

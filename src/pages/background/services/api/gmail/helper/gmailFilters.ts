@@ -23,7 +23,7 @@ export const getFilterById = async (token: string, id: string): Promise<FilterEm
       throw new Error('❌ Filter not found');
     }
 
-    if (!parsedRes || !parsedRes.criteria.query) throw new Error('❌ Failed to get filters');
+    if (!parsedRes?.criteria.query) throw new Error('❌ Failed to get filters');
 
     // get emails from query
     let emails = getEmailsFromFilterQuery(parsedRes.criteria.query);
@@ -64,9 +64,7 @@ export const createFilter = async ({
   }
 
   // format the emails into a single query string for filter criteria
-  const criteriaQuery = `from:(${emailsList.map(email => `${email}`).join(' OR ')})`;
-
-  console.log('🚀 ~ file: gmailFilters.ts:70 ~ criteriaQuery:', criteriaQuery);
+  const criteriaQuery = `from:(${emailsList.map(email => email).join(' OR ')})`;
 
   //* explanation of labels/action
   // addLabelIds adds label to the email present in the filter (here TRASH label will be added to the unsubscribed email)

@@ -14,6 +14,7 @@ import { showConfirmModal } from '../../elements/confirmModal';
 import { getLocalStorageByKey } from '@src/pages/content/utils/getStorageByKey';
 import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
 import ActionButton from '../../elements/action-button';
+import { logger } from '@src/pages/content/utils/logger';
 
 type NewsletterData = {
   email: string;
@@ -52,7 +53,11 @@ const getNewsletterEmailsData = async (shouldRefreshData = false) => {
 
     return newsletterEmails;
   } catch (error) {
-    console.log('🚀 ~ file: Newsletter.tsx:35 ~ getNewsletterEmailsData ~ error:', error);
+    logger.error({
+      error,
+      msg: 'Failed to get newsletter data for newsletter tab.',
+      fileTrace: 'content/view/appModal/tabs/Newsletter.tsx:59 ~ catch block',
+    });
     return null;
   }
 };
@@ -69,7 +74,7 @@ export const Newsletter = () => {
 
   // email actions states
   // current email/emails that are being unsubscribed, deleted, whitelisted, etc.
-  const [actionInProgressFor, setEmailActionsInProgressFor] = useState<IActionInProgress | null>(null);
+  const [emailActionsInProgressFor, setEmailActionsInProgressFor] = useState<IActionInProgress | null>(null);
 
   // get newsletter emails data
   useEffect(() => {
@@ -100,8 +105,6 @@ export const Newsletter = () => {
 
     const data = await getNewsletterEmailsData(shouldRefreshData);
 
-    console.log('🚀 ~ file: Newsletter.tsx:147 ~ refreshTable ~ data:', data);
-
     // hide loading spinner
     if (isFetchingNewsletterEmails) setIsFetchingNewsletterEmails(false);
 
@@ -115,28 +118,26 @@ export const Newsletter = () => {
   useEffect(
     asyncHandler(async () => {
       // do nothing if no action in progress
-      if (!actionInProgressFor || actionInProgressFor.emails.length < 1) return;
-
-      console.log('🚀 ~ file: Newsletter.tsx:162 ~ asyncHandler ~ actionInProgressFor:', actionInProgressFor);
+      if (!emailActionsInProgressFor || emailActionsInProgressFor.emails.length < 1) return;
 
       // handle email actions
-      if (actionInProgressFor.action === 'unsubscribe') {
-        await handleUnsubscribeAction({ emails: actionInProgressFor.emails, isWhitelisted: false });
+      if (emailActionsInProgressFor.action === 'unsubscribe') {
+        await handleUnsubscribeAction({ emails: emailActionsInProgressFor.emails, isWhitelisted: false });
         await refreshTable();
         return;
       }
-      if (actionInProgressFor.action === 'deleteAllMails') {
+      if (emailActionsInProgressFor.action === 'deleteAllMails') {
         await handleDeleteAllMailsAction({
-          emails: actionInProgressFor.emails,
+          emails: emailActionsInProgressFor.emails,
           onSuccess: async () => {
             await refreshTable();
           },
         });
         return;
       }
-      if (actionInProgressFor.action === 'unsubscribeAndDeeAllMails') {
+      if (emailActionsInProgressFor.action === 'unsubscribeAndDeeAllMails') {
         await handleUnsubscribeAndDeleteAction({
-          emails: actionInProgressFor.emails,
+          emails: emailActionsInProgressFor.emails,
           isWhitelisted: false,
           onSuccess: async () => {
             await refreshTable();
@@ -144,79 +145,78 @@ export const Newsletter = () => {
         });
         return;
       }
-      if (actionInProgressFor.action === 'whitelistEmail') {
-        await handleWhitelistAction({ emails: actionInProgressFor.emails });
+      if (emailActionsInProgressFor.action === 'whitelistEmail') {
+        await handleWhitelistAction({ emails: emailActionsInProgressFor.emails });
         await refreshTable();
-        return;
       }
     }),
-    [actionInProgressFor]
+    [emailActionsInProgressFor]
   );
+
+  // action buttons for each email
+  const actionButtons = (email: string) => (
+    <>
+      <ActionButton
+        action={EmailAction.whitelistEmail}
+        tooltipLabel='Keep/Whitelist'
+        onClick={() => setEmailActionsInProgressFor({ emails: [email], action: 'whitelistEmail' })}
+        isDisabled={selectedEmails.length > 0 || emailActionsInProgressFor?.emails.length > 1}
+      />
+
+      <ActionButton
+        action={EmailAction.unsubscribe}
+        tooltipLabel='Unsubscribe'
+        onClick={() => setEmailActionsInProgressFor({ emails: [email], action: 'unsubscribe' })}
+        isDisabled={selectedEmails.length > 0 || emailActionsInProgressFor?.emails.length > 1}
+      />
+
+      <ActionButton
+        action={EmailAction.deleteAllMails}
+        tooltipLabel='Delete all mails'
+        onClick={async () =>
+          await showConfirmModal({
+            email,
+            msg: 'Are you sure you want to delete all mails from',
+            onConfirmClick: async () => {
+              setEmailActionsInProgressFor({ emails: [email], action: 'deleteAllMails' });
+            },
+          })
+        }
+        isDisabled={selectedEmails.length > 0 || emailActionsInProgressFor?.emails.length > 1}
+      />
+      <ActionButton
+        action={EmailAction.unsubscribeAndDeeAllMails}
+        tooltipLabel='Unsubscribe & Delete all'
+        onClick={async () =>
+          await showConfirmModal({
+            email,
+            msg: 'Are you sure you want to delete all mails and unsubscribe from',
+            onConfirmClick: async () => {
+              setEmailActionsInProgressFor({ emails: [email], action: 'unsubscribeAndDeeAllMails' });
+            },
+          })
+        }
+        isDisabled={selectedEmails.length > 0 || emailActionsInProgressFor?.emails.length > 1}
+      />
+    </>
+  );
+
+  // render action buttons or spinner based on loading state
+  const renderActionButtons = (email: string) => {
+    if (
+      selectedEmails.length < 1 &&
+      emailActionsInProgressFor?.emails.length === 1 &&
+      emailActionsInProgressFor?.emails.includes(email)
+    ) {
+      // render loading spinner if a action is in progress for this email
+      return <Spinner size='sm' />;
+    }
+
+    return actionButtons(email);
+  };
 
   // render newsletter table
   const renderTable = () => {
-    // action buttons for each email
-    const actionButtons = (email: string) => (
-      <>
-        <ActionButton
-          action={EmailAction.whitelistEmail}
-          tooltipLabel='Keep/Whitelist'
-          onClick={() => setEmailActionsInProgressFor({ emails: [email], action: 'whitelistEmail' })}
-          isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
-        />
-
-        <ActionButton
-          action={EmailAction.unsubscribe}
-          tooltipLabel='Unsubscribe'
-          onClick={() => setEmailActionsInProgressFor({ emails: [email], action: 'unsubscribe' })}
-          isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
-        />
-
-        <ActionButton
-          action={EmailAction.deleteAllMails}
-          tooltipLabel='Delete all mails'
-          onClick={async () =>
-            await showConfirmModal({
-              email,
-              msg: 'Are you sure you want to delete all mails from',
-              onConfirmClick: async () => {
-                setEmailActionsInProgressFor({ emails: [email], action: 'deleteAllMails' });
-              },
-            })
-          }
-          isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
-        />
-        <ActionButton
-          action={EmailAction.unsubscribeAndDeeAllMails}
-          tooltipLabel='Unsubscribe & Delete all'
-          onClick={async () =>
-            await showConfirmModal({
-              email,
-              msg: 'Are you sure you want to delete all mails and unsubscribe from',
-              onConfirmClick: async () => {
-                setEmailActionsInProgressFor({ emails: [email], action: 'unsubscribeAndDeeAllMails' });
-              },
-            })
-          }
-          isDisabled={selectedEmails.length > 0 || actionInProgressFor?.emails.length > 1}
-        />
-      </>
-    );
-
-    // render action buttons or spinner based on loading state
-    const renderActionButtons = (email: string) => {
-      if (
-        selectedEmails.length < 1 &&
-        actionInProgressFor?.emails.length === 1 &&
-        actionInProgressFor?.emails.includes(email)
-      ) {
-        // render loading spinner if a action is in progress for this email
-        return <Spinner size='sm' />;
-      }
-
-      return actionButtons(email);
-    };
-
     return newsletterEmails.length > 0 ? (
       <>
         {/* emails table */}
@@ -307,7 +307,7 @@ export const Newsletter = () => {
                 </span>
                 {/*  email action  */}
                 <div className='mr-10 w-[25%]  '>
-                  {actionInProgressFor?.emails.length > 0 ? (
+                  {emailActionsInProgressFor?.emails.length > 0 ? (
                     // show loading spinner if action in progress
                     <Spinner size='sm' />
                   ) : (

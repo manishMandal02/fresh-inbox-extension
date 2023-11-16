@@ -1,11 +1,11 @@
 import { IMessageEvent, type DataOnPage, IMessageBody } from '@src/pages/content/types/content.types';
+import { logger } from '@src/pages/content/utils/logger';
 
 type GenerateStorageKeyProps = Pick<DataOnPage, 'category' | 'dateRange' | 'folder'>;
 
 // generate session storage key from search query props
-const generateStorageKey = ({ dateRange, category, folder }: GenerateStorageKeyProps) => {
-  return `${dateRange.startDate}-${dateRange.endDate}-${folder}-${category || '0'}`;
-};
+const generateStorageKey = ({ dateRange, category, folder }: GenerateStorageKeyProps) =>
+  `${dateRange.startDate}-${dateRange.endDate}-${folder}-${category || '0'}`;
 
 export const identifyOnPageNewsletterEmails = async ({
   emails,
@@ -19,8 +19,6 @@ export const identifyOnPageNewsletterEmails = async ({
 
   // check if the emails data are cached in session storage
   const newsletterEmails = sessionStorage.getItem(key);
-
-  console.log('🚀 ~ file: identifyOnPageNewsletterEmails.ts:23 ~ newsletterEmails:', newsletterEmails);
 
   if (newsletterEmails) {
     // cache data found in session storage
@@ -40,9 +38,13 @@ export const identifyOnPageNewsletterEmails = async ({
     // save data to session storage
     sessionStorage.setItem(key, JSON.stringify(res));
 
-    console.log('🚀 ~ file: identifyOnPageNewsletterEmails.ts:43 ~  sessionStorage.setItem');
-
     if (res) return res;
   }
+
+  logger.error({
+    error: new Error('Failed to get on page newsletter emails'),
+    msg: 'Failed to get on page newsletter data from cache or background script',
+    fileTrace: 'content/view/assistant-button/helper/identifyOnPageNewsletterEmails',
+  });
   return [];
 };

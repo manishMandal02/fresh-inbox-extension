@@ -18,14 +18,14 @@ const handleUnsubscribeEmail = async (emails: string[], isWhitelisted = false): 
       event: IMessageEvent.UNSUBSCRIBE,
     });
     if (!res) {
-      throw new Error('Failed to unsubscribe');
+      throw new Error('Failed to unsubscribe.');
     }
     // hide snackbar
     hideLoadingSnackbar();
     // show success snackbar
     showSnackbar({
       emails,
-      title: 'Successfully unsubscribed from',
+      title: 'Successfully unsubscribed from.',
     });
 
     return res;

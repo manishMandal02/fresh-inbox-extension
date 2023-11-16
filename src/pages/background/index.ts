@@ -110,8 +110,6 @@ chrome.runtime.onMessage.addListener(
       case IMessageEvent.CHECK_AUTH_TOKEN: {
         const res = await getAuthToken(request.userEmail, googleClientId);
 
-        console.log('🚀 ~ file: index.ts:110 ~ res:', res);
-
         if (res) {
           token = res;
           return true;

@@ -9,10 +9,10 @@ import {
 import { logger } from '@src/pages/content/utils/logger';
 import InfoIcon from '../../../elements/InfoIcon';
 import { showConfirmModal } from '../../../elements/confirmModal';
+import { showSnackbar } from '../../../elements/snackbar';
 
 const AdvanceSearch = () => {
-  const [errorMsg, setErrorMsg] = useState('');
-  const [searchResEmailIds, setSearchResEmailsIds] = useState<string[] | null>(null);
+  const [searchResEmailIds, setSearchResEmailIds] = useState<string[] | null>(null);
   const [isLoadingSearchRes, setIsLoadingSearchRes] = useState(false);
 
   // bulk delete state
@@ -29,9 +29,8 @@ const AdvanceSearch = () => {
     )
       return;
     // reset the previous res state if any
-    if (searchResEmailIds) setSearchResEmailsIds(null);
+    if (searchResEmailIds) setSearchResEmailIds(null);
 
-    console.log('🚀 ~ file: AdvanceSearch.tsx:16 ~ handleSearch ~ formData:', formData);
     setIsLoadingSearchRes(true);
 
     // send search event to background script
@@ -42,10 +41,8 @@ const AdvanceSearch = () => {
 
     setIsLoadingSearchRes(false);
 
-    console.log('🚀 ~ file: AdvanceSearch.tsx:23 ~ handleSearch ~ res:', res);
-
     if (res) {
-      setSearchResEmailsIds(res);
+      setSearchResEmailIds(res);
     } else {
       logger.error({
         msg: 'Failed to get result for advance search',
@@ -69,6 +66,11 @@ const AdvanceSearch = () => {
           emails: searchResEmailIds,
         });
 
+        if (res) {
+          showSnackbar({ title: `Successfully deleted ${searchResEmailIds.length} emails.`, emails: [] });
+        } else {
+          showSnackbar<true>({ title: `Failed to delete emails.`, isError: true });
+        }
         setIsDeleting(false);
       },
     });

@@ -56,6 +56,17 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
     }
   };
 
+  const renderAuthCard = () => {
+    return isAppEnabled && !isTokenValid ? (
+      <AuthCard
+        isAppEnabled={isAppEnabled}
+        onClose={() => {
+          setIsModalOpen(false);
+        }}
+      />
+    ) : null;
+  };
+
   return (
     <>
       <button
@@ -78,19 +89,12 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
           {/* modal card */}
           <div className='w-[65rem] h-[40rem] rounded-md shadow-lg z-50 shadow-slate-600 bg-slate-100'>
             {isAppEnabled && isTokenValid ? (
-              // {/* all tabs */}
               <Tabs tabs={[...tabs]} activeTab={activeTab} setActiveTab={setActiveTab}>
                 {renderActiveTab(activeTab)}
               </Tabs>
-            ) : isAppEnabled && !isTokenValid ? (
-              // {/* auth card */}
-              <AuthCard
-                isAppEnabled={isAppEnabled}
-                onClose={() => {
-                  setIsModalOpen(false);
-                }}
-              />
             ) : null}
+            {/* auth card */}
+            {renderAuthCard()}
           </div>
         </div>
       ) : null}

@@ -13,9 +13,8 @@ type UpdateFilterParams = {
 const getStorageKeyByAction = (filterAction: FILTER_ACTION) => {
   if (filterAction === FILTER_ACTION.INBOX) {
     return { sync: storageKeys.WHITELIST_FILTER_ID, local: storageKeys.WHITELISTED_EMAILS };
-  } else if (filterAction === FILTER_ACTION.TRASH) {
-    return { sync: storageKeys.UNSUBSCRIBE_FILTER_ID, local: storageKeys.UNSUBSCRIBED_EMAILS };
   }
+  return { sync: storageKeys.UNSUBSCRIBE_FILTER_ID, local: storageKeys.UNSUBSCRIBED_EMAILS };
 };
 
 // update filter helper
@@ -28,13 +27,11 @@ export const addEmailToFilter = async ({ token, emails, filterId, filterAction }
   // add email to existing filter emails
   const updatedFilterEmails = new Set([...filter.emails, ...emails]);
 
-  console.log('🚀 ~ file: updateFilter.ts:31 ~ addEmailToFilter ~ updatedFilterEmails:', updatedFilterEmails);
-
   // delete existing filter
   await deleteFilter(token, filterId);
 
   // create new filter with updated emails
-  const newFilterId = await createFilter({ token, emails: [...updatedFilterEmails], filterAction });
+  const newFilterId = await createFilter({ token, filterAction, emails: [...updatedFilterEmails] });
 
   // save new filter id to sync storage
   await chrome.storage.sync.set({ [storageKey.sync]: newFilterId });
