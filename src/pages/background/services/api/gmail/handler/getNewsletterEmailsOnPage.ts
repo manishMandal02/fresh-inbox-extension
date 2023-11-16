@@ -26,10 +26,8 @@ export const getNewsletterEmailsOnPage = async ({
     const searchQuery = `from:(${emails.map(email => `${email.email}`).join(' OR ')}) "unsubscribe"
      after:${dateRange.startDate} before:${dateRange.endDate} 
     ${category ? `category:${category}` : ''} 
-    ${(folder === 'all' || folder === 'search') ? '' : `in:${folder}`}
+    ${folder === 'all' || folder === 'search' ? '' : `in:${folder}`}
     `;
-
-
 
     console.log('🚀 ~ file: getNewsletterEmailsOnPage.ts:32 ~ searchQuery:', searchQuery);
 

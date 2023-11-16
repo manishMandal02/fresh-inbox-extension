@@ -11,12 +11,12 @@ export const getOpenedContainerType = (): 'inbox' | 'singleEmail' => {
     return 'singleEmail';
   }
 
-  // checking for inbox inbox
+  // checking for emails table (inbox) container
   // check for row with sender email
-  const emailRow = document.querySelector(MAIL_NODES_SELECTOR) as HTMLElement;
+  const emailRow = document.querySelectorAll(MAIL_NODES_SELECTOR);
 
   //@ts-ignore
-  if (emailRow && emailRow.checkVisibility()) {
+  if ([...emailRow].find(row => row.checkVisibility())!!) {
     return 'inbox';
   }
 
