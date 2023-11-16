@@ -69,6 +69,7 @@ type InitializeAssistantBtnParams = {
   isSingleEmail?: boolean;
 };
 
+// render logic for assistant button
 const initializeAssistantBtn = ({
   assistantBtnContainer,
   email,
@@ -108,12 +109,14 @@ const initializeAssistantBtn = ({
   assistantBtn.addEventListener('mouseout', handleMouseOut);
 };
 
-// render assistant button render
+// render assistant buttons on emails table
 const embedAssistantBtnLogic = async (): Promise<boolean> => {
   // get all the mails with ids on the page
   const { emails, dateRange, allMailNodes } = getAllMailsOnPage();
 
-  // TODO: fix: multiple assistant buttons render
+  console.log('🚀 ~ file: index.ts:117 ~ embedAssistantBtnLogic ~ emails:', emails);
+
+  console.log('🚀 ~ file: index.ts:117 ~ embedAssistantBtnLogic ~ allMailNodes:', allMailNodes);
 
   if (emails.length < 1) return false;
 
@@ -123,8 +126,12 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
   // get current selected category
   const selectedCategory = getSelectedCategory();
 
+  console.log('🚀 ~ file: index.ts:125 ~ embedAssistantBtnLogic ~ selectedCategory:', selectedCategory);
+
   // newsletter emails
   let newsletterEmails = [''];
+
+  // TODO: save emails on session storage with date as key to avoid re-fetching data on every page load
 
   const res = await chrome.runtime.sendMessage<IMessageBody>({
     event: IMessageEvent.GET_NEWSLETTER_EMAILS_ON_PAGE,
@@ -175,7 +182,7 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
   return true;
 };
 
-// embed single assistant btn (used when single email is opened)
+// embed single assistant btn (used when single email view is opened)
 export const embedSingleAssistantBtn = async () => {
   // get print email button
   const printEmailBtn = document.querySelector('button[aria-label="Print all"]');

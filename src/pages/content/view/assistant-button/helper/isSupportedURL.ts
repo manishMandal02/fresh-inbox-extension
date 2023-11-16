@@ -9,7 +9,7 @@ export const isSupportedURL = () => {
   console.log('🚀 ~ file: isSupportedURL.ts:9 ~ isSupportedURL ~ anchorId:', anchorId);
 
   // labels/pages to embed the assistant button on
-  const supportedLabels = ['inbox', 'starred', 'all', 'spam'];
+  const supportedLabels = ['inbox', 'starred', 'all', 'spam', 'search'];
 
   // check if anchor id is present and it is one of the supported labels
   if (anchorId && supportedLabels.includes(anchorId)) {

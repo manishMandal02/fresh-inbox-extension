@@ -35,7 +35,7 @@ type EmailId = {
   id: string;
 };
 
-type GmailFolder = 'all' | 'inbox' | 'spam';
+type GmailFolder = 'all' | 'inbox' | 'spam' | 'search';
 
 // for checking newsletter emails on page
 export interface DataOnPage {

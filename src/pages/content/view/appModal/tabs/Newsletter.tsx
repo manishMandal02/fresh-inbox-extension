@@ -14,7 +14,6 @@ import { showConfirmModal } from '../../elements/confirmModal';
 import { getLocalStorageByKey } from '@src/pages/content/utils/getStorageByKey';
 import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
 import ActionButton from '../../elements/action-button';
-import wait from '@src/pages/content/utils/wait';
 
 type NewsletterData = {
   email: string;
@@ -378,7 +377,7 @@ export const Newsletter = () => {
   return (
     <div className='w-full h-full max-h-full'>
       <p className='h-[5%] m-0 text-slate-700 mb-[.4rem] font-light text-sm flex items-center justify-center'>
-        Fresh Inbox has identified
+        Fresh Inbox has identified more than
         <u className='mx-1'>
           {newsletterEmails.length}
           {/* show + if more than 100 emails */}

@@ -103,11 +103,6 @@ const reEmbedAssistantBtnOnContainerClick = async (callback: AsyncCallback) => {
     },
   });
 
-  console.log(
-    '🚀 ~ file: index.tsx:72 ~ reEmbedAssistantBtnOnContainerClick ~ emailsContainer:',
-    emailsContainer
-  );
-
   if (!emailsContainer) {
     logger.info('Email Container not found', 'content/app/index.tsx:76');
     return;

@@ -27,6 +27,11 @@ export const getAllMailsOnPage = (): GetAllMailsOnPageReturn => {
   //@ts-ignore
   allMailNodes = allMailNodes.filter(node => node.checkVisibility());
 
+  console.log(
+    '🚀 ~ file: getMailsOnPage.ts:30 ~ getAllMailsOnPage ~ allMailNodes.length:',
+    allMailNodes.length
+  );
+
   // date range
   const dateRange = getDateRangeFromNodes(allMailNodes);
 
@@ -38,17 +43,29 @@ export const getAllMailsOnPage = (): GetAllMailsOnPageReturn => {
 
     const email = mailNode.getAttribute('email');
 
-    // if duplicate node, remove it from the main array
-    if ([...allMailNodes.filter(node => mailNode.isEqualNode(node))].length > 1) {
-      // remove this duplicate node from array
-      allEmailsOnPage.splice(idx, 1);
-      return;
-    }
+    console.log('🚀 ~ file: getMailsOnPage.ts:41 ~ allMailNodes.forEach ~ email:', email);
 
+    // TODO: check if working without the below logic. context: ln:28 checks for the visibility for the nodes that should handle the duplicate node issues
+    // // if duplicate node, remove it from the main array
+    // if ([...allMailNodes.filter(node => mailNode.isEqualNode(node))].length > 1) {
+    //   // remove this duplicate node from array
+
+    //   console.log('🚀 ~ file: getMailsOnPage.ts:47 ~ allMailNodes.forEach ~ duplicate NODEs: 🗑️');
+
+    //   allMailNodes.splice(idx, 1);
+    //   return;
+    // }
+
+    // get id node from mail node
     const idNode = mailNode
       .closest('td')
       .nextElementSibling.querySelector('span[data-legacy-last-message-id]');
+
+    // extract the id
     const id = idNode.getAttribute('data-legacy-last-message-id');
+
+    console.log('🚀 ~ file: getMailsOnPage.ts:56 ~ allMailNodes.forEach ~ id:', id);
+
     allEmailsOnPage.push({ email, id });
   });
 
