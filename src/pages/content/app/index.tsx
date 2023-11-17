@@ -44,6 +44,8 @@ window.freshInboxGlobalVariables = {
   loggerLevel: 'dev',
 };
 
+//TODO: - handle gmail api limit exceeded
+
 (async () => {
   // wait 2s
   await wait(2000);
@@ -63,7 +65,7 @@ window.freshInboxGlobalVariables = {
   });
 
   // show settings modal based on app status & auth status
-  createRoot(root).render(<AppModal isAppEnabled={isAppEnabled} isTokenValid={isTokenValid} />);
+  createRoot(root).render(<AppModal appStatus={isAppEnabled} isTokenValid={isTokenValid} />);
 
   if (isTokenValid) {
     // embed assistant button

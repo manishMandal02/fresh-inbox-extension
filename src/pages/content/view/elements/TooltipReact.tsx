@@ -12,7 +12,7 @@ const Tooltip = ({ label, children }: Props) => {
         <div
           className={`absolute top-0 w-fit h-fit whitespace-nowrap hidden   transition-all rounded bg-gray-800 p-2 text-xs text-white leading-3 group-hover:block `}
           style={{
-            transform: `translate(-40%, -120%)`,
+            transform: `translate(-10%, -105%)`,
           }}
         >
           {label}

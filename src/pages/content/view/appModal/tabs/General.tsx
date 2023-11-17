@@ -1,12 +1,23 @@
 import { EmailAction } from '@src/pages/content/types/content.types';
 import { ActionIcons } from '../../elements/action-button/ActionIcons';
+import { disableApp } from '@src/pages/content/utils/disableApp';
 
-export const General = () => {
+type Props = {
+  onAppDisable: () => void;
+};
+
+export const General = ({ onAppDisable }: Props) => {
   const UnsubscribeIcon = ActionIcons[EmailAction.unsubscribe];
   const DeleteAllMailsIcon = ActionIcons[EmailAction.deleteAllMails];
   const WhitelistIcon = ActionIcons[EmailAction.whitelistEmail];
   const ReSubscribeIcon = ActionIcons[EmailAction.resubscribe];
   const UnsubscribeAndDeleteMailIcon = ActionIcons[EmailAction.unsubscribeAndDeeAllMails];
+
+  // handle disable app
+  const handleDisable = async () => {
+    onAppDisable();
+    await disableApp();
+  };
   return (
     <div className='flex flex-col  py-8 px-6 relative h-full'>
       <div className='text-lg font-medium m-0 mb-1 '>
@@ -26,21 +37,21 @@ export const General = () => {
         </span>
       </div>
 
-      <span className='  my-2 leading-6'>
-        Fresh Inbox helps you keep your inbox clean, it can &nbsp;
+      <span className='text-slate-800  my-2 leading-[1.65rem]'>
+        Fresh Inbox helps you keep your inbox clean, it can&nbsp;
         <span className='bg-emerald-100 px-1 rounded-sm py-1 font-medium'>
           unsubscribe from unwanted emails
         </span>
-        &nbsp; like newsletters, promotional mails, etc. <br /> and &nbsp;
+        &nbsp;like newsletters, promotional mails, etc. <br /> and&nbsp;
         <span className='bg-emerald-100 px-1 rounded-sm py-1 font-medium'>
           bulk 🧹 delete 100s of emails in a single click
         </span>
         .
       </span>
 
-      <span className='text-slate-900  my-1 leading-7'>
+      <span className='text-slate-800  my-1 leading-[1.65rem]'>
         {' '}
-        The best part? &nbsp;
+        The best part?&nbsp;
         <span className='bg-emerald-100 px-1 rounded-sm py-1 font-medium'>
           Your data never leaves your browser
         </span>
@@ -58,7 +69,7 @@ export const General = () => {
       </span>
 
       {/* app walkthrough yt link */}
-      <span className='text-slate-700  mt-2 leading-6'>
+      <span className='text-slate-700  mt-2 leading-6 text-[.85rem]'>
         A quick walkthrough of Fresh Inbox can help you get started, if you're having trouble understanding
         it's features 🔗{' '}
         <a
@@ -76,6 +87,7 @@ export const General = () => {
 
       {/* understanding action icons */}
       <p className=' font-light text-slate-700 m-0 mb-px'>Actions you can perform with FreshInbox</p>
+      {/* actions block */}
       <div className='w-full'>
         {/* unsubscribe/block */}
         <span className='flex items-center mt-2 rounded-sm w-full  '>
@@ -152,7 +164,10 @@ export const General = () => {
         </span>
       </div>
 
-      <button className='w-max absolute bottom-4 left-[45%] px-2 py-px  underline font-light text-center cursor-pointer rounded-sm border-0 bg-transparent mx-auto text-sm text-slate-700 hover:text-slate-950 transition-all duration-150'>
+      <button
+        className='w-max absolute bottom-4 left-[45%] px-2 py-px  underline font-light text-center cursor-pointer rounded-sm border-0 bg-transparent mx-auto text-sm text-slate-700 hover:text-slate-950 transition-all duration-150'
+        onClick={handleDisable}
+      >
         Disable Fresh Inbox
       </button>
     </div>

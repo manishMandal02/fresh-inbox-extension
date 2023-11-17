@@ -56,12 +56,8 @@ export const getFreshInboxFilter = async ({
       // check if this filter is a fresh-inbox filter (we only check for matching labels/actions here)
       if (!isFreshInboxFilter(filter, filterAction)) continue;
 
-      console.log('🚀 ~ file: getFreshInboxFilter.ts:59 ~ isFreshInboxFilter: true ✅');
-
       // if yes,  get emails from the filter criteria
       const queryEmails = getEmailsFromFilterQuery(filter.criteria.query);
-
-      console.log('🚀 ~ file: getFreshInboxFilter.ts:65 ~ queryEmails:', queryEmails);
 
       // check if this filter has the fresh-inbox filter identity email
       if (queryEmails.includes(FRESH_INBOX_FILTER_EMAIL)) {
@@ -71,7 +67,7 @@ export const getFreshInboxFilter = async ({
         break;
       }
     }
-    console.log('🚀 ~ file: getFreshInboxFilter.ts:76 ~ filterId:', filterId);
+
     if (filterId) {
       return {
         filterId,

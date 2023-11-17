@@ -34,6 +34,7 @@ export const logger = {
     // handle gmail api error
     if (error && error.code && error.code === 401) {
       //TODO - invalid credentials
+      // Error: User interaction required. Please sign in again.
       //
     }
 

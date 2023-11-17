@@ -22,8 +22,6 @@ export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): P
     //get id from storage
     const filterId = await getSyncStorageByKey(storageKey);
 
-    console.log('🚀 ~ file: getFilterId.ts:24 ~ getFilterId ~ filterId:', filterId);
-
     // check if filter exists in gmail filters
     if (filterId && (await checkFilterIdExists(token, filterId))) {
       return filterId;
@@ -40,8 +38,6 @@ export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): P
 
       // if not found in storage or in the user's filters, then create new filter with the give action
       const newFilterId = await createFilter({ token, filterAction, emails: [FRESH_INBOX_FILTER_EMAIL] });
-
-      console.log('🚀 ~ file: getFilterId.ts:44 ~ getFilterId ~ newFilterId:', newFilterId);
 
       if (newFilterId) {
         // save the new filter id to sync storage

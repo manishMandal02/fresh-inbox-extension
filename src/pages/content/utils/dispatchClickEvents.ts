@@ -1,7 +1,6 @@
 //* the refresh button doesn't have a consistent selector to target it
 
 import { logger } from './logger';
-import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 
 // dispatches custom mouse events to simulate a click event (used for buttons on gmail table)
 const dispatchClickEvent = (el: Element) => {

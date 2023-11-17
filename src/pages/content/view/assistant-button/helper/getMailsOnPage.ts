@@ -27,12 +27,8 @@ export const getAllMailsOnPage = (): GetAllMailsOnPageReturn => {
   //@ts-ignore
   allMailNodes = allMailNodes.filter(node => node.checkVisibility());
 
-  console.log('🚀 ~ file: getMailsOnPage.ts:30 ~ getAllMailsOnPage ~ allMailNodes:', allMailNodes);
-
   // date range
   const dateRange = getDateRangeFromNodes(allMailNodes);
-
-  console.log('🚀 ~ file: getMailsOnPage.ts:33 ~ getAllMailsOnPage ~ dateRange:', dateRange);
 
   // get email and name from each mail node
   let allEmailsOnPage: EmailId[] = [];

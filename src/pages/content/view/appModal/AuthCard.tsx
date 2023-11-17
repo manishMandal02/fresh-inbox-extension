@@ -98,8 +98,9 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
           </div>
           {/* disable app button */}
           <button
-            className='absolute bottom-4 text-sm text-slate-500 underline border-none outline-none bg-transparent cursor-pointer'
+            className='absolute bottom-4 text-sm text-slate-500 underline border-none outline-none bg-transparent cursor-pointer disabled:cursor-default'
             onClick={handleDisableBtnClick}
+            disabled={!isAppEnabled}
           >
             {!isAppEnabled ? 'Fresh Inbox is currently disabled' : 'Disable Fresh Inbox'}
           </button>

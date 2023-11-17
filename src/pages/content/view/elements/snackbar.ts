@@ -75,8 +75,6 @@ type SnackbarParams<IsError> = IsError extends ErrorType ? ErrorSnackbarParams :
 const showSnackbar = <IsError>(params: SnackbarParams<IsError>) => {
   const { title } = params;
 
-  console.log('🚀 ~ file: snackbar.ts:78 ~ showSnackbar ~ title:', title);
-
   const container = document.createElement('div');
   const label = document.createElement('span');
 

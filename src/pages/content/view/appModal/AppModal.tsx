@@ -8,28 +8,40 @@ import Whitelisted from './tabs/Whitelisted';
 import AdvanceSearch from './tabs/advance-search';
 
 import FreshInboxIcon from './../../assets/app-icon-128.png';
+import Tooltip from '../elements/TooltipReact';
 
 const tabs = ['General', 'Newsletter', 'Unsubscribed', 'Whitelisted', 'Advance Search'] as const;
 
 export type Tabs = (typeof tabs)[number];
 
 type Props = {
-  isAppEnabled: boolean;
+  appStatus: boolean;
   isTokenValid: boolean;
 };
 
-const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
+const AppModal = ({ appStatus, isTokenValid }: Props) => {
   //
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAppEnabled, setIsAppEnabled] = useState(false);
+  const [isAuthed, setIsAuthed] = useState(false);
+
   const [activeTab, setActiveTab] = useState<Tabs>('General');
 
-  //TODO: - gmail api limit exceeded
+  //TODO: - handle auth error (401, sign  in required)
+
+  useEffect(() => {
+    setIsAppEnabled(appStatus);
+  }, [appStatus]);
+
+  useEffect(() => {
+    setIsAuthed(isAppEnabled);
+  }, [isAppEnabled]);
 
   useEffect(() => {
     if (isAppEnabled && !isTokenValid) {
       setIsModalOpen(true);
     }
-  }, [isAppEnabled, isTokenValid]);
+  }, [appStatus, isTokenValid]);
 
   const handleOpenSettings = () => {
     setIsModalOpen(true);
@@ -39,10 +51,15 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
     setIsModalOpen(false);
   };
 
+  // after app has been disabled
+  const onDisableApp = () => {
+    setIsModalOpen(false);
+    setIsAuthed(false);
+    setIsAppEnabled(false);
+  };
+
   const renderActiveTab = (currentTab: Tabs) => {
     switch (currentTab) {
-      case 'General':
-        return <General />;
       case 'Newsletter':
         return <Newsletter />;
       case 'Unsubscribed':
@@ -52,32 +69,29 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
       case 'Advance Search':
         return <AdvanceSearch />;
       default:
-        return <General />;
+        return <General onAppDisable={onDisableApp} />;
     }
-  };
-
-  const renderAuthCard = () => {
-    return isAppEnabled && !isTokenValid ? (
-      <AuthCard
-        isAppEnabled={isAppEnabled}
-        onClose={() => {
-          setIsModalOpen(false);
-        }}
-      />
-    ) : null;
   };
 
   return (
     <>
-      <button
-        className={` bg-transparent py-1.5 px-2 rounded text-sm  flex items-center justify-center cursor-pointer appearance-none outline-none border
-         border-slate-50  border-opacity-20 hover:border-opacity-50 hover:border-slate-600 focus:border-opacity-50 
+      <Tooltip label={isAppEnabled ? 'FreshInbox is active' : 'FreshInbox is inactive'}>
+        <button
+          className={` bg-transparent py-1.5 px-2 rounded text-sm  flex items-center justify-center cursor-pointer appearance-none outline-none border
+        border-slate-50  border-opacity-20 hover:border-opacity-50 hover:border-slate-600 focus:border-opacity-50 
         ${isAppEnabled ? ' text-white' : 'text-slate-500 grayscale'}
         `}
-        onClick={handleOpenSettings}
-      >
-        <img src={FreshInboxIcon} alt='icon' className='w-5 h-5 mr-1.5 ' /> Fresh Inbox
-      </button>
+          onClick={handleOpenSettings}
+        >
+          <img
+            src={FreshInboxIcon}
+            alt='icon'
+            className='w-5 h-5 mr-1.5'
+            style={!isAppEnabled ? { filter: 'grayscale(100%)' } : {}}
+          />{' '}
+          Fresh Inbox
+        </button>
+      </Tooltip>
       {/* Modal */}
       {isModalOpen ? (
         <div className='fixed top-0 left-0 w-screen h-screen flex items-center justify-center'>
@@ -88,13 +102,23 @@ const AppModal = ({ isAppEnabled, isTokenValid }: Props) => {
           ></div>
           {/* modal card */}
           <div className='w-[65rem] h-[40rem] rounded-md shadow-lg z-50 shadow-slate-600 bg-slate-100'>
-            {isAppEnabled && isTokenValid ? (
-              <Tabs tabs={[...tabs]} activeTab={activeTab} setActiveTab={setActiveTab}>
-                {renderActiveTab(activeTab)}
-              </Tabs>
-            ) : null}
-            {/* auth card */}
-            {renderAuthCard()}
+            {isAuthed ? (
+              <>
+                <Tabs tabs={[...tabs]} activeTab={activeTab} setActiveTab={setActiveTab}>
+                  {renderActiveTab(activeTab)}
+                </Tabs>
+              </>
+            ) : (
+              <>
+                <AuthCard
+                  isAppEnabled={isAppEnabled}
+                  onClose={() => {
+                    setIsModalOpen(false);
+                    setIsAppEnabled(true);
+                  }}
+                />
+              </>
+            )}
           </div>
         </div>
       ) : null}

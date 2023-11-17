@@ -20,14 +20,10 @@ export const unsubscribeEmail = async ({ token, emails, isWhitelisted }: Unsubsc
     // check if fresh-Inbox filter id exists in storage
     const filterId = await getFilterId({ token, filterAction: FILTER_ACTION.TRASH });
 
-    console.log('🚀 ~ file: unsubscribeEmail.ts:23 ~ unsubscribeEmail ~ filterId:', filterId);
-
     if (filterId) {
       // block/unsubscribe email
       // update filter: add email to filter
       await addEmailToFilter({ token, filterId, emails, filterAction: FILTER_ACTION.TRASH });
-
-      console.log('🚀 ~ file: unsubscribeEmail.ts:30 ~ unsubscribeEmail ~ addEmailToFilter: success ✅');
 
       // get all the newsletter emails
       const newsletterEmails = await getLocalStorageByKey<NewsletterEmails[]>(storageKeys.NEWSLETTER_EMAILS);

@@ -1,13 +1,10 @@
 import { storageKeys } from '../../constants/app.constants';
-import { asyncHandler } from '../../utils/asyncHandler';
 import { getSyncStorageByKey } from '../../utils/getStorageByKey';
 
 const handleConfirmActionBtnClick = async (ev: MouseEvent, onConfirmClick: () => Promise<void>) => {
   ev.stopPropagation();
   // execute callback
   hideConfirmModal();
-
-  console.log('🚀 ~ file: confirmModal.ts:10 ~ handleConfirmActionBtnClick ~ hideConfirmModal:');
 
   //
   await onConfirmClick();
@@ -23,8 +20,6 @@ const handleCancelActionBtnClick = (ev: MouseEvent) => {
 const handleCheckboxUpdate = async (ev: Event) => {
   //@ts-ignore
   const isChecked = ev.target.checked;
-
-  console.log('🚀 ~ file: confirmModal.ts:27 ~ handleCheckboxUpdate ~ isChecked:', isChecked);
 
   // update checkbox state
   // if checked, update storage (sync) to save preference (checked = user doesn't want to see this message again)
@@ -43,11 +38,6 @@ const showConfirmModal = async ({ msg, email, onConfirmClick, isBulkDelete }: Sh
   if (!isBulkDelete) {
     // check user preference , if the user want's to see the delete confirmation message or not
     const showDeleteConfirmMsg = await getSyncStorageByKey<boolean>('SHOW_DELETE_CONFIRM_MSG');
-
-    console.log(
-      '🚀 ~ file: confirmModal.ts:47 ~ showConfirmModal ~ showDeleteConfirmMsg:',
-      showDeleteConfirmMsg
-    );
 
     if (typeof showDeleteConfirmMsg === 'boolean' && showDeleteConfirmMsg === false) {
       // user has opted not to see the confirm action msg again

@@ -15,6 +15,7 @@ import { getLocalStorageByKey } from '@src/pages/content/utils/getStorageByKey';
 import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
 import ActionButton from '../../elements/action-button';
 import { logger } from '@src/pages/content/utils/logger';
+import InfoIcon from '../../elements/InfoIcon';
 
 type NewsletterData = {
   email: string;
@@ -42,7 +43,7 @@ const getNewsletterEmailsData = async (shouldRefreshData = false) => {
       const storageData = await getLocalStorageByKey<NewsletterData[]>(storageKeys.NEWSLETTER_EMAILS);
 
       // check if newsletters data already exists
-      if (storageData.length > 0) {
+      if (storageData?.length > 0) {
         // data already exists, use it
         newsletterEmails = storageData;
       } else {
@@ -378,11 +379,7 @@ export const Newsletter = () => {
     <div className='w-full h-full max-h-full'>
       <p className='h-[5%] m-0 text-slate-700 mb-[.4rem] font-light text-sm flex items-center justify-center'>
         Fresh Inbox has identified more than
-        <u className='mx-1'>
-          {newsletterEmails.length}
-          {/* show + if more than 100 emails */}
-          <strong>{newsletterEmails.length > 100 ? '+' : null}</strong>
-        </u>
+        <u className='mx-1'>{newsletterEmails?.length || '-'}</u>
         emails as newsletters or as part of a mailing list.
       </p>
 
@@ -392,7 +389,12 @@ export const Newsletter = () => {
       <div className='w-full h-[95%] flex flex-col justify-center items-start'>
         {/* render table after loading or show error msg if failed */}
         {isFetchingNewsletterEmails ? (
-          <Spinner size='lg' />
+          <>
+            <Spinner size='lg' />
+            <span className='text-xs text-slate-500 font-extralight text-center mt-1.5 flex items-center'>
+              <InfoIcon /> This may take a few seconds, do not close or refresh the page.
+            </span>
+          </>
         ) : !errorMsg ? (
           renderTable()
         ) : (

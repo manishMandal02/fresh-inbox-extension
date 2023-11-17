@@ -78,6 +78,9 @@ const checkFreshInboxFilters = async () => {
     // wait for all promises to resolve
     // throw error if any of the promises reject to catch in the catch block
     await Promise.all(promises.map(promise => promise.catch(err => err)));
+
+    logger.info('✅ Successfully checked for FreshInbox filters after auth.');
+
     return true;
   } catch (error) {
     logger.error({
@@ -96,6 +99,7 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
   (async () => {
     if (reason === 'install') {
       await initializeStorage();
+      logger.info('✅ Successfully app initialized on install.');
     }
   })();
 });
@@ -137,7 +141,6 @@ chrome.runtime.onMessage.addListener(
           // enable app
           await chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: true });
         }
-
         // check app (fresh inbox) custom filters
         return await checkFreshInboxFilters();
       }
@@ -213,7 +216,9 @@ chrome.runtime.onMessage.addListener(
 
       // disable app
       case IMessageEvent.DISABLE_FRESH_INBOX: {
-        return await logoutUser(token);
+        await logoutUser(token);
+        token = '';
+        return true;
       }
 
       default: {
