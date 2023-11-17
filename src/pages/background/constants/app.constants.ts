@@ -12,6 +12,7 @@ export const AUTH_SCOPE = 'https://mail.google.com https://www.googleapis.com/au
 //
 export const storageKeys = {
   IS_APP_ENABLED: 'IS_APP_ENABLED',
+  SESSION_TOKEN: 'SESSION_TOKEN',
   UNSUBSCRIBE_FILTER_ID: 'UNSUBSCRIBE_FILTER_ID',
   WHITELIST_FILTER_ID: 'WHITELIST_FILTER_ID',
   NEWSLETTER_EMAILS: 'NEWSLETTER_EMAILS',

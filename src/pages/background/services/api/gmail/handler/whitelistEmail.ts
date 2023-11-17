@@ -2,7 +2,7 @@ import { storageKeys } from '@src/pages/background/constants/app.constants';
 import {
   APIHandleParams,
   FILTER_ACTION,
-  NewsletterEmails,
+  INewsletterEmails,
 } from '@src/pages/background/types/background.types';
 import { getFilterId } from '../helper/getFilterId';
 import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';
@@ -16,14 +16,12 @@ export const whitelistEmail = async ({ token, emails }: APIHandleParams) => {
     // get whitelist filter id
     const filterId = await getFilterId({ token, filterAction: FILTER_ACTION.INBOX });
 
-
     if (filterId) {
       // add email to filter
       addEmailToFilter({ token, emails, filterId, filterAction: FILTER_ACTION.INBOX });
 
-
       // get all the newsletter emails
-      const newsletterEmails = await getLocalStorageByKey<NewsletterEmails[]>(storageKeys.NEWSLETTER_EMAILS);
+      const newsletterEmails = await getLocalStorageByKey<INewsletterEmails[]>(storageKeys.NEWSLETTER_EMAILS);
       if (newsletterEmails && newsletterEmails.length > 0) {
         // check if these emails exists in the newsletters list (local.storage)
         const emailsPresentInNewsletterEmails = newsletterEmails?.filter(e => emails.includes(e.email));

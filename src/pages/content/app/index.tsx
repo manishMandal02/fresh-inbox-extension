@@ -8,7 +8,6 @@ import { onURLChange } from '../utils/onURLChange';
 import { getSyncStorageByKey } from '../utils/getStorageByKey';
 import { embedAssistantBtn } from '../view/assistant-button';
 import { watchEmailTableContainerClick } from '@src/pages/background/services/api/gmail/helper/watchEmailTableContainerClick';
-import { showSnackbar } from '../view/elements/snackbar';
 import { getUserEmailIdFromPage } from '../view/assistant-button/helper/getEmailIdFromPage';
 
 // reload on update
@@ -44,7 +43,6 @@ window.freshInboxGlobalVariables = {
   loggerLevel: 'dev',
 };
 
-//TODO: - handle gmail api limit exceeded
 
 (async () => {
   // wait 2s
@@ -55,8 +53,6 @@ window.freshInboxGlobalVariables = {
 
   // check if app is enabled or not
   const isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
-
-  freshInboxGlobalVariables.isAppEnabled = isAppEnabled;
 
   // is user Authed or not? (handle multiple user) send email id from the content script
   const isTokenValid = await chrome.runtime.sendMessage<IMessageBody>({

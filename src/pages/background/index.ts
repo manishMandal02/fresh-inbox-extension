@@ -1,5 +1,5 @@
 import reloadOnUpdate from 'virtual:reload-on-update-in-background-script';
-import { FILTER_ACTION, IMessageBody, IMessageEvent, NewsletterEmails } from './types/background.types';
+import { IMessageBody, IMessageEvent, INewsletterEmails } from './types/background.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
 import { logoutUser, getAuthToken, launchGoogleAuthFlow } from './services/auth';
 import {
@@ -15,10 +15,10 @@ import { resubscribeEmail } from './services/api/gmail/handler/resubscribeEmail'
 import { getNewsletterEmailsOnPage } from './services/api/gmail/handler/getNewsletterEmailsOnPage';
 import { logger } from './utils/logger';
 import { storageKeys } from './constants/app.constants';
-import { getFilterId } from './services/api/gmail/helper/getFilterId';
 import { getSyncStorageByKey } from './utils/getStorageByKey';
 import { advanceSearch } from './services/api/gmail/handler/advance-search/advanceSearch';
 import { bulkDelete } from './services/api/gmail/handler/advance-search/bulkDelete';
+import { checkFreshInboxFilters } from './services/api/gmail/helper/checkFreshInboxFilters';
 
 reloadOnUpdate('pages/background');
 
@@ -28,11 +28,11 @@ reloadOnUpdate('pages/content/style.scss');
 logger.info('🏁 background script loaded');
 
 // TODO: fix: sometimes the token is empty (usually after staying sometime on the tab)
-// background service global variable
+// user email & toke
+let userEmail = '';
 let token = '';
 
-console.log('🚀 ~ file: index.ts:34 ~ token:', token);
-
+// initialize chrome storage on app install
 const initializeStorage = async () => {
   try {
     const promises = [
@@ -65,34 +65,49 @@ const initializeStorage = async () => {
   }
 };
 
-// check if app custom filter exists, if not create it
-const checkFreshInboxFilters = async () => {
-  try {
-    const promises = [
-      // unsubscribe filter
-      getFilterId({ token, filterAction: FILTER_ACTION.TRASH }),
-      // whitelist filter
-      getFilterId({ token, filterAction: FILTER_ACTION.INBOX }),
-    ];
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-    // wait for all promises to resolve
-    // throw error if any of the promises reject to catch in the catch block
-    await Promise.all(promises.map(promise => promise.catch(err => err)));
-
-    logger.info('✅ Successfully checked for FreshInbox filters after auth.');
-
-    return true;
-  } catch (error) {
-    logger.error({
-      error,
-      msg: 'Failed to initialize storage',
-      fileTrace: 'background/index.ts:37 ~ initializeStorage() - catch block',
-    });
-    return false;
-  }
+// store token in chrome session storage
+const saveTokenToStorage = async (newToken: string, email: string) => {
+  token = newToken;
+  userEmail = email;
+  await chrome.storage.session.set({ [storageKeys.SESSION_TOKEN]: { token: newToken, email } });
 };
 
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const checkToken = async (event: IMessageEvent) => {
+  // ignore events where tokens are not required
+  if (
+    event === IMessageEvent.CHECKS_AFTER_AUTH ||
+    event === IMessageEvent.CHECK_AUTH_TOKEN ||
+    event === IMessageEvent.LAUNCH_AUTH_FLOW
+  )
+    return;
+
+  // if token present, do nothing
+  if (token) return;
+
+  // get token from chrome session storage
+  const tokenStorage = await chrome.storage.session.get(storageKeys.SESSION_TOKEN);
+  if (tokenStorage && tokenStorage[storageKeys.SESSION_TOKEN].token) {
+    // token found in storage
+    token = tokenStorage[storageKeys.SESSION_TOKEN].token;
+    userEmail = tokenStorage[storageKeys.SESSION_TOKEN].email;
+  } else {
+    // token not found in storage
+    // get new token
+    const res = await getAuthToken(userEmail, googleClientId);
+
+    if (res) {
+      await saveTokenToStorage(res, userEmail);
+    } else {
+      token = '';
+      userEmail = '';
+      //TODO: requires sign in, logout user
+      //TODO: send events to content => logout user
+      //TODO: create a re-usable event emitter for b=>c
+    }
+  }
+};
 
 // extension install event listener
 chrome.runtime.onInstalled.addListener(({ reason }) => {
@@ -104,10 +119,21 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
   })();
 });
 
-// listen for messages from content script - email action events
+// logout & clear user data
+const clearUserData = async () => {
+  await logoutUser(token);
+  token = '';
+  userEmail = '';
+  await chrome.storage.session.remove(storageKeys.SESSION_TOKEN);
+};
+
+//SECTION listen for messages from content script - email action events
 chrome.runtime.onMessage.addListener(
-  asyncMessageHandler<IMessageBody, string | boolean | NewsletterEmails[] | string[]>(async request => {
+  asyncMessageHandler<IMessageBody, string | boolean | INewsletterEmails[] | string[]>(async request => {
     logger.info(`received event: ${request.event}`);
+
+    // check for token
+    await checkToken(request.event);
     // switch case
     switch (request.event) {
       // check for user token
@@ -115,7 +141,7 @@ chrome.runtime.onMessage.addListener(
         const res = await getAuthToken(request.userEmail, googleClientId);
 
         if (res) {
-          token = res;
+          await saveTokenToStorage(res, request.userEmail);
           return true;
         } else {
           return false;
@@ -127,7 +153,7 @@ chrome.runtime.onMessage.addListener(
         const res = await launchGoogleAuthFlow(request.userEmail, googleClientId);
 
         if (res) {
-          token = res;
+          await saveTokenToStorage(res, request.userEmail);
           return true;
         } else {
           return false;
@@ -142,7 +168,7 @@ chrome.runtime.onMessage.addListener(
           await chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: true });
         }
         // check app (fresh inbox) custom filters
-        return await checkFreshInboxFilters();
+        return await checkFreshInboxFilters(token);
       }
 
       // unsubscribe email
@@ -216,8 +242,8 @@ chrome.runtime.onMessage.addListener(
 
       // disable app
       case IMessageEvent.DISABLE_FRESH_INBOX: {
-        await logoutUser(token);
-        token = '';
+        // logout & clear user data
+        await clearUserData();
         return true;
       }
 

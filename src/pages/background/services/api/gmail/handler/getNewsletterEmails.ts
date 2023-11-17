@@ -1,6 +1,6 @@
 import { error } from 'console';
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
-import type { NewsletterEmails } from '@src/pages/background/types/background.types';
+import type { INewsletterEmails } from '@src/pages/background/types/background.types';
 import { removeDuplicateEmails } from '@src/pages/background/utils/removeDuplicateEmails';
 import { getUnsubscribedEmails } from './getUnsubscribedEmails';
 import { getWhitelistedEmails } from './getWhitelistedEmails';
@@ -60,7 +60,7 @@ ${request.method} ${request.path}
       const headerMatches = responseText.match(headersRegex);
 
       // sender emails (name, emails)
-      const senderEmails: NewsletterEmails[] = [];
+      const senderEmails: INewsletterEmails[] = [];
 
       // lop through each header match to get names and emails
       for (const header of headerMatches!) {
@@ -118,7 +118,7 @@ export const getNewsletterEmails = async (token: string) => {
   let batches: string[][] = [];
 
   // newsletter emails (processed & filtered)
-  let newsletterEmails: NewsletterEmails[] = [];
+  let newsletterEmails: INewsletterEmails[] = [];
 
   try {
     // do while loop to handle pagination (gmail api has a response limit of 500)

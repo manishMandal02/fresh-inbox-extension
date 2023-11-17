@@ -27,7 +27,11 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
 
   const [activeTab, setActiveTab] = useState<Tabs>('General');
 
+  // TODO: listen to events from  background
+
   //TODO: - handle auth error (401, sign  in required)
+
+  //TODO: - handle gmail api limit exceeded
 
   useEffect(() => {
     setIsAppEnabled(appStatus);

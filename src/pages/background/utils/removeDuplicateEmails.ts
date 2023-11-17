@@ -1,6 +1,6 @@
-import type { NewsletterEmails } from '../types/background.types';
+import type { INewsletterEmails } from '../types/background.types';
 
-const removeDuplicateEmails = (arr: NewsletterEmails[]) => {
+const removeDuplicateEmails = (arr: INewsletterEmails[]) => {
   return arr.filter((v, i, a) => a.findIndex(v2 => v2.email === v.email) === i);
 };
 

@@ -100,7 +100,7 @@ export type GmailMessage = {
   threadId: string;
 };
 
-export type NewsletterEmails = {
+export type INewsletterEmails = {
   email: string;
   name: string;
 };
