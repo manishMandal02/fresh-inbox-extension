@@ -2,6 +2,7 @@ import type { AsyncCallback } from '@src/pages/content/types/content.types';
 import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 import { logger } from '@src/pages/content/utils/logger';
 import { retryAtIntervals } from '@src/pages/content/utils/retryAtIntervals';
+import { throttle } from '@src/pages/content/utils/throttle';
 import wait from '@src/pages/content/utils/wait';
 
 // top most container for inbox and also the single email container
@@ -59,15 +60,12 @@ export const watchEmailTableContainerClick = async (callback: AsyncCallback) => 
     logger.info('Email Container not found', 'content/app/index.tsx:76');
     return;
   }
+  // TODO:
 
-  const handleContainerClick = async () => {
-    await wait(1000);
-
-    await callback();
-  };
+  const throttledCallback = throttle(callback);
 
   // // list to on click
-  emailsContainer.addEventListener('click', asyncHandler(handleContainerClick));
+  emailsContainer.addEventListener('click', asyncHandler(throttledCallback));
 
   // list to mouse up
   // emailsContainer.addEventListener('mouseup', asyncHandler(handleContainerClick));

@@ -292,6 +292,7 @@ export const hideHoverCard = ({ parentElId, forceClose }: HideHoverCardParams) =
   // get hover card el from id
   const hoverCard = document.getElementById(HOVER_CARD_ID);
 
+
   if (!hoverCard) return;
 
   // get parent el from id

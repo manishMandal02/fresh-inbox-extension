@@ -111,6 +111,8 @@ const initializeAssistantBtn = ({
 
 // render assistant buttons on emails table
 const embedAssistantBtnLogic = async (): Promise<boolean> => {
+  // wait for 600ms
+  await wait(600);
   // get all the mails with ids on the page
   const { emails, dateRange, allMailNodes } = getAllMailsOnPage();
 
@@ -203,6 +205,9 @@ export const embedSingleAssistantBtn = async () => {
 
 // embed assistant button with retry logic
 export const embedAssistantBtn = async () => {
+  // check if current url is supported &&
+  // supported url/labels (inbox, starred, all, spam, search)
+  if (!isSupportedURL()) return;
   //
   let containerType = null;
 
@@ -226,11 +231,9 @@ export const embedAssistantBtn = async () => {
     logger.info('Not supported container type');
     return;
   }
-  // check if current url is supported && current tab/page is inbox container
-  // supported url/labels (inbox, starred, all, spam, search)
-  if (isSupportedURL() && containerType === 'inbox') {
+
+  if (containerType === 'inbox') {
     // re-embed the assistant button
-    // this is a supported url
 
     // retry to check if the emails are found on page or not
     // if not, then retry it for 3 times with 2 seconds interval

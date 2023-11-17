@@ -4,12 +4,12 @@ import AppModal from '../view/appModal/AppModal';
 import wait from '../utils/wait';
 import { IMessageBody, IMessageEvent } from '../types/content.types';
 import { createRoot } from 'react-dom/client';
-import { getEmailIdFromPage } from '../view/assistant-button/helper/getEmailIdFromPage';
 import { onURLChange } from '../utils/onURLChange';
 import { getSyncStorageByKey } from '../utils/getStorageByKey';
 import { embedAssistantBtn } from '../view/assistant-button';
 import { watchEmailTableContainerClick } from '@src/pages/background/services/api/gmail/helper/watchEmailTableContainerClick';
 import { showSnackbar } from '../view/elements/snackbar';
+import { getUserEmailIdFromPage } from '../view/assistant-button/helper/getEmailIdFromPage';
 
 // reload on update
 refreshOnUpdate('pages/content');
@@ -49,7 +49,7 @@ window.freshInboxGlobalVariables = {
   await wait(2000);
 
   // query for user email id on page
-  freshInboxGlobalVariables.userEmail = await getEmailIdFromPage();
+  freshInboxGlobalVariables.userEmail = await getUserEmailIdFromPage();
 
   // check if app is enabled or not
   const isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');

@@ -6,6 +6,9 @@ const handleConfirmActionBtnClick = async (ev: MouseEvent, onConfirmClick: () =>
   ev.stopPropagation();
   // execute callback
   hideConfirmModal();
+
+  console.log('🚀 ~ file: confirmModal.ts:10 ~ handleConfirmActionBtnClick ~ hideConfirmModal:');
+
   //
   await onConfirmClick();
   // hide modal
@@ -21,9 +24,11 @@ const handleCheckboxUpdate = async (ev: Event) => {
   //@ts-ignore
   const isChecked = ev.target.checked;
 
+  console.log('🚀 ~ file: confirmModal.ts:27 ~ handleCheckboxUpdate ~ isChecked:', isChecked);
+
   // update checkbox state
   // if checked, update storage (sync) to save preference (checked = user doesn't want to see this message again)
-  await chrome.storage.sync.set({ [storageKeys.SHOW_DELETE_CONFIRM_MSG]: isChecked });
+  await chrome.storage.sync.set({ [storageKeys.SHOW_DELETE_CONFIRM_MSG]: !isChecked });
 };
 
 type ShowConfirmModalParams = {
@@ -38,6 +43,11 @@ const showConfirmModal = async ({ msg, email, onConfirmClick, isBulkDelete }: Sh
   if (!isBulkDelete) {
     // check user preference , if the user want's to see the delete confirmation message or not
     const showDeleteConfirmMsg = await getSyncStorageByKey<boolean>('SHOW_DELETE_CONFIRM_MSG');
+
+    console.log(
+      '🚀 ~ file: confirmModal.ts:47 ~ showConfirmModal ~ showDeleteConfirmMsg:',
+      showDeleteConfirmMsg
+    );
 
     if (typeof showDeleteConfirmMsg === 'boolean' && showDeleteConfirmMsg === false) {
       // user has opted not to see the confirm action msg again
@@ -91,16 +101,12 @@ const showConfirmModal = async ({ msg, email, onConfirmClick, isBulkDelete }: Sh
   backdrop.addEventListener('click', handleCancelActionBtnClick);
 
   // checkbox event listener
-  checkbox.addEventListener('change', ev => {
-    asyncHandler(async () => {
-      await handleCheckboxUpdate(ev);
-    });
+  checkbox.addEventListener('change', async ev => {
+    await handleCheckboxUpdate(ev);
   });
 
-  confirmAction.addEventListener('click', (ev: MouseEvent) => {
-    asyncHandler(async () => {
-      await handleConfirmActionBtnClick(ev, onConfirmClick);
-    });
+  confirmAction.addEventListener('click', async (ev: MouseEvent) => {
+    await handleConfirmActionBtnClick(ev, onConfirmClick);
   });
 
   // disable btn

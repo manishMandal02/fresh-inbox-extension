@@ -69,6 +69,8 @@ export const advanceSearch = async (token: string, formData: SearchFormData) => 
         nextPageToken = null;
       }
 
+      if (!parsedRes.messages) return [];
+
       // get email/message ids from the response
       const extractedIds = parsedRes.messages.map(msg => msg.id);
 

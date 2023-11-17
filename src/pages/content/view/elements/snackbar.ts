@@ -121,9 +121,9 @@ const showSnackbar = <IsError>(params: SnackbarParams<IsError>) => {
   // remove snackbar after 3.5s
   setTimeout(
     asyncHandler(async () => {
-      // container.classList.remove('show');
+      container.classList.remove('show');
       await wait(500);
-      // container.remove();
+      container.remove();
     }),
     3500
   );

@@ -68,6 +68,7 @@ const AdvanceSearch = () => {
 
         if (res) {
           showSnackbar({ title: `Successfully deleted ${searchResEmailIds.length} emails.`, emails: [] });
+          setSearchResEmailIds(null);
         } else {
           showSnackbar<true>({ title: `Failed to delete emails.`, isError: true });
         }

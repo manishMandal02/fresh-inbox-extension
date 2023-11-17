@@ -86,7 +86,7 @@ export const removeEmailFromFilter = async ({
   const newFilterId = await createFilter({
     token,
     emails: [...updatedFilterEmails],
-    filterAction: FILTER_ACTION.INBOX,
+    filterAction: filterAction,
   });
   // save the filter id to chrome sync storage
   await chrome.storage.sync.set({ [storageKey.sync]: newFilterId });

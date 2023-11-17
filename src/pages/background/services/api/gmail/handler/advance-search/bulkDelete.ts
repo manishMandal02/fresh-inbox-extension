@@ -19,7 +19,6 @@ export const bulkDelete = async (token: string, ids: string[]) => {
       const res = await batchDeleteMails(token, batch);
       if (!res) throw new Error('❌ Failed to delete emails');
     }
-    await wait(10000);
     return true;
   } catch (error) {
     logger.error({

@@ -15,7 +15,7 @@ export const getLocalStorageByKey = async <T = string[]>(key: StorageKey): Promi
 export const getSyncStorageByKey = async <T>(key: StorageKey): Promise<T> => {
   const syncStorage = await chrome.storage.sync.get(key);
 
-  if (syncStorage && syncStorage[key]) {
+  if (syncStorage && typeof syncStorage[key] !== 'undefined') {
     return syncStorage[key];
   } else {
     return null;

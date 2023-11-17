@@ -19,12 +19,12 @@ const queryEmailId = (): Promise<string | null> => {
   //
 };
 
-export const getEmailIdFromPage = async (): Promise<string | null> => {
+export const getUserEmailIdFromPage = async (): Promise<string | null> => {
   // queries email id from on the page
   // reties 3 times with interval of 2s
   const email = await retryAtIntervals<string | null>({ retries: 3, interval: 2000, callback: queryEmailId });
 
   if (!email) return null;
 
-  return email;
+  return email as string;
 };
