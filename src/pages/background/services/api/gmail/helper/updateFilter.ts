@@ -22,10 +22,26 @@ export const addEmailToFilter = async ({ token, emails, filterId, filterAction }
   // sync storage (storage id)
   const storageKey = getStorageKeyByAction(filterAction);
 
+  console.log('🚀 ~ file: updateFilter.ts:25 ~ addEmailToFilter ~ storageKey:', storageKey);
+
   const filter = await getFilterById(token, filterId);
+
+  console.log('🚀 ~ file: updateFilter.ts:29 ~ addEmailToFilter ~ filter:', filter);
+
+  // if email already present in the filter, do nothing (return back)
+  const isEmailAlreadyPresent = filter.emails.filter(email => emails.includes(email));
+
+  console.log(
+    '🚀 ~ file: updateFilter.ts:34 ~ addEmailToFilter ~ isEmailAlreadyPresent:',
+    isEmailAlreadyPresent
+  );
+
+  if (isEmailAlreadyPresent.length === emails.length) return true;
 
   // add email to existing filter emails
   const updatedFilterEmails = new Set([...filter.emails, ...emails]);
+
+  console.log('🚀 ~ file: updateFilter.ts:44 ~ addEmailToFilter ~ updatedFilterEmails:', updatedFilterEmails);
 
   // delete existing filter
   await deleteFilter(token, filterId);
@@ -33,10 +49,14 @@ export const addEmailToFilter = async ({ token, emails, filterId, filterAction }
   // create new filter with updated emails
   const newFilterId = await createFilter({ token, filterAction, emails: [...updatedFilterEmails] });
 
+  console.log('🚀 ~ file: updateFilter.ts:52 ~ addEmailToFilter ~ newFilterId:', newFilterId);
+
   // save new filter id to sync storage
   await chrome.storage.sync.set({ [storageKey.sync]: newFilterId });
   // save updated emails to local storage
   await chrome.storage.local.set({ [storageKey.local]: [...updatedFilterEmails] });
+
+  return true;
 };
 
 // remove email from filter
@@ -49,21 +69,27 @@ export const removeEmailFromFilter = async ({
   // sync storage (storage id)
   const storageKey = getStorageKeyByAction(filterAction);
 
-  // get  filter id
   // get filter by id
   const filter = await getFilterById(token, filterId);
+
+  console.log('🚀 ~ file: removeEmailFromFilter.ts:79  ~ filter:', filter);
+
   // update the email list, remove the email
   const updatedFilterEmails = filter.emails.filter(e => !emails.includes(e));
-  // delete current whitelist/inbox filter
+
+  console.log('🚀 ~ file: updateFilter.ts:80 ~ updatedFilterEmails:', updatedFilterEmails);
+
+  // delete current  filter
   await deleteFilter(token, filterId);
+
   // create new one with new emails list
   const newFilterId = await createFilter({
     token,
     emails: [...updatedFilterEmails],
     filterAction: FILTER_ACTION.INBOX,
   });
-  // save the new whitelist filter id
+  // save the filter id to chrome sync storage
   await chrome.storage.sync.set({ [storageKey.sync]: newFilterId });
-  // save the updated whitelisted emails
+  // save the updated  emails to chrome local storage
   await chrome.storage.local.set({ [storageKey.local]: updatedFilterEmails });
 };

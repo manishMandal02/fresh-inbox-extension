@@ -15,9 +15,14 @@ export const whitelistEmail = async ({ token, emails }: APIHandleParams) => {
   try {
     // get whitelist filter id
     const filterId = await getFilterId({ token, filterAction: FILTER_ACTION.INBOX });
+
+    console.log('🚀 ~ file: whitelistEmail.ts:19 ~ whitelistEmail ~ filterId:', filterId);
+
     if (filterId) {
       // add email to filter
       addEmailToFilter({ token, emails, filterId, filterAction: FILTER_ACTION.INBOX });
+
+      console.log('🚀 ~ file: whitelistEmail.ts:25 ~ whitelistEmail ~ addEmailToFilter: success ✅');
 
       // get all the newsletter emails
       const newsletterEmails = await getLocalStorageByKey<NewsletterEmails[]>(storageKeys.NEWSLETTER_EMAILS);

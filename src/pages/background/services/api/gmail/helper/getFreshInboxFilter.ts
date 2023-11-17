@@ -9,13 +9,11 @@ import { FRESH_INBOX_FILTER_EMAIL } from '@src/pages/background/constants/app.co
 import { logger } from '@src/pages/background/utils/logger';
 
 // check if filter is app filter (TRASH or INBOX filter created by fresh inbox)
-
 const isFreshInboxFilter = (filter: GmailFilter, filterAction: FILTER_ACTION): boolean => {
   const labelId = filterAction === FILTER_ACTION.TRASH ? 'TRASH' : 'SPAM';
 
   const checkCondition = () => {
     // check for filter based on labels/action
-
     if (labelId === 'TRASH') {
       // check for TRASH filter
       return filter.action?.addLabelIds?.length === 1 && filter.action.addLabelIds[0] === labelId;
@@ -55,10 +53,17 @@ export const getFreshInboxFilter = async ({
     let emails: string[] = [];
 
     for (const filter of parsedRes.filter) {
+      // check if this filter is a fresh-inbox filter (we only check for matching labels/actions here)
       if (!isFreshInboxFilter(filter, filterAction)) continue;
-      // get emails from the filter criteria
+
+      console.log('🚀 ~ file: getFreshInboxFilter.ts:59 ~ isFreshInboxFilter: true ✅');
+
+      // if yes,  get emails from the filter criteria
       const queryEmails = getEmailsFromFilterQuery(filter.criteria.query);
 
+      console.log('🚀 ~ file: getFreshInboxFilter.ts:65 ~ queryEmails:', queryEmails);
+
+      // check if this filter has the fresh-inbox filter identity email
       if (queryEmails.includes(FRESH_INBOX_FILTER_EMAIL)) {
         filterId = filter.id;
         emails = queryEmails;
@@ -66,6 +71,7 @@ export const getFreshInboxFilter = async ({
         break;
       }
     }
+    console.log('🚀 ~ file: getFreshInboxFilter.ts:76 ~ filterId:', filterId);
     if (filterId) {
       return {
         filterId,

@@ -219,6 +219,52 @@ $text-mid-gray: #505050;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
+.freshInbox-snackbar {
+  position: fixed;
+  bottom: 16px;
+  left: 0px;
+  display: flex;
+  border-radius: 4px;
+  transform: translateX(-120%) translateY(0);
+  height: 5.5vh;
+  min-width: 7vw;
+  width: fit-content;
+  z-index: 10000;
+  background-color: #eef0f1;
+  transition: transform 0.25s ease-in;
+
+  > span {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #212020;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 12px 14px 12px;
+
+    .icon-wrapper {
+      margin-right: 6px;
+      > svg {
+        width: 24px;
+        height: 24px;
+        opacity: 0.8;
+      }
+    }
+    .snackbar-message {
+      text-align: start;
+      opacity: 0.9;
+      > p {
+        margin: 0;
+        font-size: 12px;
+        color: #2c2c2c;
+        font-weight: 400;
+        margin-top: 0px;
+      }
+    }
+  }
+}
+
 .freshInbox-snackbar.show {
   transform: translateX(2.5%) translateY(0);
 }

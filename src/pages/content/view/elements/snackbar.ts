@@ -75,6 +75,8 @@ type SnackbarParams<IsError> = IsError extends ErrorType ? ErrorSnackbarParams :
 const showSnackbar = <IsError>(params: SnackbarParams<IsError>) => {
   const { title } = params;
 
+  console.log('🚀 ~ file: snackbar.ts:78 ~ showSnackbar ~ title:', title);
+
   const container = document.createElement('div');
   const label = document.createElement('span');
 
@@ -89,7 +91,7 @@ const showSnackbar = <IsError>(params: SnackbarParams<IsError>) => {
     container.classList.add('error');
   } else if (params.emails && params.emails.length > 0) {
     const emails = params.emails;
-    emailMessage = emails.length > 1 ? `${emails.length} emails` : limitCharLength(emails[0]);
+    emailMessage = emails.length > 1 ? `${emails.length} emails` : limitCharLength(emails[0], 42);
     // success class
     container.classList.add('success');
   }
@@ -99,9 +101,9 @@ const showSnackbar = <IsError>(params: SnackbarParams<IsError>) => {
   <span class='icon-wrapper'>
   ${snackbarIcon}
   </span>
-  <span>
+  <span class='snackbar-message'>
   ${title} 
-  ${emailMessage && `<br/> <span>${emailMessage}</span>`}
+  ${emailMessage && `<br/> <p>${emailMessage}</p>`}
   </span>
   `;
 
@@ -119,9 +121,9 @@ const showSnackbar = <IsError>(params: SnackbarParams<IsError>) => {
   // remove snackbar after 3.5s
   setTimeout(
     asyncHandler(async () => {
-      container.classList.remove('show');
+      // container.classList.remove('show');
       await wait(500);
-      container.remove();
+      // container.remove();
     }),
     3500
   );

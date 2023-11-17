@@ -6,6 +6,8 @@ export const checkFilterIdExists = async (token: string, filterId: string): Prom
   try {
     const filter = await getFilterById(token, filterId);
 
+    console.log('🚀 ~ file: checkFilterIdExists.ts:9 ~ checkFilterIdExists ~ filter:', filter);
+
     if (filter && filter.filterId) {
       return true;
     } else {

@@ -154,18 +154,19 @@ const embedAssistantBtnLogic = async (): Promise<boolean> => {
 
     const name = emailNode.getAttribute('name');
 
-    // skips the iteration if the current email is not a newsletter email
-    if (!newsletterEmails.includes(email)) {
-      // assistant button won't be rendered
-      continue;
-    }
-
-    // embed assistant  button
     // container to add unsubscribe button
     const assistantBtnContainer = emailNode.closest('div');
 
-    // check if assistant button is already embedded, if yes do nothing
-    if (assistantBtnContainer.querySelector('span.freshInbox-assistantBtn')) continue;
+    // skips the iteration
+    // if the current email is not identified as a newsletter email or
+    // if assistant button is already embedded, if yes do nothing
+    if (
+      !newsletterEmails.includes(email) ||
+      assistantBtnContainer.querySelector('span.freshInbox-assistantBtn')!!
+    ) {
+      // assistant button won't be rendered
+      continue;
+    }
 
     // embed assistant button
     initializeAssistantBtn({ name, email, assistantBtnContainer });

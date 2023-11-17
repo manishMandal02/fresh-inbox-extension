@@ -9,6 +9,7 @@ import { onURLChange } from '../utils/onURLChange';
 import { getSyncStorageByKey } from '../utils/getStorageByKey';
 import { embedAssistantBtn } from '../view/assistant-button';
 import { watchEmailTableContainerClick } from '@src/pages/background/services/api/gmail/helper/watchEmailTableContainerClick';
+import { showSnackbar } from '../view/elements/snackbar';
 
 // reload on update
 refreshOnUpdate('pages/content');
