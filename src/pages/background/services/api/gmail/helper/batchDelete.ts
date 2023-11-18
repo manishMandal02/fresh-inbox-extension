@@ -1,3 +1,4 @@
+import { apiErrorHandler } from '@src/pages/background/utils/apiErrorHandler';
 import { logger } from '@src/pages/background/utils/logger';
 
 // delete all mails in batches for faster processing
@@ -20,7 +21,15 @@ export const batchDeleteMails = async (token: string, ids: string[]) => {
 
   try {
     // batch delete emails
-    await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/batchModify', fetchOptions);
+    const res = await fetch(
+      'https://gmail.googleapis.com/gmail/v1/users/me/messages/batchModify',
+      fetchOptions
+    );
+    const parsedRes = await res.json();
+
+    // handle api errors
+    apiErrorHandler(parsedRes);
+
     return true;
   } catch (error) {
     logger.error({

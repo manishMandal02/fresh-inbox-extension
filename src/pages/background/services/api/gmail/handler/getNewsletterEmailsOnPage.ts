@@ -2,6 +2,7 @@ import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
 import type { DataOnPage, GetMsgAPIResponse } from '@src/pages/background/types/background.types';
 import { getWhitelistedEmails } from './getWhitelistedEmails';
 import { logger } from '@src/pages/background/utils/logger';
+import { apiErrorHandler } from '@src/pages/background/utils/apiErrorHandler';
 
 type GetNewsletterEmailsOnPageParams = {
   token: string;
@@ -37,6 +38,9 @@ export const getNewsletterEmailsOnPage = async ({
 
     // parse response
     const parsedRes: GetMsgAPIResponse = await res.json();
+
+    // handle api errors
+    apiErrorHandler(parsedRes);
 
     if (!parsedRes.messages) {
       logger.info(

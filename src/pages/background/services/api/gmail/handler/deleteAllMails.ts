@@ -2,6 +2,7 @@ import { logger } from './../../../../utils/logger';
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
 import type { APIHandleParams, GetMsgAPIResponse } from '@src/pages/background/types/background.types';
 import { batchDeleteMails } from '../helper/batchDelete';
+import { apiErrorHandler } from '@src/pages/background/utils/apiErrorHandler';
 
 // delete all mails
 export const deleteAllMails = async ({ token, emails }: APIHandleParams) => {
@@ -34,6 +35,9 @@ export const deleteAllMails = async ({ token, emails }: APIHandleParams) => {
       );
       // parse res
       parsedRes = await res.json();
+
+      // handle api errors
+      apiErrorHandler(parsedRes);
 
       // stop if no messages found
       if (!parsedRes.messages) {

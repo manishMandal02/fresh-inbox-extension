@@ -2,6 +2,7 @@ import { FILTER_ACTION, FilterEmails, GmailFilter } from '@src/pages/background/
 import { getEmailsFromFilterQuery } from './getEmailsFromFilterQuery';
 import { FRESH_INBOX_FILTER_EMAIL } from '@src/pages/background/constants/app.constants';
 import { logger } from '@src/pages/background/utils/logger';
+import { apiErrorHandler } from '@src/pages/background/utils/apiErrorHandler';
 
 // get  filter by Id
 export const getFilterById = async (token: string, id: string): Promise<FilterEmails | null> => {
@@ -18,6 +19,9 @@ export const getFilterById = async (token: string, id: string): Promise<FilterEm
     );
 
     const parsedRes: GmailFilter | null = await res.json();
+
+    // handle api errors
+    apiErrorHandler(parsedRes);
 
     if (!parsedRes.id) {
       throw new Error('❌ Filter not found');
@@ -91,14 +95,17 @@ export const createFilter = async ({
   try {
     const res = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/settings/filters`, fetchOptions);
 
-    const newFilter: GmailFilter = await res.json();
+    const parsedRes: GmailFilter = await res.json();
+
+    // handle api errors
+    apiErrorHandler(parsedRes);
 
     logger.info(
       '✅ Successfully created filter',
       'background/services/api/gmail/helper/gmailFilters.ts:98 ~ createFilter()'
     );
 
-    return newFilter.id;
+    return parsedRes.id;
   } catch (error) {
     logger.error({
       error,
@@ -119,7 +126,15 @@ export const deleteFilter = async (token: string, id: string) => {
     },
   };
   try {
-    await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/settings/filters/${id}`, fetchOptions);
+    const res = await fetch(
+      `https://gmail.googleapis.com/gmail/v1/users/me/settings/filters/${id}`,
+      fetchOptions
+    );
+
+    const parsedRes = await res.json();
+
+    // handle api errors
+    apiErrorHandler(parsedRes);
 
     logger.info(
       '✅ Successfully deleted filter',

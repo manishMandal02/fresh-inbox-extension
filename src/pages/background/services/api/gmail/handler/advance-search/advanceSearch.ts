@@ -1,5 +1,6 @@
 import { API_MAX_RESULT } from '@src/pages/background/constants/app.constants';
 import type { GetMsgAPIResponse, SearchFormData } from '@src/pages/background/types/background.types';
+import { apiErrorHandler } from '@src/pages/background/utils/apiErrorHandler';
 import { logger } from '@src/pages/background/utils/logger';
 
 const buildSearchQuery = ({ keyword, afterDate, beforeDate, isRead, isUnRead }: SearchFormData) => {
@@ -51,6 +52,9 @@ export const advanceSearch = async (token: string, formData: SearchFormData) => 
 
       // parse response
       const parsedRes: GetMsgAPIResponse = await res.json();
+
+      // handle api errors
+      apiErrorHandler(parsedRes);
 
       if (parsedRes.error) {
         logger.error({

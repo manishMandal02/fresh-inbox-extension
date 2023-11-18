@@ -7,6 +7,7 @@ import {
 import { getEmailsFromFilterQuery } from './getEmailsFromFilterQuery';
 import { FRESH_INBOX_FILTER_EMAIL } from '@src/pages/background/constants/app.constants';
 import { logger } from '@src/pages/background/utils/logger';
+import { apiErrorHandler } from '@src/pages/background/utils/apiErrorHandler';
 
 // check if filter is app filter (TRASH or INBOX filter created by fresh inbox)
 const isFreshInboxFilter = (filter: GmailFilter, filterAction: FILTER_ACTION): boolean => {
@@ -45,7 +46,11 @@ export const getFreshInboxFilter = async ({
 
   try {
     const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/settings/filters', fetchOptions);
+
     const parsedRes: GmailFilters | null = await res.json();
+
+    // handle api errors
+    apiErrorHandler(parsedRes);
 
     if (!parsedRes.filter) throw new Error('Failed to get filters');
 
