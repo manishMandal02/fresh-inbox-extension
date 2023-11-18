@@ -2,15 +2,31 @@ import '@pages/popup/Popup.css';
 
 const Popup = () => {
   return (
-    <div className='App'>
-      <header className='App-header'>
-        <p className='text-lime-400'>
-          Edit <code>src/pages/popup/Popup.tsx</code> and save to reload.
-        </p>
-        <a className='App-link' href='https://reactjs.org' target='_blank' rel='noopener noreferrer'>
-          Learn React!
+    <div className='flex relative items-center justify-center h-full w-full flex-col bg-emerald-100/25'>
+      <div className='flex items-center -mt-2'>
+        <img src='/icon-128.png' className='w-12 h-12 mr-2 mt-px' />
+        <span className='text-2xl text-slate-800 font-medium'>Fresh Inbox</span>
+      </div>
+      <a
+        className='mt-4 underline  text-slate-900 hover:font-medium transition-all duration-200'
+        href='https://mail.google.com/mail/u/'
+        target='_blank'
+        rel='noopener noreferrer'
+      >
+        Open Gmail
+      </a>
+      <div className='absolute bottom-1.5 left-auto text-[.7rem] tracking-tight text-slate-700 font-light'>
+        Consider leaving a review if FreshInbox is helpful.&nbsp;
+        {/* TODO: update the review link */}
+        <a
+          className='underline'
+          href='https://chromewebstore.google.com/'
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          here
         </a>
-      </header>
+      </div>
     </div>
   );
 };

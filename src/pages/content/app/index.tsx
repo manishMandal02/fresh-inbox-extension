@@ -9,8 +9,6 @@ import { getSyncStorageByKey } from '../utils/getStorageByKey';
 import { embedAssistantBtn } from '../view/assistant-button';
 import { watchEmailTableContainerClick } from '@src/pages/background/services/api/gmail/helper/watchEmailTableContainerClick';
 import { getUserEmailIdFromPage } from '../view/assistant-button/helper/getEmailIdFromPage';
-import { asyncMessageHandler } from '../utils/asyncMessageHandler';
-import { logger } from '../utils/logger';
 
 // reload on update
 refreshOnUpdate('pages/content');
