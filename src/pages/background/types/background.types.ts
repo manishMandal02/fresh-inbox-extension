@@ -1,4 +1,3 @@
-import { error } from 'console';
 export enum IMessageEvent {
   UNSUBSCRIBE = 'unsubscribe',
   DELETE_ALL_MAILS = 'deleteAllMails',
@@ -16,6 +15,10 @@ export enum IMessageEvent {
   CHECKS_AFTER_AUTH = 'checksAfterAuth',
   ADVANCE_SEARCH = 'advanceSearch',
   BULK_DELETE = 'bulkDelete',
+  // for content script
+  LOGOUT_USER = 'logoutUser',
+  API_LIMIT_REACHED = 'apiLimitReached',
+  BACKGROUND_ERROR = 'backgroundError',
 }
 
 export enum FILTER_ACTION {
@@ -63,6 +66,8 @@ export interface IMessageBody {
   dataOnPage?: DataOnPage;
   // for advance search event
   advanceSearch?: SearchFormData;
+  // for when events are sent from background to content script
+  msg?: string;
 }
 
 export type GetMsgAPIResponse = {

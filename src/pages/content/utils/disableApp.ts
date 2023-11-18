@@ -1,4 +1,5 @@
 import { IMessageBody, IMessageEvent } from '../types/content.types';
+import { removeAssistantBtn } from '../view/assistant-button/helper/removeAssistantBtn';
 import { hideLoadingSnackbar, showLoadingSnackbar, showSnackbar } from '../view/elements/snackbar';
 import { logger } from './logger';
 
@@ -9,15 +10,7 @@ export const disableApp = async () => {
   // disable app
   const res = await chrome.runtime.sendMessage<IMessageBody>({ event: IMessageEvent.DISABLE_FRESH_INBOX });
 
-  //  remove assistant buttons, if any
-  const assistantButtons = document.getElementsByClassName('freshInbox-assistantBtn');
-
-  if (assistantButtons.length < 1) return;
-
-  for (const btn of assistantButtons) {
-    // remove the button
-    btn.remove();
-  }
+  removeAssistantBtn();
 
   hideLoadingSnackbar();
 
@@ -28,5 +21,6 @@ export const disableApp = async () => {
   } else {
     showSnackbar<true>({ title: 'Failed to disable Fresh Inbox', isError: true });
 
-    logger.dev('❌ Failed to disable Fresh Inbox', 'authModal.ts:33 ~ handleDisableBtnClick()'); }
+    logger.dev('❌ Failed to disable Fresh Inbox', 'authModal.ts:33 ~ handleDisableBtnClick()');
+  }
 };

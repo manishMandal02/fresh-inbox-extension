@@ -19,6 +19,7 @@ import { getSyncStorageByKey } from './utils/getStorageByKey';
 import { advanceSearch } from './services/api/gmail/handler/advance-search/advanceSearch';
 import { bulkDelete } from './services/api/gmail/handler/advance-search/bulkDelete';
 import { checkFreshInboxFilters } from './services/api/gmail/helper/checkFreshInboxFilters';
+import { sendMsgToTab } from './utils/sendMsgToTab';
 
 reloadOnUpdate('pages/background');
 
@@ -27,10 +28,12 @@ reloadOnUpdate('pages/content/style.scss');
 
 logger.info('🏁 background script loaded');
 
-// TODO: fix: sometimes the token is empty (usually after staying sometime on the tab)
-// user email & toke
+// user email & token
 let userEmail = '';
 let token = '';
+
+// google client id from env variables for google auth
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 // initialize chrome storage on app install
 const initializeStorage = async () => {
@@ -65,8 +68,6 @@ const initializeStorage = async () => {
   }
 };
 
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
 // store token in chrome session storage
 const saveTokenToStorage = async (newToken: string, email: string) => {
   token = newToken;
@@ -74,7 +75,15 @@ const saveTokenToStorage = async (newToken: string, email: string) => {
   await chrome.storage.session.set({ [storageKeys.SESSION_TOKEN]: { token: newToken, email } });
 };
 
-const checkToken = async (event: IMessageEvent) => {
+// logout & clear user data
+export const clearUserData = async () => {
+  await logoutUser(token);
+  token = '';
+  userEmail = '';
+  await chrome.storage.session.remove(storageKeys.SESSION_TOKEN);
+};
+
+const checkUserToken = async (event: IMessageEvent) => {
   // ignore events where tokens are not required
   if (
     event === IMessageEvent.CHECKS_AFTER_AUTH ||
@@ -100,11 +109,12 @@ const checkToken = async (event: IMessageEvent) => {
     if (res) {
       await saveTokenToStorage(res, userEmail);
     } else {
-      token = '';
-      userEmail = '';
-      //TODO: requires sign in, logout user
-      //TODO: send events to content => logout user
-      //TODO: create a re-usable event emitter for b=>c
+      // clear user data, revoke token, clear storage.
+      await clearUserData();
+      // logout user in the content script
+      await sendMsgToTab({
+        event: IMessageEvent.LOGOUT_USER,
+      });
     }
   }
 };
@@ -119,22 +129,15 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
   })();
 });
 
-// logout & clear user data
-const clearUserData = async () => {
-  await logoutUser(token);
-  token = '';
-  userEmail = '';
-  await chrome.storage.session.remove(storageKeys.SESSION_TOKEN);
-};
-
 //SECTION listen for messages from content script - email action events
 chrome.runtime.onMessage.addListener(
   asyncMessageHandler<IMessageBody, string | boolean | INewsletterEmails[] | string[]>(async request => {
     logger.info(`received event: ${request.event}`);
 
     // check for token
-    await checkToken(request.event);
-    // switch case
+    await checkUserToken(request.event);
+
+    //  handle all the  events
     switch (request.event) {
       // check for user token
       case IMessageEvent.CHECK_AUTH_TOKEN: {
@@ -242,7 +245,7 @@ chrome.runtime.onMessage.addListener(
 
       // disable app
       case IMessageEvent.DISABLE_FRESH_INBOX: {
-        // logout & clear user data
+        // clear user data, revoke token, clear storage.
         await clearUserData();
         return true;
       }

@@ -5,6 +5,7 @@ import { removeDuplicateEmails } from '@src/pages/background/utils/removeDuplica
 import { getUnsubscribedEmails } from './getUnsubscribedEmails';
 import { getWhitelistedEmails } from './getWhitelistedEmails';
 import { logger } from '@src/pages/background/utils/logger';
+import { apiErrorHandler } from '@src/pages/background/utils/apiErrorHandler';
 
 type GetSendEmailFromIdsParams = {
   messageIds: string[];
@@ -135,9 +136,7 @@ export const getNewsletterEmails = async (token: string) => {
       const parsedRes = await res.json();
 
       // handle api errors
-      if (parsedRes.error && parsedRes.error.code === 401) throw new Error('Invalid token');
-
-      if (parsedRes.error) throw new Error(parsedRes.error.message);
+      apiErrorHandler(parsedRes);
 
       if (parsedRes.messages && parsedRes.messages.length < 1) throw new Error('No emails found');
 

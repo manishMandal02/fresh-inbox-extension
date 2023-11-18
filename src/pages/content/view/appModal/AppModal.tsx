@@ -9,6 +9,11 @@ import AdvanceSearch from './tabs/advance-search';
 
 import FreshInboxIcon from './../../assets/app-icon-128.png';
 import Tooltip from '../elements/TooltipReact';
+import { IMessageEvent, type IMessageBody } from '../../types/content.types';
+import { asyncMessageHandler } from '../../utils/asyncMessageHandler';
+import { logger } from '../../utils/logger';
+import { showSnackbar } from '../elements/snackbar';
+import { removeAssistantBtn } from '../assistant-button/helper/removeAssistantBtn';
 
 const tabs = ['General', 'Newsletter', 'Unsubscribed', 'Whitelisted', 'Advance Search'] as const;
 
@@ -27,11 +32,49 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
 
   const [activeTab, setActiveTab] = useState<Tabs>('General');
 
-  // TODO: listen to events from  background
+  // listen to events from  background
+  chrome.runtime.onMessage.addListener(
+    asyncMessageHandler<IMessageBody, boolean | string>(async request => {
+      switch (request.event) {
+        // token missing or invalid, logout user from fresh-inbox
+        case IMessageEvent.LOGOUT_USER: {
+          showSnackbar<true>({
+            isError: true,
+            title: 'Sign in required.',
+          });
+          setIsAuthed(false);
 
-  //TODO: - handle auth error (401, sign  in required)
+          if (isAppEnabled) setIsModalOpen(true);
+          removeAssistantBtn();
 
-  //TODO: - handle gmail api limit exceeded
+          return true;
+        }
+
+        // fresh-inbox api limit reached - show error snackbar
+        case IMessageEvent.API_LIMIT_REACHED: {
+          showSnackbar<true>({
+            isError: true,
+            title: 'API limit has exceeded, reach out to the developer.',
+          });
+          return true;
+        }
+
+        // some unhandled error from the background - show error snackbar
+        case IMessageEvent.BACKGROUND_ERROR: {
+          showSnackbar<true>({
+            isError: true,
+            title: 'Something went wrong in the background. \n Please reload the page.',
+          });
+          return true;
+        }
+
+        default: {
+          logger.info(`Received unknown event in content script: ${request.event}`);
+          return 'Unknown event.';
+        }
+      }
+    })
+  );
 
   useEffect(() => {
     setIsAppEnabled(appStatus);
@@ -107,21 +150,17 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
           {/* modal card */}
           <div className='w-[65rem] h-[40rem] rounded-md shadow-lg z-50 shadow-slate-600 bg-slate-100'>
             {isAuthed ? (
-              <>
-                <Tabs tabs={[...tabs]} activeTab={activeTab} setActiveTab={setActiveTab}>
-                  {renderActiveTab(activeTab)}
-                </Tabs>
-              </>
+              <Tabs tabs={[...tabs]} activeTab={activeTab} setActiveTab={setActiveTab}>
+                {renderActiveTab(activeTab)}
+              </Tabs>
             ) : (
-              <>
-                <AuthCard
-                  isAppEnabled={isAppEnabled}
-                  onClose={() => {
-                    setIsModalOpen(false);
-                    setIsAppEnabled(true);
-                  }}
-                />
-              </>
+              <AuthCard
+                isAppEnabled={isAppEnabled}
+                onClose={() => {
+                  setIsModalOpen(false);
+                  setIsAppEnabled(true);
+                }}
+              />
             )}
           </div>
         </div>
