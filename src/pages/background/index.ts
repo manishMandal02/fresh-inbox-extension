@@ -119,15 +119,6 @@ const checkUserToken = async (event: IMessageEvent) => {
   }
 };
 
-const changeAppIconToActive = async () => {
-  const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-
-  console.log('🚀 ~ file: index.ts:128 ~ changeAppIconToActive ~ tab:', tab);
-
-  if (!tab?.id) return;
-  await chrome.action.setIcon({ path: '/icon-128.png', tabId: tab.id });
-};
-
 // extension install event listener
 chrome.runtime.onInstalled.addListener(({ reason }) => {
   (async () => {

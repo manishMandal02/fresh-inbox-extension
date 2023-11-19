@@ -7,7 +7,6 @@ export const sendMsgToTab = async (msg: IMessageBody) => {
   try {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
 
-    console.log('🚀 ~ file: sendMsgToTab.ts:10 ~ sendMsgToTab ~ tab:', tab);
 
     if (tab?.id) {
       const res = await chrome.tabs.sendMessage(tab.id, msg);

@@ -29,12 +29,12 @@ const manifest: chrome.runtime.ManifestV3 = {
       css: ['assets/css/contentStyle<KEY>.chunk.css'],
     },
   ],
-  // web_accessible_resources: [
-  //   {
-  //     resources: ['assets/js/*.js', 'assets/css/*.css', 'icon-128.png', 'icon-34.png'],
-  //     matches: ['*://*/*'],
-  //   },
-  // ],
+  web_accessible_resources: [
+    {
+      resources: ['assets/js/*.js', 'assets/css/*.css', 'icon-128.png', 'icon-34.png'],
+      matches: ['*://*/*'],
+    },
+  ],
 
   key: `MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7+z3sOjS66zHoBbLlR1nFrm0l1sXmedfBZqzGtzqp6OIlJPCF6DB3y+914cf/3TLf3LIf3LpgtSXTsk1E+isXCoIDEx881qtTsbK/uxG39mVDBlBI2rLxNSBqnZCFvaO4X9m2L6gRAZEv6vUnn7rgPLLslXGLvlXh+6l17kS1iSbAuTWZwKVBpTW0Lm26AT1avUzb+a4I7T4JkAt/6dysMk+MsDbMwKwWgw/KERI9j707wyuYUP9lXdN7SWtuooaLn9ZqhD3dSWrMIOqnTvfmq3onRWudThlFnblOFPBvmjnI64NAl9Mo/nKspJJPmY1SxhkobW74g7jlnElse4HGwIDAQAB`,
 };
