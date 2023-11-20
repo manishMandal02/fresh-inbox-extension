@@ -1,9 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Fresh Inbox",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Clean Inbox, Total Privacy: Fresh Inbox Delivers Both.",
-  "options_page": "src/pages/options/index.html",
   "background": {
     "service_worker": "src/pages/background/index.js",
     "type": "module"
@@ -15,7 +14,8 @@
   ],
   "action": {
     "default_popup": "src/pages/popup/index.html",
-    "default_icon": "icon-128.png"
+    "default_icon": "icon-128.png",
+    "default_title": "Fresh Inbox"
   },
   "icons": {
     "128": "icon-128.png"
@@ -29,7 +29,7 @@
         "src/pages/content/index.js"
       ],
       "css": [
-        "assets/css/contentStyle16999720735.chunk.css"
+        "assets/css/contentStyle17004807921.chunk.css"
       ]
     }
   ],

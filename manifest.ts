@@ -12,7 +12,8 @@ const manifest: chrome.runtime.ManifestV3 = {
     service_worker: 'src/pages/background/index.js',
     type: 'module',
   },
-  permissions: ['activeTab', 'identity', 'storage', 'activeTab'],
+  // TODO: check if this works without tabs or activeTab permissions
+  permissions: ['identity', 'storage'],
   action: {
     default_popup: 'src/pages/popup/index.html',
     default_icon: 'icon-128.png',

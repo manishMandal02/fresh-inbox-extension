@@ -25,6 +25,8 @@ const googleAuth = async (email: string, clientId: string, interactive: boolean)
 
     if (!responseURL && typeof responseURL !== 'string') throw new Error('Failed to complete auth.');
 
+    console.log('🚀 ~ file: index.ts:28 ~ googleAuth ~ responseURL:', responseURL);
+
     const token = (responseURL as string).split('#')[1]?.split('=')[1].split('&')[0];
 
     if (!token) throw new Error('Token not found.');
@@ -50,7 +52,7 @@ export const getAuthToken = async (email: string, clientId: string): Promise<str
   await googleAuth(email, clientId, false);
 
 // logout user
-export const logoutUser = async (token: string) => {
+export const logoutUser = async (token: string, disableApp = true) => {
   try {
     // revoke token from google OAuth service (token becomes invalid)
     const url = 'https://accounts.google.com/o/oauth2/revoke?token=' + token;
@@ -60,7 +62,7 @@ export const logoutUser = async (token: string) => {
 
     const promises = [
       // disable app
-      chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: false }),
+      chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: !disableApp }),
       // clear local storage
       // set newsletter emails
       chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: [] }),
@@ -85,4 +87,3 @@ export const logoutUser = async (token: string) => {
     return false;
   }
 };
-

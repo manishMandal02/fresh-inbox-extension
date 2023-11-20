@@ -76,8 +76,8 @@ const saveTokenToStorage = async (newToken: string, email: string) => {
 };
 
 // logout & clear user data
-export const clearUserData = async () => {
-  await logoutUser(token);
+export const clearUserData = async (disableApp = false) => {
+  await logoutUser(token, disableApp);
   token = '';
   userEmail = '';
   await chrome.storage.session.remove(storageKeys.SESSION_TOKEN);
@@ -110,7 +110,7 @@ const checkUserToken = async (event: IMessageEvent) => {
       await saveTokenToStorage(res, userEmail);
     } else {
       // clear user data, revoke token, clear storage.
-      await clearUserData();
+      await clearUserData(false);
       // logout user in the content script
       await sendMsgToTab({
         event: IMessageEvent.LOGOUT_USER,
@@ -135,7 +135,7 @@ chrome.runtime.onMessage.addListener(
     logger.info(`received event: ${request.event}`);
 
     // check for token
-    await checkUserToken(request.event);
+    // await checkUserToken(request.event);
 
     //  handle all the  events
     switch (request.event) {
@@ -144,7 +144,7 @@ chrome.runtime.onMessage.addListener(
         const res = await getAuthToken(request.userEmail, googleClientId);
 
         if (res) {
-          await saveTokenToStorage(res, request.userEmail);
+          // await saveTokenToStorage(res, request.userEmail);
           return true;
         } else {
           return false;

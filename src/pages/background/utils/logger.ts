@@ -39,7 +39,7 @@ export const logger = {
       case errorMessage.unauthorized:
         (async () => {
           await sendMsgToTab({ event: IMessageEvent.LOGOUT_USER });
-          await clearUserData();
+          await clearUserData(false);
         })();
         break;
       case errorMessage.apiLimitExceed:
