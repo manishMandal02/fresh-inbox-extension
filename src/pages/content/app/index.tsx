@@ -53,6 +53,8 @@ window.freshInboxGlobalVariables = {
   // check if app is enabled or not
   const isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
 
+  console.log('🚀 ~ file: index.tsx:56 ~ isAppEnabled:', isAppEnabled);
+
   // is user Authed or not? (handle multiple user) send email id from the content script
   const isTokenValid = await chrome.runtime.sendMessage<IMessageBody>({
     event: IMessageEvent.CHECK_AUTH_TOKEN,

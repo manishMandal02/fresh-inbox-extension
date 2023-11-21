@@ -388,13 +388,13 @@ export const Newsletter = () => {
       {/* bottom container */}
       <div className='w-full h-[95%] flex flex-col justify-center items-start'>
         {/* render table after loading or show error msg if failed */}
-        {isFetchingNewsletterEmails ? (
-          <>
+        {!isFetchingNewsletterEmails ? (
+          <span className='flex items-center justify-center flex-col w-full'>
             <Spinner size='lg' />
-            <span className='text-xs text-slate-500 font-extralight text-center mt-1.5 flex items-center'>
+            <span className='text-xs text-slate-500 font-extralight text-center flex items-center mt-4'>
               <InfoIcon /> This may take a few seconds, do not close or refresh the page.
             </span>
-          </>
+          </span>
         ) : !errorMsg ? (
           renderTable()
         ) : (

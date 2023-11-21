@@ -32,6 +32,8 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
 
   const [activeTab, setActiveTab] = useState<Tabs>('General');
 
+  // TODO: fix the auth/token part when app is starting, it should not run if no token
+
   // listen to events from  background
   chrome.runtime.onMessage.addListener(
     asyncMessageHandler<IMessageBody, boolean | string>(async request => {
@@ -81,14 +83,14 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
   }, [appStatus]);
 
   useEffect(() => {
-    setIsAuthed(isAppEnabled);
-  }, [isAppEnabled]);
+    setIsAuthed(isTokenValid);
+  }, [isTokenValid]);
 
   useEffect(() => {
-    if (isAppEnabled && !isTokenValid) {
+    if (isAppEnabled && !isAuthed) {
       setIsModalOpen(true);
     }
-  }, [appStatus, isTokenValid]);
+  }, [isAppEnabled, isAuthed]);
 
   const handleOpenSettings = () => {
     setIsModalOpen(true);
@@ -134,7 +136,7 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
             src={FreshInboxIcon}
             alt='icon'
             className='w-5 h-5 mr-1.5'
-            style={!isAppEnabled ? { filter: 'grayscale(100%)' } : {}}
+            style={!isAppEnabled || !isAuthed ? { filter: 'grayscale(100%)' } : {}}
           />{' '}
           Fresh Inbox
         </button>
@@ -159,6 +161,7 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
                 onClose={() => {
                   setIsModalOpen(false);
                   setIsAppEnabled(true);
+                  setIsAuthed(true);
                 }}
               />
             )}

@@ -1,8 +1,6 @@
 import { AUTH_SCOPE, storageKeys } from '../../constants/app.constants';
 import { logger } from '../../utils/logger';
 
-export const USER_ACCESS_DENIED = 'The user did not approve access.';
-
 // custom google OAuth2 flow
 const googleAuth = async (email: string, clientId: string, interactive: boolean): Promise<string | null> => {
   const redirectUri = `https://${chrome.runtime.id}.chromiumapp.org/`;

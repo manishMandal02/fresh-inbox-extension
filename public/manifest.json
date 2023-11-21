@@ -8,7 +8,6 @@
     "type": "module"
   },
   "permissions": [
-    "activeTab",
     "identity",
     "storage"
   ],
@@ -29,7 +28,7 @@
         "src/pages/content/index.js"
       ],
       "css": [
-        "assets/css/contentStyle17004807921.chunk.css"
+        "assets/css/contentStyle17005737172.chunk.css"
       ]
     }
   ],
@@ -46,5 +45,5 @@
       ]
     }
   ],
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7+z3sOjS66zHoBbLlR1nFrm0l1sXmedfBZqzGtzqp6OIlJPCF6DB3y+914cf/3TLf3LIf3LpgtSXTsk1E+isXCoIDEx881qtTsbK/uxG39mVDBlBI2rLxNSBqnZCFvaO4X9m2L6gRAZEv6vUnn7rgPLLslXGLvlXh+6l17kS1iSbAuTWZwKVBpTW0Lm26AT1avUzb+a4I7T4JkAt/6dysMk+MsDbMwKwWgw/KERI9j707wyuYUP9lXdN7SWtuooaLn9ZqhD3dSWrMIOqnTvfmq3onRWudThlFnblOFPBvmjnI64NAl9Mo/nKspJJPmY1SxhkobW74g7jlnElse4HGwIDAQAB"
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlIk1KHdRO+3lMZbmpfvh3SiaXWNxd/PtJ0xuk96y22h2bghTREnAydg5YGi9VmgyE0ipDrO6PfPemIXVNtpxCdpErjw1h+MVQOoDRrdfMijuZEg+CEgKxi3r6DPgKDwxtPhOZ5A63+yz55XvJmfaA4PbaYNx16v0WRhO71PeK2ftLBbt2dSE7BbpoKYDlVG+n9AFxg+y0fNqUmAJph+Kk//5t6Uf1OcR2w+ajDFczP3P+BGuYeUUg3NqvirVkHRn6LRynaQqNzZ70Hhoc1sWuGZG4I4yzF1C+33zkqgiAwuRt9dQk4rPa4CIdaQxZxt2aKX177fKDwqMuMa3ZIgAiwIDAQAB"
 }

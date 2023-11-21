@@ -93,7 +93,9 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
             </span>
             {/* auth error message */}
             {errorMsg && (
-              <span className='mt-2.5 text-sm font-light text-red-500 opacity-70'>{errorMsg}</span>
+              <span className='mt-2.5 text-sm font-light text-red-500 opacity-80 rounded-md bg-red-100/40 py-2 px-4'>
+                {errorMsg}
+              </span>
             )}
           </div>
           {/* disable app button */}

@@ -135,7 +135,7 @@ chrome.runtime.onMessage.addListener(
     logger.info(`received event: ${request.event}`);
 
     // check for token
-    // await checkUserToken(request.event);
+    await checkUserToken(request.event);
 
     //  handle all the  events
     switch (request.event) {
@@ -144,7 +144,7 @@ chrome.runtime.onMessage.addListener(
         const res = await getAuthToken(request.userEmail, googleClientId);
 
         if (res) {
-          // await saveTokenToStorage(res, request.userEmail);
+          await saveTokenToStorage(res, request.userEmail);
           return true;
         } else {
           return false;

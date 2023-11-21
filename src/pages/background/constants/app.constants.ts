@@ -5,9 +5,10 @@ export const FRESH_INBOX_FILTER_EMAIL = 'filter@getfreshinbox.com';
 export const API_MAX_RESULT = 500;
 
 // scopes for google auth
-// https://mail.google.com :- to get emails/message from users gmail account
-// https://www.googleapis.com/auth/gmail.settings.basic :- to create/delete filter on behalf of user
-export const AUTH_SCOPE = 'https://mail.google.com https://www.googleapis.com/auth/gmail.settings.basic';
+// https://www.googleapis.com/auth/gmail.modify :- to get emails/message
+// https://www.googleapis.com/auth/gmail.settings.basic :- to create/delete filters
+export const AUTH_SCOPE =
+  'https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/gmail.settings.basic';
 
 //
 export const storageKeys = {
