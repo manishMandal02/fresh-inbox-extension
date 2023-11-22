@@ -23,8 +23,6 @@ const googleAuth = async (email: string, clientId: string, interactive: boolean)
 
     if (!responseURL && typeof responseURL !== 'string') throw new Error('Failed to complete auth.');
 
-    console.log('🚀 ~ file: index.ts:28 ~ googleAuth ~ responseURL:', responseURL);
-
     const token = (responseURL as string).split('#')[1]?.split('=')[1].split('&')[0];
 
     if (!token) throw new Error('Token not found.');

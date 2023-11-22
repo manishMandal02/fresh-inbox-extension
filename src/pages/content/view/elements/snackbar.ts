@@ -29,7 +29,10 @@ const showLoadingSnackbar = ({ title, emails }: ShowLoadingSnackbarParams) => {
   const label = document.createElement('span');
 
   let emailMessage = '';
-  if (emails && emails.length > 0) emails.length > 1 ? `${emails.length} emails` : limitCharLength(emails[0]);
+
+  if (emails && emails.length > 0) {
+    emailMessage = emails.length > 1 ? `${emails.length} emails` : limitCharLength(emails[0]);
+  }
 
   // add label text
   label.innerHTML = `${title} <br/> ${emailMessage && `<strong>${emailMessage}</strong>`}`;
@@ -73,6 +76,10 @@ type ErrorType = true;
 type SnackbarParams<IsError> = IsError extends ErrorType ? ErrorSnackbarParams : SuccessSnackbarParams;
 
 const showSnackbar = <IsError>(params: SnackbarParams<IsError>) => {
+  // remove previous snackbar if any
+  const prevSnackbar = document.getElementsByClassName('freshInbox-snackbar');
+  if (prevSnackbar?.length > 0) prevSnackbar[0].remove();
+
   const { title } = params;
 
   const container = document.createElement('div');
@@ -91,8 +98,9 @@ const showSnackbar = <IsError>(params: SnackbarParams<IsError>) => {
     const emails = params.emails;
     emailMessage = emails.length > 1 ? `${emails.length} emails` : limitCharLength(emails[0], 42);
     // success class
-    container.classList.add('success');
   }
+
+  container.classList.add('success');
 
   // add label text
   label.innerHTML = `

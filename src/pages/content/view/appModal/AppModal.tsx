@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Tabs } from '../elements/Tabs';
-import { General } from './tabs/General';
+import { About } from './tabs/About';
 import { Newsletter } from './tabs/Newsletter';
 import AuthCard from './AuthCard';
 import Unsubscribed from './tabs/Unsubscribed';
@@ -15,7 +15,7 @@ import { logger } from '../../utils/logger';
 import { showSnackbar } from '../elements/snackbar';
 import { removeAssistantBtn } from '../assistant-button/helper/removeAssistantBtn';
 
-const tabs = ['General', 'Newsletter', 'Unsubscribed', 'Whitelisted', 'Advance Search'] as const;
+const tabs = ['About', 'Newsletter', 'Unsubscribed', 'Whitelisted', 'Advance Search'] as const;
 
 export type Tabs = (typeof tabs)[number];
 
@@ -26,13 +26,11 @@ type Props = {
 
 const AppModal = ({ appStatus, isTokenValid }: Props) => {
   //
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(true);
   const [isAppEnabled, setIsAppEnabled] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<Tabs>('General');
-
-  // TODO: fix the auth/token part when app is starting, it should not run if no token
+  const [activeTab, setActiveTab] = useState<Tabs>('About');
 
   // listen to events from  background
   chrome.runtime.onMessage.addListener(
@@ -98,6 +96,7 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setActiveTab('About');
   };
 
   // after app has been disabled
@@ -118,7 +117,7 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
       case 'Advance Search':
         return <AdvanceSearch />;
       default:
-        return <General onAppDisable={onDisableApp} />;
+        return <About onAppDisable={onDisableApp} />;
     }
   };
 
@@ -158,10 +157,12 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
             ) : (
               <AuthCard
                 isAppEnabled={isAppEnabled}
-                onClose={() => {
+                onClose={isSuccess => {
                   setIsModalOpen(false);
-                  setIsAppEnabled(true);
-                  setIsAuthed(true);
+                  if (isSuccess) {
+                    setIsAppEnabled(true);
+                    setIsAuthed(true);
+                  }
                 }}
               />
             )}

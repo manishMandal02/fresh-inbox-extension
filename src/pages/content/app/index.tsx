@@ -9,6 +9,7 @@ import { getSyncStorageByKey } from '../utils/getStorageByKey';
 import { embedAssistantBtn } from '../view/assistant-button';
 import { watchEmailTableContainerClick } from '../view/assistant-button/helper/watchEmailTableContainerClick';
 import { getUserEmailIdFromPage } from '../view/assistant-button/helper/getEmailIdFromPage';
+import { showLoadingSnackbar } from '../view/elements/snackbar';
 
 // reload on update
 refreshOnUpdate('pages/content');
@@ -52,8 +53,6 @@ window.freshInboxGlobalVariables = {
 
   // check if app is enabled or not
   const isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
-
-  console.log('🚀 ~ file: index.tsx:56 ~ isAppEnabled:', isAppEnabled);
 
   // is user Authed or not? (handle multiple user) send email id from the content script
   const isTokenValid = await chrome.runtime.sendMessage<IMessageBody>({

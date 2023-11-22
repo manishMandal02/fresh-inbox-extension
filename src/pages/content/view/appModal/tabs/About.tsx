@@ -1,12 +1,44 @@
 import { EmailAction } from '@src/pages/content/types/content.types';
 import { ActionIcons } from '../../elements/action-button/ActionIcons';
 import { disableApp } from '@src/pages/content/utils/disableApp';
+import { Checkbox } from '../../elements/Checkbox';
+import { useEffect, useState } from 'react';
+import { getSyncStorageByKey } from '@src/pages/content/utils/getStorageByKey';
+import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
+import { storageKeys } from '@src/pages/content/constants/app.constants';
+import { showSnackbar } from '../../elements/snackbar';
 
 type Props = {
   onAppDisable: () => void;
 };
 
-export const General = ({ onAppDisable }: Props) => {
+export const About = ({ onAppDisable }: Props) => {
+  // local state
+  const [isCheckedAlertMsg, setIsCheckedAlertMsg] = useState(false);
+
+  useEffect(
+    asyncHandler(async () => {
+      // check user preference , if the user want's to see the delete confirmation message or not
+      const showDeleteConfirmMsg = await getSyncStorageByKey<boolean>('SHOW_DELETE_CONFIRM_MSG');
+
+      if (typeof showDeleteConfirmMsg === 'boolean') {
+        setIsCheckedAlertMsg(!showDeleteConfirmMsg);
+      }
+    }),
+    []
+  );
+
+  // on update preference (checkbox)
+  const handleCheckboxUpdate = async (value: boolean) => {
+    // update checkbox state
+    // if checked, update storage (sync) to save preference (checked = user doesn't want to see this message again)
+    await chrome.storage.sync.set({ [storageKeys.SHOW_DELETE_CONFIRM_MSG]: !value });
+    setIsCheckedAlertMsg(value);
+
+    showSnackbar({ title: 'Updated preferences', emails: [] });
+  };
+
+  /// action icons
   const UnsubscribeIcon = ActionIcons[EmailAction.unsubscribe];
   const DeleteAllMailsIcon = ActionIcons[EmailAction.deleteAllMails];
   const WhitelistIcon = ActionIcons[EmailAction.whitelistEmail];
@@ -18,6 +50,7 @@ export const General = ({ onAppDisable }: Props) => {
     onAppDisable();
     await disableApp();
   };
+
   return (
     <div className='flex flex-col  py-8 px-6 relative h-full'>
       <div className='text-lg font-medium m-0 mb-1 '>
@@ -32,10 +65,27 @@ export const General = ({ onAppDisable }: Props) => {
           {/* active ping animation */}
           <span className='absolute flex h-3 w-3 -top-1 -right-1'>
             <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75'></span>
-            <span className='relative inline-flex rounded-full h-3 w-3 bg-emerald-400'></span>
+            <span className='relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400'></span>
           </span>
         </span>
       </div>
+
+      {/*****  divider ****** */}
+      <hr className='h-[.5px] w-full bg-slate-100  opacity-25 rounded-sm my-1' />
+      <p className=' font-light text-slate-700 m-0 mb-px text-sm'>Update preferences</p>
+      {/* checkbox  */}
+      <div className='w-full flex items-center py-1.5 px-2'>
+        <Checkbox isChecked={isCheckedAlertMsg} onChange={handleCheckboxUpdate} id='about-alertMsgCheckbox' />
+        <label
+          className='text-sm font-light text-slate-700 ml-1.5 cursor-pointer'
+          htmlFor='about-alertMsgCheckbox'
+        >
+          Don't show alert message for delete actions.
+        </label>
+      </div>
+
+      {/*****  divider ****** */}
+      <hr className='h-[.5px] w-full bg-slate-100  opacity-25 rounded-sm my-1' />
 
       <span className='text-slate-800  my-2 leading-[1.65rem]'>
         Fresh Inbox helps you keep your inbox clean, it can&nbsp;
@@ -58,7 +108,7 @@ export const General = ({ onAppDisable }: Props) => {
         —every action is executed securely on your system. You can explore the open-source code on 🔗 GitHub
         to get an inside look at how Fresh Inbox operates.{' '}
         <a
-          href='https://github.com/manishMandal02/fresh-Inbox'
+          href='https://freshinbox.xyz/link/github'
           target='_blank'
           rel='noreferrer'
           className='appearance-none underline font-medium'
@@ -69,11 +119,11 @@ export const General = ({ onAppDisable }: Props) => {
       </span>
 
       {/* app walkthrough yt link */}
-      <span className='text-slate-700  mt-2 leading-6 text-[.85rem]'>
+      <span className='text-slate-700  mt-1.5 leading-6 text-[.85rem]'>
         A quick walkthrough of Fresh Inbox can help you get started, if you're having trouble understanding
         it's features 🔗{' '}
         <a
-          href='https://www.youtube.com/watch?v=testvideo'
+          href='https://freshinbox.xyz/link/demo'
           target='_blank'
           rel='noreferrer'
           className='appearance-none underline font-medium'
@@ -85,7 +135,6 @@ export const General = ({ onAppDisable }: Props) => {
       {/*****  divider ****** */}
       <hr className='h-[.5px] w-full bg-slate-100  opacity-25 rounded-sm my-1.5' />
 
-      {/* understanding action icons */}
       <p className=' font-light text-slate-700 m-0 mb-px'>Actions you can perform with FreshInbox</p>
       {/* actions block */}
       <div className='w-full'>
@@ -165,7 +214,7 @@ export const General = ({ onAppDisable }: Props) => {
       </div>
 
       <button
-        className='w-max absolute bottom-4 left-[45%] px-2 py-px  underline font-light text-center cursor-pointer rounded-sm border-0 bg-transparent mx-auto text-sm text-slate-700 hover:text-slate-950 transition-all duration-150'
+        className='w-max absolute bottom-2 left-[45%] px-2 py-px  underline font-light text-center cursor-pointer rounded-sm border-0 bg-transparent mx-auto text-sm text-slate-700 hover:text-slate-950 transition-all duration-150'
         onClick={handleDisable}
       >
         Disable Fresh Inbox
@@ -173,3 +222,4 @@ export const General = ({ onAppDisable }: Props) => {
     </div>
   );
 };
+2.5;

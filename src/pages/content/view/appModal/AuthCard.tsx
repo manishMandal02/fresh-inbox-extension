@@ -5,7 +5,7 @@ import { disableApp } from '../../utils/disableApp';
 
 type Props = {
   isAppEnabled: boolean;
-  onClose: () => void;
+  onClose: (isSuccess?: boolean) => void;
 };
 
 const AuthCard = ({ isAppEnabled, onClose }: Props) => {
@@ -21,7 +21,7 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
       // auth success
 
       // close the modal
-      onClose();
+      onClose(true);
 
       // embed assistant button
       await embedAssistantBtn();
@@ -49,7 +49,7 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
         <span className='font-extralight tracking-wide text-slate-100'>Connect FreshInbox to your Gmail</span>
         <button
           className='text-2xl text-slate-100 font-extralight bg-transparent outline-none border-none cursor-pointer hover:opacity-80 transition-opacity duration-200 select-none'
-          onClick={onClose}
+          onClick={() => onClose(false)}
         >
           X
         </button>
@@ -66,7 +66,7 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
             🎬 Want to learn more? Check out our quick walkthrough here:{' '}
             <a
               className='underline'
-              href='https://www.youtube.com/watch?v=testvideo'
+              href='https://freshinbox.xyz/link/demo'
               target='_blank'
               rel='noreferrer'
             >

@@ -8,8 +8,6 @@ export const errorMessage = {
 export const apiErrorHandler = (parsedRes: any) => {
   if (!parsedRes?.error) return true;
 
-  console.log('🚀 ~ file: logger.ts:16 ~ catchAPIErrors ~ parsedRes?.error:', parsedRes?.error);
-
   if (parsedRes?.error?.code === 401) {
     throw new Error(errorMessage.unauthorized);
   }
@@ -17,7 +15,8 @@ export const apiErrorHandler = (parsedRes: any) => {
   if (parsedRes?.error?.code === 403) {
     throw new Error(errorMessage.apiLimitExceed);
   }
-  if (parsedRes?.error?.code === 500) {
+  // other errors
+  if (parsedRes?.error?.code.toString()[0] === '5' || parsedRes?.error?.code.toString()[0] === '4') {
     throw new Error(errorMessage.somethingWentWrong);
   }
   return true;
