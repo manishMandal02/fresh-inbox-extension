@@ -1,9 +1,11 @@
-import packageJson from './package.json';
+import packageJson from './package.json' assert { type: 'json' };
 
 /**
  * After changing, please reload the extension at `chrome://extensions`
+ * @type {chrome.runtime.ManifestV3}
  */
-const manifest: chrome.runtime.ManifestV3 = {
+
+const manifest = {
   manifest_version: 3,
   name: 'Fresh Inbox',
   version: '1.0.0',
@@ -20,7 +22,7 @@ const manifest: chrome.runtime.ManifestV3 = {
     default_title: 'Fresh Inbox',
   },
   icons: {
-    '128': 'icon-128.png',
+    128: 'icon-128.png',
   },
   content_scripts: [
     {

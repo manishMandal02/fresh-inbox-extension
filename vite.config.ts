@@ -1,11 +1,10 @@
 import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 import path, { resolve } from 'path';
 import makeManifest from './utils/plugins/make-manifest';
 import customDynamicImport from './utils/plugins/custom-dynamic-import';
 import addHmr from './utils/plugins/add-hmr';
 import watchRebuild from './utils/plugins/watch-rebuild';
-import manifest from './manifest';
-import viteReact from '@vitejs/plugin-react';
 
 const rootDir = resolve(__dirname);
 const srcDir = resolve(rootDir, 'src');
@@ -19,32 +18,35 @@ const isProduction = !isDev;
 
 // ENABLE HMR IN BACKGROUND SCRIPT
 const enableHmrInBackgroundScript = true;
+let cacheInvalidationKey: string = generateKey();
 
 export default defineConfig({
   resolve: {
     alias: {
+      '@root': rootDir,
       '@src': srcDir,
       '@assets': assetsDir,
       '@pages': pagesDir,
     },
   },
   plugins: [
-    viteReact(),
-    makeManifest(manifest, {
-      isDev,
-      contentScriptCssKey: regenerateCacheInvalidationKey(),
+    makeManifest({
+      contentScriptCssKey: cacheInvalidationKey,
     }),
+    react(),
     customDynamicImport(),
     addHmr({ background: enableHmrInBackgroundScript, view: true }),
-    watchRebuild(),
+    isDev && watchRebuild({ whenWriteBundle: regenerateCacheInvalidationKey }),
   ],
   publicDir,
   build: {
     outDir,
-    /** Can slowDown build speed. */
+    /** Can slow down build speed. */
     // sourcemap: isDev,
     minify: isProduction,
+    modulePreload: false,
     reportCompressedSize: isProduction,
+    emptyOutDir: !isDev,
     rollupOptions: {
       input: {
         content: resolve(pagesDir, 'content', 'index.ts'),
@@ -56,30 +58,20 @@ export default defineConfig({
         entryFileNames: 'src/pages/[name]/index.js',
         chunkFileNames: isDev ? 'assets/js/[name].js' : 'assets/js/[name].[hash].js',
         assetFileNames: assetInfo => {
-          const { dir, name: _name } = path.parse(assetInfo.name);
-          const assetFolder = dir.split('/').at(-1);
-          const name = assetFolder + firstUpperCase(_name);
-          if (name === 'contentStyle') {
-            return `assets/css/contentStyle${cacheInvalidationKey}.chunk.css`;
-          }
-          return `assets/[ext]/${name}.chunk.[ext]`;
+          const { name } = path.parse(assetInfo.name);
+          const assetFileName = name === 'contentStyle' ? `${name}${cacheInvalidationKey}` : name;
+          return `assets/[ext]/${assetFileName}.chunk.[ext]`;
         },
       },
     },
   },
 });
 
-function firstUpperCase(str: string) {
-  const firstAlphabet = new RegExp(/( |^)[a-z]/, 'g');
-  return str.toLowerCase().replace(firstAlphabet, L => L.toUpperCase());
-}
-
-let cacheInvalidationKey: string = generateKey();
 function regenerateCacheInvalidationKey() {
   cacheInvalidationKey = generateKey();
   return cacheInvalidationKey;
 }
 
 function generateKey(): string {
-  return `${(Date.now() / 100).toFixed()}`;
+  return `${Date.now().toFixed()}`;
 }
