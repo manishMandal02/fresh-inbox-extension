@@ -80,7 +80,7 @@ const AdvanceSearch = () => {
   return (
     <div className='w-full h-full max-h-full'>
       <p className='h-[5%] m-0 text-slate-700 mb[2px] font-light text-sm flex items-center justify-center'>
-        Use Advance Search to filter out for emails you want to delete.
+        Use Advance Search to filter out for emails you want to delete in bulk.
       </p>
 
       <hr className='bg-slate-200 opacity-30 p-0 m-0 my-2' />

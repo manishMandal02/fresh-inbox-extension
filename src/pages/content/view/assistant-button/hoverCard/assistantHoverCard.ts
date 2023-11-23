@@ -68,7 +68,7 @@ const handleMouseOut = () => {
 
   setTimeout(() => {
     hideHoverCard({ parentElId: assistantBtnContainerId });
-  }, 400);
+  }, 250);
 
   freshInboxGlobalVariables.isMouseOverHoverCard = false;
 };
@@ -147,6 +147,8 @@ export const showHoverCard = async ({ parentElId, email, name, isSingleEmail }: 
 
   // get parent el from id
   const parentEl = document.getElementById(parentElId);
+
+  if (!parentEl) return;
 
   parentEl.appendChild(hoverCard);
 
@@ -291,7 +293,6 @@ export const hideHoverCard = ({ parentElId, forceClose }: HideHoverCardParams) =
 
   // get hover card el from id
   const hoverCard = document.getElementById(HOVER_CARD_ID);
-
 
   if (!hoverCard) return;
 

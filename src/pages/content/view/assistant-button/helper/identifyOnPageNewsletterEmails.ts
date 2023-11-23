@@ -5,7 +5,9 @@ type GenerateStorageKeyProps = Pick<DataOnPage, 'category' | 'dateRange' | 'fold
 
 // generate session storage key from search query props
 const generateStorageKey = ({ dateRange, category, folder }: GenerateStorageKeyProps) =>
-  `${dateRange.startDate}-${dateRange.endDate}-${folder}-${category || '0'}`;
+  `${freshInboxGlobalVariables.userEmail}-${dateRange.startDate}-${dateRange.endDate}-${folder}-${
+    category || '0'
+  }`;
 
 export const identifyOnPageNewsletterEmails = async ({
   emails,

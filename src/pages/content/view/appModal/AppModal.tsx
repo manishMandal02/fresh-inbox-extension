@@ -26,7 +26,7 @@ type Props = {
 
 const AppModal = ({ appStatus, isTokenValid }: Props) => {
   //
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAppEnabled, setIsAppEnabled] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
 
@@ -76,24 +76,29 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
     })
   );
 
+  // set state from params
   useEffect(() => {
     setIsAppEnabled(appStatus);
   }, [appStatus]);
 
+  // set state from params
   useEffect(() => {
     setIsAuthed(isTokenValid);
   }, [isTokenValid]);
 
+  // open modal by default if the app is enabled and user is not authed
   useEffect(() => {
     if (isAppEnabled && !isAuthed) {
       setIsModalOpen(true);
     }
   }, [isAppEnabled, isAuthed]);
 
+  // handle open modal
   const handleOpenSettings = () => {
     setIsModalOpen(true);
   };
 
+  // handle close modal, reset tab state
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setActiveTab('About');
@@ -106,6 +111,7 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
     setIsAppEnabled(false);
   };
 
+  // renders current active tab based on tab state
   const renderActiveTab = (currentTab: Tabs) => {
     switch (currentTab) {
       case 'Newsletter':
@@ -135,6 +141,7 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
             src={FreshInboxIcon}
             alt='icon'
             className='w-5 h-5 mr-1.5'
+            // grayscale (gray) icon if the app is disabled or user is not authed
             style={!isAppEnabled || !isAuthed ? { filter: 'grayscale(100%)' } : {}}
           />{' '}
           Fresh Inbox

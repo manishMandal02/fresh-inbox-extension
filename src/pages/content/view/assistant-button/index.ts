@@ -58,7 +58,7 @@ const handleMouseOut = () => {
     hideHoverCard({
       parentElId: assistantBtnContainerId,
     });
-  }, 400);
+  }, 250);
   freshInboxGlobalVariables.isMouseOverFreshInboxAssistantBtn = false;
 };
 

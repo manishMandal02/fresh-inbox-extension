@@ -53,7 +53,7 @@ export const About = ({ onAppDisable }: Props) => {
 
   return (
     <div className='flex flex-col  py-8 px-6 relative h-full'>
-      <div className='text-lg font-medium m-0 mb-1 '>
+      <div className='text-lg font-medium m-0 mb-1.5 '>
         Fresh Inbox is
         <span
           className='rounded-sm ml-2 px-[10px]  py-[2px] text-base relative bg-slate-800 text-slate-100'
@@ -71,7 +71,7 @@ export const About = ({ onAppDisable }: Props) => {
       </div>
 
       {/*****  divider ****** */}
-      <hr className='h-[.5px] w-full bg-slate-100  opacity-25 rounded-sm my-1' />
+      <hr className='h-[.5px] w-full bg-slate-100  opacity-25 rounded-sm mt-2 mb-1' />
       <p className=' font-light text-slate-700 m-0 mb-px text-sm'>Update preferences</p>
       {/* checkbox  */}
       <div className='w-full flex items-center py-1.5 px-2'>
@@ -87,7 +87,7 @@ export const About = ({ onAppDisable }: Props) => {
       {/*****  divider ****** */}
       <hr className='h-[.5px] w-full bg-slate-100  opacity-25 rounded-sm my-1' />
 
-      <span className='text-slate-800  my-2 leading-[1.65rem]'>
+      <span className='text-slate-900 text-[.9rem] my-0.5 leading-[1.6rem]'>
         Fresh Inbox helps you keep your inbox clean, it can&nbsp;
         <span className='bg-emerald-100 px-1 rounded-sm py-1 font-medium'>
           unsubscribe from unwanted emails
@@ -99,7 +99,7 @@ export const About = ({ onAppDisable }: Props) => {
         .
       </span>
 
-      <span className='text-slate-800  my-1 leading-[1.65rem]'>
+      <span className='text-slate-900 text-[.9rem]  mt-1.5 mb-1 leading-[1.6rem]'>
         {' '}
         The best part?&nbsp;
         <span className='bg-emerald-100 px-1 rounded-sm py-1 font-medium'>
@@ -118,8 +118,10 @@ export const About = ({ onAppDisable }: Props) => {
         for you to see how Fresh Inbox works.
       </span>
 
-      {/* app walkthrough yt link */}
-      <span className='text-slate-700  mt-1.5 leading-6 text-[.85rem]'>
+      {/*****  divider ****** */}
+      <hr className='h-[.5px] w-full bg-slate-100  opacity-25 rounded-sm mt-1.5 mb-1' />
+
+      <span className='text-slate-700  leading-6 text-[.85rem]'>
         A quick walkthrough of Fresh Inbox can help you get started, if you're having trouble understanding
         it's features 🔗{' '}
         <a
@@ -132,16 +134,32 @@ export const About = ({ onAppDisable }: Props) => {
         </a>
       </span>
 
-      {/*****  divider ****** */}
-      <hr className='h-[.5px] w-full bg-slate-100  opacity-25 rounded-sm my-1.5' />
+      {/* app walkthrough yt link */}
+      <span className='text-slate-700 mt-0.5 leading-6 text-[.85rem]'>
+        Enjoying Fresh Inbox? We'd love to hear your thoughts! Consider leaving a review if it's been helpful.
+        🌟{' '}
+        <a
+          href='https://freshinbox.xyz/link/review'
+          target='_blank'
+          rel='noreferrer'
+          className='appearance-none underline font-medium'
+        >
+          Review
+        </a>
+      </span>
 
-      <p className=' font-light text-slate-700 m-0 mb-px'>Actions you can perform with FreshInbox</p>
+      {/*****  divider ****** */}
+      <hr className='h-[.5px] w-full bg-slate-100  opacity-25 rounded-sm mt-1.5 mb-1.5' />
+
+      <p className=' font-normal text-slate-800 m-0 text-sm  mb-px'>
+        Actions you can perform with FreshInbox
+      </p>
       {/* actions block */}
       <div className='w-full'>
         {/* unsubscribe/block */}
-        <span className='flex items-center mt-2 rounded-sm w-full  '>
+        <span className='flex items-center mt-1.5 rounded w-full  '>
           <div
-            className='w-6 flex items-center justify-center px-1.5 py-1 rounded-sm'
+            className='w-4 flex items-center justify-center px-1 py-1 rounded'
             style={{
               boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
             }}
@@ -153,9 +171,9 @@ export const About = ({ onAppDisable }: Props) => {
           </span>
         </span>
         {/* delete all mails */}
-        <span className='flex items-center mt-2 rounded-sm w-full  '>
+        <span className='flex items-center mt-1.5 rounded w-full  '>
           <div
-            className='w-6 flex items-center justify-center px-1.5 py-1 rounded-sm'
+            className='w-4 flex items-center justify-center px-1 py-1 rounded'
             style={{
               boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
             }}
@@ -168,9 +186,9 @@ export const About = ({ onAppDisable }: Props) => {
         </span>
 
         {/* whitelist */}
-        <span className='flex items-center mt-2 rounded-sm w-full  '>
+        <span className='flex items-center mt-1.5 rounded w-full  '>
           <div
-            className='w-6 flex items-center justify-center px-1.5 py-1 rounded-sm'
+            className='w-4 flex items-center justify-center px-1 py-1 rounded'
             style={{
               boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
             }}
@@ -183,9 +201,9 @@ export const About = ({ onAppDisable }: Props) => {
           </span>
         </span>
         {/* re-subscribe */}
-        <span className='flex items-center mt-2 rounded-sm w-full  '>
+        <span className='flex items-center mt-1.5 rounded w-full  '>
           <div
-            className='w-6 flex items-center justify-center px-1.5 py-1 rounded-sm'
+            className='w-4 flex items-center justify-center px-1 py-1 rounded'
             style={{
               boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
             }}
@@ -198,9 +216,9 @@ export const About = ({ onAppDisable }: Props) => {
           </span>
         </span>
         {/* unsubscribe + delete all */}
-        <span className='flex items-center mt-2 rounded-sm w-full  '>
+        <span className='flex items-center mt-1.5 rounded w-full  '>
           <div
-            className='flex items-center justify-center p-0 w-14 h-6 px-1.5 py-1 rounded-sm'
+            className='flex items-center justify-center p-0 w-12 h-6 px-1 py-0.5 rounded'
             style={{
               boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
             }}
