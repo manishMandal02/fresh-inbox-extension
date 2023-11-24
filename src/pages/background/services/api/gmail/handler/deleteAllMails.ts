@@ -5,12 +5,12 @@ import { batchDeleteMails } from '../helper/batchDelete';
 import { apiErrorHandler } from '@src/pages/background/utils/apiErrorHandler';
 
 // delete all mails
-export const deleteAllMails = async ({ token, emails }: APIHandleParams) => {
+export const deleteAllMails = async ({ userToken, emails }: APIHandleParams) => {
   try {
     const fetchOptions: Partial<RequestInit> = {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${userToken}`,
         'Content-Type': 'application/json',
       },
     };
@@ -51,7 +51,7 @@ export const deleteAllMails = async ({ token, emails }: APIHandleParams) => {
         );
       }
 
-      // save next page token if present to fetch next batch of messages
+      // save next page userToken if present to fetch next batch of messages
       if (parsedRes.nextPageToken) {
         nextPageToken = parsedRes.nextPageToken;
       } else {
@@ -62,7 +62,7 @@ export const deleteAllMails = async ({ token, emails }: APIHandleParams) => {
       const msgIds = parsedRes.messages.map(msg => msg.id);
 
       // batch delete messages/emails
-      await batchDeleteMails(token, msgIds);
+      await batchDeleteMails(userToken, msgIds);
       logger.info(
         `✅ Batch delete successful, deleted ${msgIds.length} mails`,
         'background/services/api/gmail/handler/deleteAllMails.ts:93 ~ deleteAllMails()'

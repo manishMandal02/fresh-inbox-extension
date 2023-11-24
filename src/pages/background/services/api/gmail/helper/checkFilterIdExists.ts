@@ -2,9 +2,9 @@ import { logger } from '@src/pages/background/utils/logger';
 import { getFilterById } from './gmailFilters';
 
 // check if filter id exists of not
-export const checkFilterIdExists = async (token: string, filterId: string): Promise<boolean> => {
+export const checkFilterIdExists = async (userToken: string, filterId: string): Promise<boolean> => {
   try {
-    const filter = await getFilterById(token, filterId);
+    const filter = await getFilterById(userToken, filterId);
 
     if (filter && filter.filterId) {
       return true;

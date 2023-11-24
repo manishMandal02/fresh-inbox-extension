@@ -20,11 +20,11 @@ const buildSearchQuery = ({ keyword, afterDate, beforeDate, isRead, isUnRead }: 
   `.replace(/\n/g, ' ');
 };
 
-export const advanceSearch = async (token: string, formData: SearchFormData) => {
+export const advanceSearch = async (userToken: string, formData: SearchFormData) => {
   const fetchOptions: Partial<RequestInit> = {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${userToken}`,
       'Content-Type': 'application/json',
     },
   };
@@ -66,7 +66,7 @@ export const advanceSearch = async (token: string, formData: SearchFormData) => 
         return [];
       }
 
-      // save next page token if present to fetch next batch of messages
+      // save next page userToken if present to fetch next batch of messages
       if (parsedRes.nextPageToken) {
         nextPageToken = parsedRes.nextPageToken;
       } else {

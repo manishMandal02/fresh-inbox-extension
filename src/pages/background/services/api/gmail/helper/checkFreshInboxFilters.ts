@@ -5,13 +5,13 @@ import { getFilterId } from './getFilterId';
 import { logger } from '@src/pages/background/utils/logger';
 
 // checks if app custom filter exists, if not create it (after successful auth)
-export const checkFreshInboxFilters = async (token: string) => {
+export const checkFreshInboxFilters = async (userToken: string) => {
   try {
     const promises = [
       // unsubscribe filter
-      getFilterId({ token, filterAction: FILTER_ACTION.TRASH }),
+      getFilterId({ userToken, filterAction: FILTER_ACTION.TRASH }),
       // whitelist filter
-      getFilterId({ token, filterAction: FILTER_ACTION.INBOX }),
+      getFilterId({ userToken, filterAction: FILTER_ACTION.INBOX }),
     ];
 
     // wait for all promises to resolve

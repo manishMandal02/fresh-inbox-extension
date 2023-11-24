@@ -2,7 +2,7 @@ import { apiErrorHandler } from '@src/pages/background/utils/apiErrorHandler';
 import { logger } from '@src/pages/background/utils/logger';
 
 // delete all mails in batches for faster processing
-export const batchDeleteMails = async (token: string, ids: string[]) => {
+export const batchDeleteMails = async (userToken: string, ids: string[]) => {
   // added TRASH label, remove INBOX label for all the emails/messages
   const reqBody = {
     ids,
@@ -13,7 +13,7 @@ export const batchDeleteMails = async (token: string, ids: string[]) => {
   const fetchOptions: Partial<RequestInit> = {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${userToken}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(reqBody),

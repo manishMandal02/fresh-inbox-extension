@@ -8,7 +8,7 @@ const googleAuth = async (email: string, clientId: string, interactive: boolean)
 
   authUrl.searchParams.set('client_id', clientId);
   authUrl.searchParams.set('redirect_uri', redirectUri);
-  authUrl.searchParams.set('response_type', 'token');
+  authUrl.searchParams.set('response_type', 'userToken');
   authUrl.searchParams.set('scope', AUTH_SCOPE);
   authUrl.searchParams.set('login_hint', email);
   try {
@@ -23,11 +23,11 @@ const googleAuth = async (email: string, clientId: string, interactive: boolean)
 
     if (!responseURL && typeof responseURL !== 'string') throw new Error('Failed to complete auth.');
 
-    const token = (responseURL as string).split('#')[1]?.split('=')[1].split('&')[0];
+    const userToken = (responseURL as string).split('#')[1]?.split('=')[1].split('&')[0];
 
-    if (!token) throw new Error('Token not found.');
+    if (!userToken) throw new Error('Token not found.');
 
-    return token;
+    return userToken;
   } catch (error) {
     logger.error({
       error,
@@ -43,15 +43,15 @@ const googleAuth = async (email: string, clientId: string, interactive: boolean)
 export const launchGoogleAuthFlow = async (email: string, clientId: string): Promise<string | null> =>
   await googleAuth(email, clientId, true);
 
-// get token for already auth'ed user
+// get userToken for already auth'ed user
 export const getAuthToken = async (email: string, clientId: string): Promise<string | null> =>
   await googleAuth(email, clientId, false);
 
 // logout user
-export const logoutUser = async (token: string, disableApp = true) => {
+export const logoutUser = async (userToken: string, disableApp = true) => {
   try {
-    // revoke token from google OAuth service (token becomes invalid)
-    const url = 'https://accounts.google.com/o/oauth2/revoke?token=' + token;
+    // revoke userToken from google OAuth service (userToken becomes invalid)
+    const url = 'https://accounts.google.com/o/oauth2/revoke?userToken=' + userToken;
     await fetch(url);
 
     //  update storage after app disabled
@@ -72,7 +72,7 @@ export const logoutUser = async (token: string, disableApp = true) => {
     // throw error if any of the promises reject to catch in the catch block
     await Promise.all(promises.map(promise => promise.catch(err => err)));
 
-    logger.info('✅ Removed user auth token', 'background/services/auth/index.ts:63 ~ logoutUser()');
+    logger.info('✅ Removed user auth userToken', 'background/services/auth/index.ts:63 ~ logoutUser()');
     return true;
   } catch (error) {
     logger.error({

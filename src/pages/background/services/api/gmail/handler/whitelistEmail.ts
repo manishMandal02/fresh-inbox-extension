@@ -11,14 +11,14 @@ import { logger } from '@src/pages/background/utils/logger';
 
 // TODO: check if already whitelisted, if yes do nothing (update storage)
 
-export const whitelistEmail = async ({ token, emails }: APIHandleParams) => {
+export const whitelistEmail = async ({ userToken, emails }: APIHandleParams) => {
   try {
     // get whitelist filter id
-    const filterId = await getFilterId({ token, filterAction: FILTER_ACTION.INBOX });
+    const filterId = await getFilterId({ userToken, filterAction: FILTER_ACTION.INBOX });
 
     if (filterId) {
       // add email to filter
-      addEmailToFilter({ token, emails, filterId, filterAction: FILTER_ACTION.INBOX });
+      addEmailToFilter({ userToken, emails, filterId, filterAction: FILTER_ACTION.INBOX });
 
       // get all the newsletter emails
       const newsletterEmails = await getLocalStorageByKey<INewsletterEmails[]>(storageKeys.NEWSLETTER_EMAILS);

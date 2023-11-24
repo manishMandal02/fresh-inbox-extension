@@ -36,7 +36,7 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
   chrome.runtime.onMessage.addListener(
     asyncMessageHandler<IMessageBody, boolean | string>(async request => {
       switch (request.event) {
-        // token missing or invalid, logout user from fresh-inbox
+        // userToken missing or invalid, logout user from fresh-inbox
         case IMessageEvent.LOGOUT_USER: {
           showSnackbar<true>({
             isError: true,

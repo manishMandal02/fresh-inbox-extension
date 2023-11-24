@@ -5,7 +5,7 @@ import wait from '@src/pages/content/utils/wait';
 // gmail api limit: max 1000 ids can be sent per req
 const BATCH_SIZE = 1000;
 
-export const bulkDelete = async (token: string, ids: string[]) => {
+export const bulkDelete = async (userToken: string, ids: string[]) => {
   const batches: string[][] = [];
 
   // create batches of emails
@@ -16,7 +16,7 @@ export const bulkDelete = async (token: string, ids: string[]) => {
   try {
     // process batches
     for (const batch of batches) {
-      const res = await batchDeleteMails(token, batch);
+      const res = await batchDeleteMails(userToken, batch);
       if (!res) throw new Error('❌ Failed to delete emails');
     }
     return true;

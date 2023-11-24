@@ -1,22 +1,48 @@
-import type { storageKeys } from '@src/pages/background/constants/app.constants';
+import type { StorageKey, UserStorageKey, storageKeys } from '@src/pages/background/constants/app.constants';
+import type { ISession } from '../types/background.types';
+import { generateStorageKey } from '..';
 
-type StorageKey = keyof typeof storageKeys;
+export const getSyncStorageByKey = async <T = string>(
+  key: Extract<
+    StorageKey,
+    'DONT_SHOW_DELETE_CONFIRM_MSG' | 'WHITELIST_FILTER_ID' | 'UNSUBSCRIBE_FILTER_ID' | 'IS_APP_ENABLED'
+  >
+): Promise<T> => {
+  // storage key for current user
+  const userStorageKey = generateStorageKey(key);
 
-export const getSyncStorageByKey = async <T = string>(key: StorageKey): Promise<T> => {
-  const syncStorage = await chrome.storage.sync.get(key);
+  // get storage from chrome
+  const syncStorage = await chrome.storage.sync.get(userStorageKey);
 
-  if (syncStorage && syncStorage[key]) {
+  if (syncStorage && typeof syncStorage[key] !== 'undefined') {
     return syncStorage[key];
   } else {
     return null;
   }
 };
 
-export const getLocalStorageByKey = async <T = string>(key: StorageKey): Promise<T> => {
-  const localStorage = await chrome.storage.local.get(key);
+export const getLocalStorageByKey = async <T = string>(
+  key: Extract<StorageKey, 'NEWSLETTER_EMAILS' | 'UNSUBSCRIBED_EMAILS' | 'WHITELISTED_EMAILS'>
+): Promise<T> => {
+  // storage key for current user
+  const userStorageKey = generateStorageKey(key);
 
-  if (localStorage && localStorage[key]) {
+  // get storage from chrome
+  const localStorage = await chrome.storage.local.get(userStorageKey);
+
+  if (localStorage && typeof localStorage[key] !== 'undefined') {
     return localStorage[key];
+  } else {
+    return null;
+  }
+};
+
+export const getSessionStorageByKey = async <T = ISession>(key: UserStorageKey): Promise<T> => {
+  // get storage from chrome
+  const sessionStorage = await chrome.storage.session.get(key);
+
+  if (sessionStorage && typeof sessionStorage[key] !== 'undefined') {
+    return sessionStorage[key];
   } else {
     return null;
   }

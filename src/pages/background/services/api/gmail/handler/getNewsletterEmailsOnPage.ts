@@ -5,20 +5,20 @@ import { logger } from '@src/pages/background/utils/logger';
 import { apiErrorHandler } from '@src/pages/background/utils/apiErrorHandler';
 
 type GetNewsletterEmailsOnPageParams = {
-  token: string;
+  userToken: string;
   dataOnPage: DataOnPage;
 };
 
 // check for newsletter emails on page
 export const getNewsletterEmailsOnPage = async ({
-  token,
+  userToken,
   dataOnPage: { emails, dateRange, category, folder },
 }: GetNewsletterEmailsOnPageParams) => {
   try {
     const fetchOptions: Partial<RequestInit> = {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${userToken}`,
         'Content-Type': 'application/json',
       },
     };
@@ -64,7 +64,7 @@ export const getNewsletterEmailsOnPage = async ({
       .map(email => email.email);
 
     // remove whitelisted emails from newsletter emails
-    const whitelistedEmails = await getWhitelistedEmails(token);
+    const whitelistedEmails = await getWhitelistedEmails(userToken);
 
     if (whitelistedEmails.length > 0) {
       newsletterEmails = newsletterEmails.filter(email => !whitelistedEmails.includes(email));

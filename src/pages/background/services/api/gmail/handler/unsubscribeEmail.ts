@@ -15,15 +15,15 @@ type UnsubscribeEmailParams = {
 } & APIHandleParams;
 
 // handle unsubscribe/block email
-export const unsubscribeEmail = async ({ token, emails, isWhitelisted }: UnsubscribeEmailParams) => {
+export const unsubscribeEmail = async ({ userToken, emails, isWhitelisted }: UnsubscribeEmailParams) => {
   try {
     // check if fresh-Inbox filter id exists in storage
-    const filterId = await getFilterId({ token, filterAction: FILTER_ACTION.TRASH });
+    const filterId = await getFilterId({ userToken, filterAction: FILTER_ACTION.TRASH });
 
     if (filterId) {
       // block/unsubscribe email
       // update filter: add email to filter
-      await addEmailToFilter({ token, filterId, emails, filterAction: FILTER_ACTION.TRASH });
+      await addEmailToFilter({ userToken, filterId, emails, filterAction: FILTER_ACTION.TRASH });
 
       // get all the newsletter emails
       const newsletterEmails = await getLocalStorageByKey<INewsletterEmails[]>(storageKeys.NEWSLETTER_EMAILS);
@@ -44,16 +44,16 @@ export const unsubscribeEmail = async ({ token, emails, isWhitelisted }: Unsubsc
       // check isWhitelisted flag:
       // if present, remove the emails from the whitelist filter as well
       if (isWhitelisted) {
-        const whitelistedEmails = await getWhitelistedEmails(token);
+        const whitelistedEmails = await getWhitelistedEmails(userToken);
 
         if (!whitelistedEmails) return true;
 
         if (whitelistedEmails.filter(e => emails.includes(e)).length > 0) {
           // get whitelist filter id
-          const whitelistFilterId = await getFilterId({ token, filterAction: FILTER_ACTION.INBOX });
+          const whitelistFilterId = await getFilterId({ userToken, filterAction: FILTER_ACTION.INBOX });
           // remove email from whitelist filter
           await removeEmailFromFilter({
-            token,
+            userToken,
             filterId: whitelistFilterId,
             emails,
             filterAction: FILTER_ACTION.INBOX,

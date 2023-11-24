@@ -9,7 +9,6 @@ import { getSyncStorageByKey } from '../utils/getStorageByKey';
 import { embedAssistantBtn } from '../view/assistant-button';
 import { watchEmailTableContainerClick } from '../view/assistant-button/helper/watchEmailTableContainerClick';
 import { getUserEmailIdFromPage } from '../view/assistant-button/helper/getEmailIdFromPage';
-import { showLoadingSnackbar } from '../view/elements/snackbar';
 
 // reload on update
 refreshOnUpdate('pages/content');

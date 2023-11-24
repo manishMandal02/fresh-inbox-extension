@@ -5,11 +5,11 @@ import { logger } from '@src/pages/background/utils/logger';
 import { apiErrorHandler } from '@src/pages/background/utils/apiErrorHandler';
 
 // get  filter by Id
-export const getFilterById = async (token: string, id: string): Promise<FilterEmails | null> => {
+export const getFilterById = async (userToken: string, id: string): Promise<FilterEmails | null> => {
   const fetchOptions: Partial<RequestInit> = {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${userToken}`,
     },
   };
   try {
@@ -48,14 +48,14 @@ export const getFilterById = async (token: string, id: string): Promise<FilterEm
 };
 
 type CreateFilterParams = {
-  token: string;
+  userToken: string;
   emails: string[];
   filterAction: FILTER_ACTION;
 };
 
 // create filter with fresh-Inbox email get emails array
 export const createFilter = async ({
-  token,
+  userToken,
   emails,
   filterAction,
 }: CreateFilterParams): Promise<string | null> => {
@@ -81,7 +81,7 @@ export const createFilter = async ({
   const fetchOptions: Partial<RequestInit> = {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${userToken}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -117,12 +117,12 @@ export const createFilter = async ({
 };
 
 // delete previous fresh-Inbox filter with id
-export const deleteFilter = async (token: string, id: string) => {
+export const deleteFilter = async (userToken: string, id: string) => {
   //
   const fetchOptions: Partial<RequestInit> = {
     method: 'DELETE',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${userToken}`,
     },
   };
   try {

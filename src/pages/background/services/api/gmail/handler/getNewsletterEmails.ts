@@ -9,11 +9,11 @@ import { apiErrorHandler } from '@src/pages/background/utils/apiErrorHandler';
 
 type GetSendEmailFromIdsParams = {
   messageIds: string[];
-  token: string;
+  userToken: string;
 };
 
 // get sender emails & name from message/email ids
-const getSenderEmailsFromIds = async ({ messageIds, token }: GetSendEmailFromIdsParams) => {
+const getSenderEmailsFromIds = async ({ messageIds, userToken }: GetSendEmailFromIdsParams) => {
   // Construct the batch request body
   const batchRequestBody = messageIds.map(id => {
     return {
@@ -43,7 +43,7 @@ ${request.method} ${request.path}
   const fetchOptions: Partial<RequestInit> = {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${userToken}`,
       'Content-Type': `multipart/mixed; boundary=${boundary}`,
     },
     body: requestBody,
@@ -105,11 +105,11 @@ ${request.method} ${request.path}
 };
 
 // get newsletters/mailing list emails form Gmail ap
-export const getNewsletterEmails = async (token: string) => {
+export const getNewsletterEmails = async (userToken: string) => {
   const fetchOptions: Partial<RequestInit> = {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${userToken}`,
     },
   };
 
@@ -140,7 +140,7 @@ export const getNewsletterEmails = async (token: string) => {
 
       if (parsedRes.messages && parsedRes.messages.length < 1) throw new Error('No emails found');
 
-      // save next page token if present to fetch next batch of messages
+      // save next page userToken if present to fetch next batch of messages
       if (parsedRes.nextPageToken) {
         nextPageToken = parsedRes.nextPageToken;
       } else {
@@ -167,7 +167,7 @@ export const getNewsletterEmails = async (token: string) => {
         // get sender emails from the message ids queried
         const senderEmails = await getSenderEmailsFromIds({
           messageIds: batch,
-          token,
+          userToken,
         });
 
         // store the emails
@@ -176,9 +176,9 @@ export const getNewsletterEmails = async (token: string) => {
 
       //* check if these emails are already unsubscribed or whitelisted
       if (newsletterEmails.length > 0) {
-        const unsubscribedEmails = await getUnsubscribedEmails(token);
+        const unsubscribedEmails = await getUnsubscribedEmails(userToken);
 
-        const whitelistedEmails = await getWhitelistedEmails(token);
+        const whitelistedEmails = await getWhitelistedEmails(userToken);
 
         // emails to filter out, combining unsubscribed and whitelisted emails
         const filterEmails = [];

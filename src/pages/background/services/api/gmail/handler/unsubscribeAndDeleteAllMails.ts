@@ -8,14 +8,14 @@ type UnsubscribeAndDeleteAllMailsParams = {
 
 export const unsubscribeAndDeleteAllMails = async ({
   emails,
-  token,
+  userToken,
   isWhitelisted,
 }: UnsubscribeAndDeleteAllMailsParams) => {
   // unsubscribe
-  const res1 = await unsubscribeEmail({ token, emails, isWhitelisted });
+  const res1 = await unsubscribeEmail({ userToken, emails, isWhitelisted });
 
   //delete all mails
-  const res2 = await deleteAllMails({ token, emails });
+  const res2 = await deleteAllMails({ userToken, emails });
 
   if (res1 && res2) {
     return true;

@@ -6,21 +6,21 @@ import { logger } from '@src/pages/background/utils/logger';
 // TODO: check if already re-Subscribed, if yes do nothing (update storage)
 
 // handle resubscribe
-export const resubscribeEmail = async ({ token, emails }: APIHandleParams) => {
+export const resubscribeEmail = async ({ userToken, emails }: APIHandleParams) => {
   try {
     // remove email from unsubscribe filter
-    const unsubscribeFilterId = await getFilterId({ token, filterAction: FILTER_ACTION.TRASH });
+    const unsubscribeFilterId = await getFilterId({ userToken, filterAction: FILTER_ACTION.TRASH });
     await removeEmailFromFilter({
-      token,
+      userToken,
       emails,
       filterId: unsubscribeFilterId,
       filterAction: FILTER_ACTION.TRASH,
     });
 
     // add email to whitelist filter
-    const whitelistFilterId = await getFilterId({ token, filterAction: FILTER_ACTION.INBOX });
+    const whitelistFilterId = await getFilterId({ userToken, filterAction: FILTER_ACTION.INBOX });
     await addEmailToFilter({
-      token,
+      userToken,
       emails,
       filterId: whitelistFilterId,
       filterAction: FILTER_ACTION.INBOX,

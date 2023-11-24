@@ -28,19 +28,19 @@ const isFreshInboxFilter = (filter: GmailFilter, filterAction: FILTER_ACTION): b
 };
 
 type GetFreshInboxFilterParams = {
-  token: string;
+  userToken: string;
   filterAction?: FILTER_ACTION;
 };
 
 // get fresh-Inbox filter id also return all emails optionally
 export const getFreshInboxFilter = async ({
-  token,
+  userToken,
   filterAction = FILTER_ACTION.TRASH,
 }: GetFreshInboxFilterParams): Promise<FilterEmails | null> => {
   const fetchOptions: Partial<RequestInit> = {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${userToken}`,
     },
   };
 

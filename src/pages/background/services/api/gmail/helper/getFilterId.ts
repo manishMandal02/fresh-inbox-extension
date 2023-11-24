@@ -7,11 +7,11 @@ import { checkFilterIdExists } from './checkFilterIdExists';
 import { logger } from '@src/pages/background/utils/logger';
 
 type GetFilterIdParams = {
-  token: string;
+  userToken: string;
   filterAction: FILTER_ACTION;
 };
 // get filter id from storage or gmail filters api
-export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): Promise<string> => {
+export const getFilterId = async ({ userToken, filterAction }: GetFilterIdParams): Promise<string> => {
   // set storage key based on action
   const storageKey =
     filterAction === FILTER_ACTION.TRASH
@@ -23,11 +23,11 @@ export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): P
     const filterId = await getSyncStorageByKey(storageKey);
 
     // check if filter exists in gmail filters
-    if (filterId && (await checkFilterIdExists(token, filterId))) {
+    if (filterId && (await checkFilterIdExists(userToken, filterId))) {
       return filterId;
     } else {
       // search for whitelist/inbox filter in users filter (gmail-api)
-      const res = await getFreshInboxFilter({ token, filterAction });
+      const res = await getFreshInboxFilter({ userToken, filterAction });
 
       if (res?.filterId) {
         // save the filterId to sync storage
@@ -37,7 +37,7 @@ export const getFilterId = async ({ token, filterAction }: GetFilterIdParams): P
       }
 
       // if not found in storage or in the user's filters, then create new filter with the give action
-      const newFilterId = await createFilter({ token, filterAction, emails: [FRESH_INBOX_FILTER_EMAIL] });
+      const newFilterId = await createFilter({ userToken, filterAction, emails: [FRESH_INBOX_FILTER_EMAIL] });
 
       if (newFilterId) {
         // save the new filter id to sync storage

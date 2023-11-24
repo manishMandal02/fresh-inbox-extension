@@ -5,7 +5,7 @@ type StorageKey = keyof typeof storageKeys;
 export const getLocalStorageByKey = async <T = string[]>(key: StorageKey): Promise<T> => {
   const localStorage = await chrome.storage.local.get(key);
 
-  if (localStorage && localStorage[key]) {
+  if (localStorage && typeof localStorage[key] !== 'undefined') {
     return localStorage[key];
   } else {
     return null;
@@ -21,3 +21,4 @@ export const getSyncStorageByKey = async <T>(key: StorageKey): Promise<T> => {
     return null;
   }
 };
+

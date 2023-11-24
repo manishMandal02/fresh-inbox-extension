@@ -19,10 +19,10 @@ export const About = ({ onAppDisable }: Props) => {
   useEffect(
     asyncHandler(async () => {
       // check user preference , if the user want's to see the delete confirmation message or not
-      const showDeleteConfirmMsg = await getSyncStorageByKey<boolean>('SHOW_DELETE_CONFIRM_MSG');
+      const shouldShowDeleteConfirmMsg = await getSyncStorageByKey<boolean>('DONT_SHOW_DELETE_CONFIRM_MSG');
 
-      if (typeof showDeleteConfirmMsg === 'boolean') {
-        setIsCheckedAlertMsg(!showDeleteConfirmMsg);
+      if (typeof shouldShowDeleteConfirmMsg === 'boolean') {
+        setIsCheckedAlertMsg(shouldShowDeleteConfirmMsg);
       }
     }),
     []
@@ -32,7 +32,7 @@ export const About = ({ onAppDisable }: Props) => {
   const handleCheckboxUpdate = async (value: boolean) => {
     // update checkbox state
     // if checked, update storage (sync) to save preference (checked = user doesn't want to see this message again)
-    await chrome.storage.sync.set({ [storageKeys.SHOW_DELETE_CONFIRM_MSG]: !value });
+    await chrome.storage.sync.set({ [storageKeys.DONT_SHOW_DELETE_CONFIRM_MSG]: value });
     setIsCheckedAlertMsg(value);
 
     showSnackbar({ title: 'Updated preferences', emails: [] });

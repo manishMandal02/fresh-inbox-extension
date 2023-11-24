@@ -3,7 +3,7 @@ import { createFilter, deleteFilter, getFilterById } from './gmailFilters';
 import { storageKeys } from '@src/pages/background/constants/app.constants';
 
 type UpdateFilterParams = {
-  token: string;
+  userToken: string;
   emails: string[];
   filterId: string;
   filterAction: FILTER_ACTION;
@@ -18,11 +18,11 @@ const getStorageKeyByAction = (filterAction: FILTER_ACTION) => {
 };
 
 // update filter helper
-export const addEmailToFilter = async ({ token, emails, filterId, filterAction }: UpdateFilterParams) => {
+export const addEmailToFilter = async ({ userToken, emails, filterId, filterAction }: UpdateFilterParams) => {
   // sync storage (storage id)
   const storageKey = getStorageKeyByAction(filterAction);
 
-  const filter = await getFilterById(token, filterId);
+  const filter = await getFilterById(userToken, filterId);
 
   // if email already present in the filter, do nothing (return back)
   const isEmailAlreadyPresent = filter.emails.filter(email => emails.includes(email));
@@ -33,10 +33,10 @@ export const addEmailToFilter = async ({ token, emails, filterId, filterAction }
   const updatedFilterEmails = new Set([...filter.emails, ...emails]);
 
   // delete existing filter
-  await deleteFilter(token, filterId);
+  await deleteFilter(userToken, filterId);
 
   // create new filter with updated emails
-  const newFilterId = await createFilter({ token, filterAction, emails: [...updatedFilterEmails] });
+  const newFilterId = await createFilter({ userToken, filterAction, emails: [...updatedFilterEmails] });
 
   // save new filter id to sync storage
   await chrome.storage.sync.set({ [storageKey.sync]: newFilterId });
@@ -48,7 +48,7 @@ export const addEmailToFilter = async ({ token, emails, filterId, filterAction }
 
 // remove email from filter
 export const removeEmailFromFilter = async ({
-  token,
+  userToken,
   emails,
   filterId,
   filterAction,
@@ -57,17 +57,17 @@ export const removeEmailFromFilter = async ({
   const storageKey = getStorageKeyByAction(filterAction);
 
   // get filter by id
-  const filter = await getFilterById(token, filterId);
+  const filter = await getFilterById(userToken, filterId);
 
   // update the email list, remove the email
   const updatedFilterEmails = filter.emails.filter(e => !emails.includes(e));
 
   // delete current  filter
-  await deleteFilter(token, filterId);
+  await deleteFilter(userToken, filterId);
 
   // create new one with new emails list
   const newFilterId = await createFilter({
-    token,
+    userToken,
     emails: [...updatedFilterEmails],
     filterAction: filterAction,
   });

@@ -5,7 +5,7 @@ import { getFilterById } from '../helper/gmailFilters';
 import { getFilterId } from '../helper/getFilterId';
 import { logger } from '@src/pages/background/utils/logger';
 
-export const getWhitelistedEmails = async (token: string): Promise<string[]> => {
+export const getWhitelistedEmails = async (userToken: string): Promise<string[]> => {
   let filterEmails = [];
   try {
     // get whitelisted emails from local.storage
@@ -16,10 +16,10 @@ export const getWhitelistedEmails = async (token: string): Promise<string[]> => 
       // if emails not present in local.storage get it from user's filter (gmail-api)
 
       // check for whitelisted filter id in sync.storage
-      const whitelistFilterId = await getFilterId({ token, filterAction: FILTER_ACTION.INBOX });
+      const whitelistFilterId = await getFilterId({ userToken, filterAction: FILTER_ACTION.INBOX });
       if (whitelistFilterId) {
         // if exists, get emails from filter by id
-        const res = await getFilterById(token, whitelistFilterId);
+        const res = await getFilterById(userToken, whitelistFilterId);
         if (res) {
           // save emails to local.storage
           await chrome.storage.local.set({ [storageKeys.WHITELISTED_EMAILS]: res.emails });

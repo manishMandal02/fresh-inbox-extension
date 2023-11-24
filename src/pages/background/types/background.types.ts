@@ -21,6 +21,12 @@ export enum IMessageEvent {
   BACKGROUND_ERROR = 'backgroundError',
 }
 
+export interface ISession {
+  token: string;
+  expiresAt: string;
+  email: string;
+}
+
 export enum FILTER_ACTION {
   TRASH = 'TRASH',
   INBOX = 'INBOX',
@@ -30,7 +36,7 @@ export type FilterType = 'whitelist' | 'unsubscribe';
 
 export type APIHandleParams = {
   emails: string[];
-  token: string;
+  userToken: string;
 };
 
 type EmailId = {
@@ -58,7 +64,7 @@ export interface DataOnPage {
 export interface IMessageBody {
   event: IMessageEvent;
   emails?: string[];
-  userEmail?: string;
+  userEmail: string;
   name?: string;
   // to remove the email from the whitelisted emails after unsubscribing (if true)
   isWhitelisted?: boolean;
