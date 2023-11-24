@@ -14,7 +14,7 @@ import { whitelistEmail } from './services/api/gmail/handler/whitelistEmail';
 import { resubscribeEmail } from './services/api/gmail/handler/resubscribeEmail';
 import { getNewsletterEmailsOnPage } from './services/api/gmail/handler/getNewsletterEmailsOnPage';
 import { logger } from './utils/logger';
-import { UserStorageKey, storageKeys } from './constants/app.constants';
+import { StorageKey, UserStorageKey, storageKeys } from './constants/app.constants';
 import { getSessionStorageByKey, getSyncStorageByKey } from './utils/getStorageByKey';
 import { advanceSearch } from './services/api/gmail/handler/advance-search/advanceSearch';
 import { bulkDelete } from './services/api/gmail/handler/advance-search/bulkDelete';
@@ -41,7 +41,7 @@ let currentSession: ISession | null = null;
 // google client id from env variables for google auth
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-type StorageKey = keyof typeof storageKeys;
+
 
 // generate storage key with user email, to differentiate data stored for multi email/users
 export const generateStorageKey = (key: StorageKey): UserStorageKey => `${currentSession.email}-${key}`;
@@ -52,19 +52,21 @@ const initializeStorage = async () => {
     const promises = [
       // sync storage
       // set app status
-      chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: true }),
+      setStorage({ type: 'sync', key: storageKeys.IS_APP_ENABLED, value: true }),
       // set unsubscribe filter id
-      chrome.storage.sync.set({ [storageKeys.UNSUBSCRIBE_FILTER_ID]: '' }),
+      setStorage({ type: 'sync', key: storageKeys.UNSUBSCRIBE_FILTER_ID, value: '' }),
       // set whitelist filter id
-      chrome.storage.sync.set({ [storageKeys.WHITELIST_FILTER_ID]: '' }),
+      setStorage({ type: 'sync', key: storageKeys.WHITELIST_FILTER_ID, value: '' }),
 
       // local storage
       // set newsletter emails
-      chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: [] }),
+      setStorage({ type: 'local', key: storageKeys.NEWSLETTER_EMAILS, value: [] }),
+
       // set unsubscribed emails
-      chrome.storage.local.set({ [storageKeys.UNSUBSCRIBED_EMAILS]: [] }),
+      setStorage({ type: 'local', key: storageKeys.UNSUBSCRIBED_EMAILS, value: [] }),
+
       // set whitelisted emails
-      chrome.storage.local.set({ [storageKeys.WHITELISTED_EMAILS]: [] }),
+      setStorage({ type: 'local', key: storageKeys.WHITELISTED_EMAILS, value: [] }),
     ];
 
     // wait for all promises to resolve
@@ -207,7 +209,7 @@ chrome.runtime.onMessage.addListener(
         const isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
         if (!isAppEnabled) {
           // enable app
-          await chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: true });
+          await setStorage({ type: 'sync', key: storageKeys.IS_APP_ENABLED, value: true });
         }
         // check app (fresh inbox) custom filters
         return await checkFreshInboxFilters(currentSession.email);

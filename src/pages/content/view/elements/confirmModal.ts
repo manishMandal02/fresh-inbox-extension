@@ -1,4 +1,5 @@
 import { storageKeys } from '../../constants/app.constants';
+import { createStorageKey } from '../../utils/createStorageKey';
 import { getSyncStorageByKey } from '../../utils/getStorageByKey';
 
 const handleConfirmActionBtnClick = async (ev: MouseEvent, onConfirmClick: () => Promise<void>) => {
@@ -23,7 +24,10 @@ const handleCheckboxUpdate = async (ev: Event) => {
 
   // update checkbox state
   // if checked, update storage (sync) to save preference (checked = user doesn't want to see this message again)
-  await chrome.storage.sync.set({ [storageKeys.DONT_SHOW_DELETE_CONFIRM_MSG]: isChecked });
+
+  // create storage key
+  const storageKey = createStorageKey(storageKeys.DONT_SHOW_DELETE_CONFIRM_MSG);
+  await chrome.storage.sync.set({ [storageKey]: isChecked });
 };
 
 type ShowConfirmModalParams = {

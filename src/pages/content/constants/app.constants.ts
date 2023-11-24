@@ -8,3 +8,5 @@ export const storageKeys = {
   WHITELISTED_EMAILS: 'WHITELISTED_EMAILS',
   DONT_SHOW_DELETE_CONFIRM_MSG: 'DONT_SHOW_DELETE_CONFIRM_MSG',
 } as const;
+
+export type StorageKey = keyof typeof storageKeys;

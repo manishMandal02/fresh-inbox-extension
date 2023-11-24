@@ -4,6 +4,7 @@ import { getFilterById } from '../helper/gmailFilters';
 import { getFilterId } from '../helper/getFilterId';
 import { getLocalStorageByKey } from '@src/pages/background/utils/getStorageByKey';
 import { logger } from '@src/pages/background/utils/logger';
+import { setStorage } from '@src/pages/background/utils/setStorage';
 
 export const getUnsubscribedEmails = async (userToken: string): Promise<string[]> => {
   try {
@@ -16,20 +17,16 @@ export const getUnsubscribedEmails = async (userToken: string): Promise<string[]
 
     // check for unsubscribe filter id in sync.storage
     const unsubscribeFilterId = await getFilterId({ userToken, filterAction: FILTER_ACTION.TRASH });
-    if (unsubscribeFilterId) {
-      // if exists, get emails from filter by id
-      const res = await getFilterById(userToken, unsubscribeFilterId);
+    if (!unsubscribeFilterId) throw new Error('❌ Failed to get unsubscribe filter id');
 
-      if (res) {
-        // save emails to local.storage
-        await chrome.storage.local.set({ [storageKeys.UNSUBSCRIBED_EMAILS]: res.emails });
-        return res.emails;
-      } else {
-        throw new Error('❌ Failed to get unsubscribe filter emails');
-      }
-    } else {
-      throw new Error('❌ Failed to get unsubscribe filter id');
-    }
+    //  get emails from filter by id
+    const res = await getFilterById(userToken, unsubscribeFilterId);
+
+    if (!res) throw new Error('❌ Failed to get unsubscribe filter emails');
+    // save emails to chrome local storage
+    await setStorage({ type: 'local', key: storageKeys.UNSUBSCRIBED_EMAILS, value: res.emails });
+
+    return res.emails;
   } catch (error) {
     logger.error({
       error,

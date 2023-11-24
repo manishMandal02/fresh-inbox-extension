@@ -95,6 +95,7 @@ const handleUnsubscribeAndDeleteAllMails = async ({
     });
 
     // send message/event to background script
+    //@ts-ignore
     const res = await chrome.runtime.sendMessage<IMessageBody>({
       event: IMessageEvent.UNSUBSCRIBE_AND_DELETE_MAILS,
       emails,

@@ -1,6 +1,4 @@
-import type { storageKeys } from '../constants/app.constants';
-
-type StorageKey = keyof typeof storageKeys;
+import type { StorageKey } from '../constants/app.constants';
 
 export const getLocalStorageByKey = async <T = string[]>(key: StorageKey): Promise<T> => {
   const localStorage = await chrome.storage.local.get(key);
@@ -21,4 +19,3 @@ export const getSyncStorageByKey = async <T>(key: StorageKey): Promise<T> => {
     return null;
   }
 };
-

@@ -23,16 +23,6 @@ root.style.zIndex = '10000';
 root.style.top = '20px';
 root.style.right = '200px';
 
-// content script global variables type
-export interface FreshInboxGlobalVariables {
-  assistantBtnContainerId: string;
-  isMouseOverHoverCard: boolean;
-  userEmail: string;
-  isMouseOverFreshInboxAssistantBtn: boolean;
-  loggerLevel: 'dev' | 'prod';
-  isAppEnabled?: boolean;
-}
-
 // set  global variable state
 window.freshInboxGlobalVariables = {
   assistantBtnContainerId: '',

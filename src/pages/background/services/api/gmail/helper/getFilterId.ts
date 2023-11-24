@@ -5,6 +5,7 @@ import { getFreshInboxFilter } from './getFreshInboxFilter';
 import { getSyncStorageByKey } from '@src/pages/background/utils/getStorageByKey';
 import { checkFilterIdExists } from './checkFilterIdExists';
 import { logger } from '@src/pages/background/utils/logger';
+import { setStorage } from '@src/pages/background/utils/setStorage';
 
 type GetFilterIdParams = {
   userToken: string;
@@ -31,7 +32,7 @@ export const getFilterId = async ({ userToken, filterAction }: GetFilterIdParams
 
       if (res?.filterId) {
         // save the filterId to sync storage
-        await chrome.storage.sync.set({ [storageKey]: res.filterId });
+        await setStorage({ type: 'sync', key: storageKey, value: res.filterId });
 
         return res.filterId;
       }
@@ -41,7 +42,8 @@ export const getFilterId = async ({ userToken, filterAction }: GetFilterIdParams
 
       if (newFilterId) {
         // save the new filter id to sync storage
-        await chrome.storage.sync.set({ [storageKey]: newFilterId });
+        await setStorage({ type: 'sync', key: storageKey, value: newFilterId });
+
         // return the new filter id
         return newFilterId;
       } else {

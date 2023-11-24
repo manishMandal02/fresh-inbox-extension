@@ -1,6 +1,7 @@
 import { FILTER_ACTION } from '@src/pages/background/types/background.types';
 import { createFilter, deleteFilter, getFilterById } from './gmailFilters';
 import { storageKeys } from '@src/pages/background/constants/app.constants';
+import { setStorage } from '@src/pages/background/utils/setStorage';
 
 type UpdateFilterParams = {
   userToken: string;
@@ -39,9 +40,10 @@ export const addEmailToFilter = async ({ userToken, emails, filterId, filterActi
   const newFilterId = await createFilter({ userToken, filterAction, emails: [...updatedFilterEmails] });
 
   // save new filter id to sync storage
-  await chrome.storage.sync.set({ [storageKey.sync]: newFilterId });
+  await setStorage({ type: 'sync', key: storageKey.sync, value: newFilterId });
+
   // save updated emails to local storage
-  await chrome.storage.local.set({ [storageKey.local]: [...updatedFilterEmails] });
+  await setStorage({ type: 'local', key: storageKey.local, value: [...updatedFilterEmails] });
 
   return true;
 };
@@ -68,11 +70,12 @@ export const removeEmailFromFilter = async ({
   // create new one with new emails list
   const newFilterId = await createFilter({
     userToken,
+    filterAction,
     emails: [...updatedFilterEmails],
-    filterAction: filterAction,
   });
   // save the filter id to chrome sync storage
-  await chrome.storage.sync.set({ [storageKey.sync]: newFilterId });
+  await setStorage({ type: 'sync', key: storageKey.sync, value: newFilterId });
+
   // save the updated  emails to chrome local storage
-  await chrome.storage.local.set({ [storageKey.local]: updatedFilterEmails });
+  await setStorage({ type: 'local', key: storageKey.local, value: updatedFilterEmails });
 };

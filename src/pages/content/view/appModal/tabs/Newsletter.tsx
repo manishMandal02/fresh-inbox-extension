@@ -27,12 +27,15 @@ const getNewsletterEmailsData = async (shouldRefreshData = false) => {
     let newsletterEmails: NewsletterData[] = [];
     const getNewsletterEmailsFromBackground = async () => {
       // send message to background to get data
-      newsletterEmails = await chrome.runtime.sendMessage<IMessageBody>({
+      let newsletterEmailsData = (await chrome.runtime.sendMessage<IMessageBody, NewsletterData[]>({
         event: IMessageEvent.GET_NEWSLETTER_EMAILS,
-      });
+      })) as NewsletterData[] | null;
 
-      // save newsletter data to chrome local storage
-      await chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: newsletterEmails });
+      if (newsletterEmailsData) {
+        newsletterEmails = newsletterEmailsData;
+        // save newsletter data to chrome local storage
+        await chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: newsletterEmails });
+      }
     };
 
     if (shouldRefreshData) {

@@ -1,5 +1,6 @@
 import { AUTH_SCOPE, storageKeys } from '../../constants/app.constants';
 import { logger } from '../../utils/logger';
+import { setStorage } from '../../utils/setStorage';
 
 // custom google OAuth2 flow
 const googleAuth = async (email: string, clientId: string, interactive: boolean): Promise<string | null> => {
@@ -58,14 +59,15 @@ export const logoutUser = async (userToken: string, disableApp = true) => {
 
     const promises = [
       // disable app
-      chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: !disableApp }),
+      setStorage({ type: 'sync', key: storageKeys.IS_APP_ENABLED, value: !disableApp }),
+
       // clear local storage
       // set newsletter emails
-      chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: [] }),
+      setStorage({ type: 'local', key: storageKeys.NEWSLETTER_EMAILS, value: [] }),
       // set unsubscribed emails
-      chrome.storage.local.set({ [storageKeys.UNSUBSCRIBED_EMAILS]: [] }),
+      setStorage({ type: 'local', key: storageKeys.UNSUBSCRIBED_EMAILS, value: [] }),
       // set whitelisted emails
-      chrome.storage.local.set({ [storageKeys.WHITELISTED_EMAILS]: [] }),
+      setStorage({ type: 'local', key: storageKeys.WHITELISTED_EMAILS, value: [] }),
     ];
 
     // wait for all promises to resolve
