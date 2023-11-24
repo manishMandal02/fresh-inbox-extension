@@ -41,8 +41,6 @@ let currentSession: ISession | null = null;
 // google client id from env variables for google auth
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-
-
 // generate storage key with user email, to differentiate data stored for multi email/users
 export const generateStorageKey = (key: StorageKey): UserStorageKey => `${currentSession.email}-${key}`;
 
@@ -110,6 +108,9 @@ export const clearUserData = async (disableApp = false) => {
 
 // checks for user session and refreshes token if needed
 const checkUserSession = async (event: IMessageEvent, userEmail: string) => {
+  //
+  logger.info(`Current Session: ${userEmail}`);
+
   // ignore events where tokens are not required
   if (event === IMessageEvent.CHECK_AUTH_TOKEN || event === IMessageEvent.LAUNCH_AUTH_FLOW) return;
 
@@ -148,7 +149,6 @@ const checkUserSession = async (event: IMessageEvent, userEmail: string) => {
       // logout user in the content script
       await sendMsgToTab({
         event: IMessageEvent.LOGOUT_USER,
-        userEmail: '',
       });
     }
   }

@@ -1,9 +1,9 @@
-// send message/events to active tab (content script)
+// publish events to active tab (content script)
 
 import type { IMessageBody } from '../types/background.types';
 import { logger } from './logger';
 
-export const sendMsgToTab = async (msg: IMessageBody) => {
+export const sendMsgToTab = async (msg: Omit<IMessageBody, 'userEmail'>) => {
   try {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
 

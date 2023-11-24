@@ -1,5 +1,6 @@
 import { IMessageEvent, type DataOnPage, IMessageBody } from '@src/pages/content/types/content.types';
 import { logger } from '@src/pages/content/utils/logger';
+import { publishEvent } from '@src/pages/content/utils/publishEvent';
 
 type GenerateStorageKeyProps = Pick<DataOnPage, 'category' | 'dateRange' | 'folder'>;
 
@@ -27,7 +28,7 @@ export const identifyOnPageNewsletterEmails = async ({
     return JSON.parse(newsletterEmails);
   } else {
     // no cache data, fetch data from background script
-    const res = await chrome.runtime.sendMessage<IMessageBody>({
+    const res = await publishEvent<string[]>({
       event: IMessageEvent.GET_NEWSLETTER_EMAILS_ON_PAGE,
       dataOnPage: {
         emails,

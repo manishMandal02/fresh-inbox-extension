@@ -9,6 +9,7 @@ import { getSyncStorageByKey } from '../utils/getStorageByKey';
 import { embedAssistantBtn } from '../view/assistant-button';
 import { watchEmailTableContainerClick } from '../view/assistant-button/helper/watchEmailTableContainerClick';
 import { getUserEmailIdFromPage } from '../view/assistant-button/helper/getEmailIdFromPage';
+import { publishEvent } from '../utils/publishEvent';
 
 // reload on update
 refreshOnUpdate('pages/content');
@@ -44,10 +45,7 @@ window.freshInboxGlobalVariables = {
   const isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
 
   // is user Authed or not? (handle multiple user) send email id from the content script
-  const isTokenValid = await chrome.runtime.sendMessage<IMessageBody>({
-    event: IMessageEvent.CHECK_AUTH_TOKEN,
-    userEmail: freshInboxGlobalVariables.userEmail,
-  });
+  const isTokenValid = await publishEvent({ event: IMessageEvent.CHECK_AUTH_TOKEN });
 
   // show settings modal based on app status & auth status
   createRoot(root).render(<AppModal appStatus={isAppEnabled} isTokenValid={isTokenValid} />);

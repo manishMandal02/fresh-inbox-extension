@@ -2,13 +2,14 @@ import { IMessageBody, IMessageEvent } from '../types/content.types';
 import { removeAssistantBtn } from '../view/assistant-button/helper/removeAssistantBtn';
 import { hideLoadingSnackbar, showLoadingSnackbar, showSnackbar } from '../view/elements/snackbar';
 import { logger } from './logger';
+import { publishEvent } from './publishEvent';
 
 // disable app
 export const disableApp = async () => {
   // show loading snackbar
   showLoadingSnackbar({ title: 'Disabling Fresh Inbox...', emails: [] });
   // disable app
-  const res = await chrome.runtime.sendMessage<IMessageBody>({ event: IMessageEvent.DISABLE_FRESH_INBOX });
+  const res = await publishEvent({ event: IMessageEvent.DISABLE_FRESH_INBOX });
 
   removeAssistantBtn();
 

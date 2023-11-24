@@ -16,6 +16,7 @@ import { limitCharLength } from '@src/pages/content/utils/limitCharLength';
 import ActionButton from '../../elements/action-button';
 import { logger } from '@src/pages/content/utils/logger';
 import InfoIcon from '../../elements/InfoIcon';
+import { publishEvent } from '@src/pages/content/utils/publishEvent';
 
 type NewsletterData = {
   email: string;
@@ -26,10 +27,10 @@ const getNewsletterEmailsData = async (shouldRefreshData = false) => {
   try {
     let newsletterEmails: NewsletterData[] = [];
     const getNewsletterEmailsFromBackground = async () => {
-      // send message to background to get data
-      let newsletterEmailsData = (await chrome.runtime.sendMessage<IMessageBody, NewsletterData[]>({
+      // publish event to background to get data
+      let newsletterEmailsData = await publishEvent<NewsletterData[]>({
         event: IMessageEvent.GET_NEWSLETTER_EMAILS,
-      })) as NewsletterData[] | null;
+      });
 
       if (newsletterEmailsData) {
         newsletterEmails = newsletterEmailsData;

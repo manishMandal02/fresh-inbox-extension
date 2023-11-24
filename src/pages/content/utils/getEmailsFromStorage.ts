@@ -1,13 +1,13 @@
 import { IMessageBody, IMessageEvent } from '../types/content.types';
 import { logger } from './logger';
+import { publishEvent } from './publishEvent';
 
 // get list of unsubscribed emails
 export const getUnsubscribedEmails = async (): Promise<string[]> => {
   try {
-    // send message/event to background script to fetch emails
-    const emails = await chrome.runtime.sendMessage<IMessageBody>({
-      event: IMessageEvent.GET_UNSUBSCRIBED_EMAILS,
-    });
+    // publish event to background script to fetch emails
+    const emails = await publishEvent<string[]>({ event: IMessageEvent.GET_UNSUBSCRIBED_EMAILS });
+
     if (emails) {
       return emails;
     } else {
@@ -26,10 +26,9 @@ export const getUnsubscribedEmails = async (): Promise<string[]> => {
 // get list of whitelisted emails
 export const getWhitelistedEmails = async (): Promise<string[]> => {
   try {
-    // send message/event to background script to fetch emails
-    const emails = await chrome.runtime.sendMessage<IMessageBody>({
-      event: IMessageEvent.GET_WHITELISTED_EMAILS,
-    });
+    // publish event to background script to fetch emails
+    const emails = await publishEvent<string[]>({ event: IMessageEvent.GET_WHITELISTED_EMAILS });
+
     if (emails) {
       return emails;
     } else {

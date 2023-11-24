@@ -2,6 +2,7 @@ import { IMessageBody, IMessageEvent } from '../types/content.types';
 import { showConfirmModal } from '../view/elements/confirmModal';
 import { hideLoadingSnackbar, showLoadingSnackbar, showSnackbar } from '../view/elements/snackbar';
 import { logger } from './logger';
+import { publishEvent } from './publishEvent';
 
 // handle unsubscribe
 const handleUnsubscribeEmail = async (emails: string[], isWhitelisted = false): Promise<boolean> => {
@@ -11,12 +12,9 @@ const handleUnsubscribeEmail = async (emails: string[], isWhitelisted = false): 
       emails,
       title: `Unsubscribing from`,
     });
-    // send message/event to background script
-    const res = await chrome.runtime.sendMessage<IMessageBody>({
-      emails,
-      isWhitelisted,
-      event: IMessageEvent.UNSUBSCRIBE,
-    });
+    // publish event to background script
+    const res = await publishEvent({ emails, isWhitelisted, event: IMessageEvent.UNSUBSCRIBE });
+
     if (!res) {
       throw new Error('Failed to unsubscribe.');
     }
@@ -50,11 +48,9 @@ const handleDeleteAllMails = async (emails: string[]): Promise<boolean> => {
       emails,
       title: `Deleting all mails from`,
     });
-    // send message/event to background script
-    const res = await chrome.runtime.sendMessage<IMessageBody>({
-      event: IMessageEvent.DELETE_ALL_MAILS,
-      emails,
-    });
+    // publish event to background script
+    const res = await publishEvent({ emails, event: IMessageEvent.DELETE_ALL_MAILS });
+
     if (!res) {
       throw new Error('Failed to delete mails');
     }
@@ -94,12 +90,11 @@ const handleUnsubscribeAndDeleteAllMails = async ({
       title: `Unsubscribing and deleting all mails from`,
     });
 
-    // send message/event to background script
-    //@ts-ignore
-    const res = await chrome.runtime.sendMessage<IMessageBody>({
-      event: IMessageEvent.UNSUBSCRIBE_AND_DELETE_MAILS,
+    // publish event to background script
+    const res = await publishEvent({
       emails,
       isWhitelisted,
+      event: IMessageEvent.UNSUBSCRIBE_AND_DELETE_MAILS,
     });
 
     if (!res) {
@@ -133,8 +128,8 @@ const handleReSubscribeEmail = async (emails: string[]): Promise<boolean> => {
       title: `Re-subscribing to `,
     });
 
-    // send message/event to background script
-    const res = await chrome.runtime.sendMessage<IMessageBody>({ event: IMessageEvent.RE_SUBSCRIBE, emails });
+    // publish event to background script
+    const res = await publishEvent({ emails, event: IMessageEvent.RE_SUBSCRIBE });
 
     if (!res) {
       throw new Error('Failed to resubscribe');
@@ -168,11 +163,9 @@ const handleWhitelistEmail = async (emails: string[]): Promise<boolean> => {
       title: `Whitelisting `,
     });
 
-    // send message/event to background script
-    const res = await chrome.runtime.sendMessage<IMessageBody>({
-      emails,
-      event: IMessageEvent.WHITELIST_EMAIL,
-    });
+    // publish event to background script
+    const res = await publishEvent({ emails, event: IMessageEvent.WHITELIST_EMAIL });
+
     if (!res) {
       throw new Error('Failed to whitelist email');
     }

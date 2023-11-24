@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { IMessageEvent, type IMessageBody } from '../../types/content.types';
 import { embedAssistantBtn } from '../assistant-button';
 import { disableApp } from '../../utils/disableApp';
+import { publishEvent } from '../../utils/publishEvent';
 
 type Props = {
   isAppEnabled: boolean;
@@ -13,10 +14,8 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
 
   // handle connect button click
   const handleConnectBtnClick = async () => {
-    const res = await chrome.runtime.sendMessage<IMessageBody>({
-      event: IMessageEvent.LAUNCH_AUTH_FLOW,
-      userEmail: freshInboxGlobalVariables.userEmail,
-    });
+    const res = await publishEvent({ event: IMessageEvent.LAUNCH_AUTH_FLOW });
+
     if (res) {
       // auth success
 
@@ -27,9 +26,7 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
       await embedAssistantBtn();
 
       // run checks after successful auth
-      await chrome.runtime.sendMessage<IMessageBody>({
-        event: IMessageEvent.CHECKS_AFTER_AUTH,
-      });
+      await publishEvent({ event: IMessageEvent.CHECK_AUTH_TOKEN });
     } else {
       // failed auth
       // show error message
@@ -64,12 +61,7 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
           <br />
           <p className='m-0 mt-2.5'>
             🎬 Want to learn more? Check out our quick walkthrough here:{' '}
-            <a
-              className='underline'
-              href='https://freshinbox.xyz/link/demo'
-              target='_blank'
-              rel='noreferrer'
-            >
+            <a className='underline' href='https://freshinbox.xyz/link/demo' target='_blank' rel='noreferrer'>
               Link
             </a>
           </p>

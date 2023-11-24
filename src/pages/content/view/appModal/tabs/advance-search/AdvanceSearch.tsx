@@ -10,6 +10,7 @@ import { logger } from '@src/pages/content/utils/logger';
 import InfoIcon from '../../../elements/InfoIcon';
 import { showConfirmModal } from '../../../elements/confirmModal';
 import { showSnackbar } from '../../../elements/snackbar';
+import { publishEvent } from '@src/pages/content/utils/publishEvent';
 
 const AdvanceSearch = () => {
   const [searchResEmailIds, setSearchResEmailIds] = useState<string[] | null>(null);
@@ -34,7 +35,8 @@ const AdvanceSearch = () => {
     setIsLoadingSearchRes(true);
 
     // send search event to background script
-    const res = await chrome.runtime.sendMessage<IMessageBody, string[]>({
+
+    const res = await publishEvent<string[]>({
       event: IMessageEvent.ADVANCE_SEARCH,
       advanceSearch: formData,
     });
@@ -61,7 +63,8 @@ const AdvanceSearch = () => {
       onConfirmClick: async () => {
         setIsDeleting(true);
         // send bulk delete event to background script
-        const res = await chrome.runtime.sendMessage<IMessageBody, boolean>({
+
+        const res = await publishEvent<string[]>({
           event: IMessageEvent.BULK_DELETE,
           emails: searchResEmailIds,
         });
