@@ -31,12 +31,13 @@ reloadOnUpdate('pages/content/style.scss');
 logger.info('🏁 background script loaded');
 
 // current session: email, token,tokenExpireAt
-let currentSession: ISession | null = null;
+const currentSession: ISession = {
+  email: '',
+  token: '',
+  expiresAt: '',
+};
 
-// TODO - update all the storage keys to include user emails
-
-// TODO - fix: if 2 users using the extension in same browser switch the tabs (without reloading the page),
-//
+// TODO: if app not initialized do something
 
 // google client id from env variables for google auth
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -51,6 +52,8 @@ const initializeStorage = async () => {
       // sync storage
       // set app status
       setStorage({ type: 'sync', key: storageKeys.IS_APP_ENABLED, value: true }),
+      // set preference: confirm delete action
+      setStorage({ type: 'sync', key: storageKeys.DONT_SHOW_DELETE_CONFIRM_MSG, value: false }),
       // set unsubscribe filter id
       setStorage({ type: 'sync', key: storageKeys.UNSUBSCRIBE_FILTER_ID, value: '' }),
       // set whitelist filter id
@@ -103,7 +106,10 @@ export const clearUserData = async (disableApp = false) => {
   const userStorageKey = generateStorageKey(storageKeys.SESSIONS);
   await chrome.storage.session.remove(userStorageKey);
 
-  currentSession = null;
+  // reset session variable
+  currentSession.email = '';
+  currentSession.token = '';
+  currentSession.expiresAt = '';
 };
 
 // checks for user session and refreshes token if needed
@@ -162,6 +168,11 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
       logger.info('✅ Successfully app initialized on install.');
     }
   })();
+});
+
+// on connect (when the extension is started)
+chrome.runtime.onConnect.addListener(port => {
+  // check if the storage is initialized
 });
 
 //SECTION listen for messages from content script

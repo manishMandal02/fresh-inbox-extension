@@ -7,7 +7,7 @@ import { getSyncStorageByKey } from '@src/pages/content/utils/getStorageByKey';
 import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 import { storageKeys } from '@src/pages/content/constants/app.constants';
 import { showSnackbar } from '../../elements/snackbar';
-import { createStorageKey } from '@src/pages/content/utils/createStorageKey';
+import { generateStorageKey } from '@src/pages/content/utils/generateStorageKey';
 
 type Props = {
   onAppDisable: () => void;
@@ -34,7 +34,7 @@ export const About = ({ onAppDisable }: Props) => {
     // update checkbox state
     // if checked, update storage (sync) to save preference (checked = user doesn't want to see this message again)
     // create storage key
-    const storageKey = createStorageKey(storageKeys.DONT_SHOW_DELETE_CONFIRM_MSG);
+    const storageKey = generateStorageKey(storageKeys.DONT_SHOW_DELETE_CONFIRM_MSG);
 
     await chrome.storage.sync.set({ [storageKey]: value });
     setIsCheckedAlertMsg(value);

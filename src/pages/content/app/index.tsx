@@ -44,6 +44,7 @@ window.freshInboxGlobalVariables = {
   // check if app is enabled or not
   const isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
 
+
   // is user Authed or not? (handle multiple user) send email id from the content script
   const isTokenValid = await publishEvent({ event: IMessageEvent.CHECK_AUTH_TOKEN });
 

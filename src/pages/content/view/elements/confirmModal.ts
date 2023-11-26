@@ -1,5 +1,5 @@
 import { storageKeys } from '../../constants/app.constants';
-import { createStorageKey } from '../../utils/createStorageKey';
+import { generateStorageKey } from '../../utils/generateStorageKey';
 import { getSyncStorageByKey } from '../../utils/getStorageByKey';
 
 const handleConfirmActionBtnClick = async (ev: MouseEvent, onConfirmClick: () => Promise<void>) => {
@@ -26,7 +26,7 @@ const handleCheckboxUpdate = async (ev: Event) => {
   // if checked, update storage (sync) to save preference (checked = user doesn't want to see this message again)
 
   // create storage key
-  const storageKey = createStorageKey(storageKeys.DONT_SHOW_DELETE_CONFIRM_MSG);
+  const storageKey = generateStorageKey(storageKeys.DONT_SHOW_DELETE_CONFIRM_MSG);
   await chrome.storage.sync.set({ [storageKey]: isChecked });
 };
 
@@ -41,9 +41,9 @@ const showConfirmModal = async ({ msg, email, onConfirmClick, isBulkDelete }: Sh
   // action modal is shown for all bulk delete action
   if (!isBulkDelete) {
     // check user preference , if the user want's to see the delete confirmation message or not
-    const shouldShowDeleteConfirmMsg = await getSyncStorageByKey<boolean>('DONT_SHOW_DELETE_CONFIRM_MSG');
+    const dontShowDeleteConfirmMsg = await getSyncStorageByKey<boolean>('DONT_SHOW_DELETE_CONFIRM_MSG');
 
-    if (typeof shouldShowDeleteConfirmMsg === 'boolean' && shouldShowDeleteConfirmMsg === false) {
+    if (typeof dontShowDeleteConfirmMsg === 'boolean' && dontShowDeleteConfirmMsg === true) {
       // user has opted not to see the confirm action msg again
       // don't show confirm delete action msg
       await onConfirmClick();

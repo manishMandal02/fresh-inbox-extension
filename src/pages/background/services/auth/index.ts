@@ -9,9 +9,11 @@ const googleAuth = async (email: string, clientId: string, interactive: boolean)
 
   authUrl.searchParams.set('client_id', clientId);
   authUrl.searchParams.set('redirect_uri', redirectUri);
-  authUrl.searchParams.set('response_type', 'userToken');
+  authUrl.searchParams.set('response_type', 'token');
   authUrl.searchParams.set('scope', AUTH_SCOPE);
   authUrl.searchParams.set('login_hint', email);
+
+
   try {
     if (!clientId) throw new Error('No client id found.');
     const responseURL = (await chrome.identity.launchWebAuthFlow({
