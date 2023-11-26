@@ -37,7 +37,6 @@ const currentSession: ISession = {
   expiresAt: '',
 };
 
-// TODO: if app not initialized do something
 
 // google client id from env variables for google auth
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -170,11 +169,6 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
   })();
 });
 
-// on connect (when the extension is started)
-chrome.runtime.onConnect.addListener(port => {
-  // check if the storage is initialized
-});
-
 //SECTION listen for messages from content script
 chrome.runtime.onMessage.addListener(
   asyncMessageHandler<IMessageBody, string | boolean | INewsletterEmails[] | string[]>(async request => {
@@ -203,8 +197,10 @@ chrome.runtime.onMessage.addListener(
       // launch google auth
       case IMessageEvent.LAUNCH_AUTH_FLOW: {
         const token = await launchGoogleAuthFlow(request.userEmail, googleClientId);
-
         if (token) {
+          // enable app  (after successful auth)
+          await setStorage({ type: 'sync', key: storageKeys.IS_APP_ENABLED, value: true });
+          // save user session
           await saveUserSession({
             token,
             email: request.userEmail,
@@ -216,12 +212,6 @@ chrome.runtime.onMessage.addListener(
       }
 
       case IMessageEvent.CHECKS_AFTER_AUTH: {
-        // enable app if disabled (after successful auth)
-        const isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
-        if (!isAppEnabled) {
-          // enable app
-          await setStorage({ type: 'sync', key: storageKeys.IS_APP_ENABLED, value: true });
-        }
         // check app (fresh inbox) custom filters
         return await checkFreshInboxFilters(currentSession.email);
       }

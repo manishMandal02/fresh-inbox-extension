@@ -6,7 +6,7 @@ export const getLocalStorageByKey = async <T = string[]>(key: StorageKey): Promi
   if (localStorage && typeof localStorage[key] !== 'undefined') {
     return localStorage[key];
   } else {
-    return null;
+    return undefined;
   }
 };
 
@@ -16,6 +16,6 @@ export const getSyncStorageByKey = async <T>(key: StorageKey): Promise<T> => {
   if (syncStorage && typeof syncStorage[key] !== 'undefined') {
     return syncStorage[key];
   } else {
-    return null;
+    return undefined;
   }
 };
