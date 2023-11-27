@@ -14,6 +14,8 @@ const queryEmailId = (): Promise<string | null> => {
 
     // match email string with regex
     const email = stringWIthEmail.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi)[0];
+
+    if (!email) reject(null);
     resolve(email);
   });
   //
@@ -22,9 +24,21 @@ const queryEmailId = (): Promise<string | null> => {
 export const getUserEmailIdFromPage = async (): Promise<string | null> => {
   // queries email id from on the page
   // reties 3 times with interval of 2s
-  const email = await retryAtIntervals<string | null>({ retries: 3, interval: 2000, callback: queryEmailId });
+  let email = '';
+  await retryAtIntervals({
+    retries: 10,
+    interval: 2000,
+    callback: async () => {
+      const userEmail = await queryEmailId();
+
+      if (userEmail) {
+        email = userEmail;
+        return true;
+      }
+    },
+  });
 
   if (!email) return null;
 
-  return email as string;
+  return email;
 };

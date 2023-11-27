@@ -42,12 +42,12 @@ window.freshInboxGlobalVariables = {
   // query for user email id on page
   freshInboxGlobalVariables.userEmail = await getUserEmailIdFromPage();
 
+  if (!freshInboxGlobalVariables.userEmail) return;
+
   // TODO: if app not initialized do something - isAppEnabled
 
   // check if app is enabled or not
   let isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
-
-  console.log('🚀 ~ file: index.tsx:50 ~ isAppEnabled:', isAppEnabled);
 
   // is user Authed or not? (handle multiple user) send email id from the content script
   const isTokenValid = await publishEvent({ event: IMessageEvent.CHECK_AUTH_TOKEN });

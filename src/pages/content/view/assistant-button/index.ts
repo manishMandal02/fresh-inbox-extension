@@ -40,7 +40,7 @@ const handleMouseOver = async ({
   freshInboxGlobalVariables.assistantBtnContainerId = randomId();
   assistantBtnContainer.id = freshInboxGlobalVariables.assistantBtnContainerId;
 
-  await wait(200);
+  await wait(100);
 
   await showHoverCard({
     name,

@@ -104,8 +104,6 @@ const createHoverCardElements = (): IHoverCardElements => {
 
   // add tooltip to the buttons
   addTooltip(whiteListEmailBtn, 'Keep this email in your inbox');
-  addTooltip(unsubscribeBtn, 'Unsubscribe this email');
-  addTooltip(deleteAllMailsBtn, 'Delete all emails from this sender');
   addTooltip(unsubscribeAndDeleteAllMailsBtn, 'Unsubscribe and delete emails from this sender');
 
   return {

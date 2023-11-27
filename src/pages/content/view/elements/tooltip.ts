@@ -1,3 +1,5 @@
+import wait from '../../utils/wait';
+
 const addTooltip = (parentEl: HTMLElement, title: string) => {
   // tooltip message el
   const tooltipMsg = document.createElement('span');
@@ -15,7 +17,7 @@ const addTooltip = (parentEl: HTMLElement, title: string) => {
   }
 
   // add tooltip
-  parentEl.addEventListener('mouseenter', () => {
+  parentEl.addEventListener('mouseenter', async () => {
     parentEl.appendChild(tooltipMsg);
   });
 
