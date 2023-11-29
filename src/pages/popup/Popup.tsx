@@ -20,7 +20,7 @@ const Popup = () => {
         {/* TODO: update the review link */}
         <a
           className='underline'
-          href='https://freshinbox.xyz/link/review'
+          href='https://freshinbox.xyz/link/chrome'
           target='_blank'
           rel='noopener noreferrer'
         >

@@ -143,7 +143,7 @@ export const About = ({ onAppDisable }: Props) => {
         Enjoying Fresh Inbox? We'd love to hear your thoughts! Consider leaving a review if it's been helpful.
         🌟{' '}
         <a
-          href='https://freshinbox.xyz/link/review'
+          href='https://freshinbox.xyz/link/chrome'
           target='_blank'
           rel='noreferrer'
           className='appearance-none underline font-medium'
