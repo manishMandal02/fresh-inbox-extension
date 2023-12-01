@@ -14,7 +14,7 @@ type GetSendEmailFromIdsParams = {
 };
 
 // minimum emails threshold (find at least 50 newsletter emails)
-const MINIMUM_EMAILS_THRESHOLD = 50;
+const MINIMUM_EMAILS_THRESHOLD = 60;
 
 // get sender emails & name from message/email ids
 const getSenderEmailsFromIds = async ({ messageIds, userToken }: GetSendEmailFromIdsParams) => {

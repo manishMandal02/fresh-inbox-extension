@@ -30,19 +30,18 @@ export const unsubscribeEmail = async ({ userToken, emails, isWhitelisted }: Uns
     // get all the newsletter emails
     const newsletterEmails = await getLocalStorageByKey<INewsletterEmails[]>(storageKeys.NEWSLETTER_EMAILS);
     if (newsletterEmails && newsletterEmails.length > 0) {
-      // check if these emails exists in the newsletters list (local.storage)
-      const emailsPresentInNewsletterEmails = newsletterEmails?.filter(e => emails.includes(e.email));
+      // remove the unsubscribed emails if present in newsletter emails
+      const filteredNewsletterEmails = newsletterEmails?.filter(e => !emails.includes(e.email));
 
-      if (emailsPresentInNewsletterEmails.length > 0) {
-        // if yes, remove these emails from newsletter list
-        const updatedNewsletterEmails = newsletterEmails.filter(
-          e => !emailsPresentInNewsletterEmails.includes(e)
-        );
+      // check if the original newsletter emails and filtered newsletter emails
+      if (filteredNewsletterEmails.length !== newsletterEmails.length) {
+        // if not same, some newsletter emails were unsubscribed
+
         // save updated newsletter emails
         await setStorage({
           type: 'local',
           key: storageKeys.NEWSLETTER_EMAILS,
-          value: updatedNewsletterEmails,
+          value: filteredNewsletterEmails,
         });
       }
     }

@@ -100,7 +100,7 @@ export const Newsletter = () => {
     setSelectedEmails([]);
 
     // refresh/refetch newsletter data if current data is below 60
-    const shouldRefreshData = newsletterEmails.length - selectedEmails.length < 25;
+    const shouldRefreshData = newsletterEmails.length - selectedEmails.length < 30;
 
     if (shouldRefreshData) {
       // show loading spinner only if refetching data from gmail (as it could take some time)
@@ -292,7 +292,7 @@ export const Newsletter = () => {
                 <InfoIcon />
 
                 <span className='text-xs text-slate-500 font-thin text-center ml-px'>
-                  This list will automatically refresh when it reaches below 25 emails. <br /> either block or
+                  This list will automatically refresh when it reaches below 30 emails. <br /> either block or
                   whitelist them to remove from this list
                 </span>
               </td>
