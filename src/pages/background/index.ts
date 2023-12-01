@@ -122,6 +122,12 @@ export const clearUserData = async (disableApp = false) => {
   currentSession.expiresAt = '';
 };
 
+chrome.runtime.onInstalled.addListener(async details => {
+  if (details.reason === 'install') {
+    
+  }
+});
+
 // checks for user session and refreshes token if needed
 const checkUserSession = async (event: IMessageEvent, userEmail: string) => {
   //

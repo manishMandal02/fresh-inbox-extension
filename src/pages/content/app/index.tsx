@@ -51,7 +51,7 @@ window.freshInboxGlobalVariables = {
   const isTokenValid = await publishEvent({ event: IMessageEvent.CHECK_AUTH_TOKEN });
 
   // check if app status not synced with token/auth
-  if (typeof isAppEnabled === 'undefined' && isTokenValid) {
+  if (typeof isAppEnabled === 'undefined') {
     // update chrome storage
     await chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: true });
     isAppEnabled = true;
@@ -64,16 +64,19 @@ window.freshInboxGlobalVariables = {
     // embed assistant button
     await embedAssistantBtn();
 
-    // watch url change:
-    // re-embed assistant button on url changes (if url supported)
-    onURLChange(async () => {
+    // watch for container change:
+    // check if inbox or a single email view and re-embed assistant button accordingly
+    await watchEmailTableContainerClick(async () => {
       // re-embed assistant button
+
+      console.log('🚀 ~ file: index.tsx:72 ~ await watchEmailTableContainerClick ~ re-embed:');
+
       await embedAssistantBtn();
     });
 
-    // watch for container change:
-    // check if inbox or a single email view and re-embed assistant button accordingly
-    watchEmailTableContainerClick(async () => {
+    // watch url change:
+    // re-embed assistant button on url changes (if url supported)
+    onURLChange(async () => {
       // re-embed assistant button
       await embedAssistantBtn();
     });
