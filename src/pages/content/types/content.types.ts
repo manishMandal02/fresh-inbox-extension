@@ -15,7 +15,7 @@ export enum IMessageEvent {
   CHECKS_AFTER_AUTH = 'checksAfterAuth',
   ADVANCE_SEARCH = 'advanceSearch',
   BULK_DELETE = 'bulkDelete',
-  // for content script
+  // events to content script
   LOGOUT_USER = 'logoutUser',
   API_LIMIT_REACHED = 'apiLimitReached',
   BACKGROUND_ERROR = 'backgroundError',

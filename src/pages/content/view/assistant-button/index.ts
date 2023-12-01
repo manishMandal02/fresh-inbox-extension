@@ -214,8 +214,8 @@ export const embedAssistantBtn = async () => {
   // check for container type & embed assistant button accordingly (single or inbox)
   // with a retry mechanism to try if container type not found the first time
   await retryAtIntervals<boolean>({
-    retries: 3,
-    interval: 2000,
+    retries: 4,
+    interval: 1500,
     callback: async () => {
       const currentContainer = await getOpenedContainerType();
       if (currentContainer) {
@@ -238,8 +238,8 @@ export const embedAssistantBtn = async () => {
     // retry to check if the emails are found on page or not
     // if not, then retry it for 3 times with 2 seconds interval
     await retryAtIntervals<boolean>({
-      retries: 3,
-      interval: 2000,
+      retries: 4,
+      interval: 1500,
       callback: async () => await embedAssistantBtnLogic(),
     });
 

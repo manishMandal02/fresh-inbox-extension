@@ -26,6 +26,7 @@ type NewsletterData = {
 const getNewsletterEmailsData = async (shouldRefreshData = false) => {
   try {
     let newsletterEmails: NewsletterData[] = [];
+    // handle get data from background
     const getNewsletterEmailsFromBackground = async () => {
       // publish event to background to get data
       let newsletterEmailsData = await publishEvent<NewsletterData[]>({
@@ -34,8 +35,6 @@ const getNewsletterEmailsData = async (shouldRefreshData = false) => {
 
       if (newsletterEmailsData) {
         newsletterEmails = newsletterEmailsData;
-        // save newsletter data to chrome local storage
-        await chrome.storage.local.set({ [storageKeys.NEWSLETTER_EMAILS]: newsletterEmails });
       }
     };
 
@@ -101,7 +100,7 @@ export const Newsletter = () => {
     setSelectedEmails([]);
 
     // refresh/refetch newsletter data if current data is below 60
-    const shouldRefreshData = newsletterEmails.length - selectedEmails.length < 60;
+    const shouldRefreshData = newsletterEmails.length - selectedEmails.length < 25;
 
     if (shouldRefreshData) {
       // show loading spinner only if refetching data from gmail (as it could take some time)
@@ -289,7 +288,14 @@ export const Newsletter = () => {
             ))}
             {/* refresh table button */}
             <tr>
-              <td colSpan={5} className='w-full flex justify-center items-center'></td>
+              <td colSpan={5} className='w-full flex justify-center items-start '>
+                <InfoIcon />
+
+                <span className='text-xs text-slate-500 font-thin text-center ml-px'>
+                  This list will automatically refresh when it reaches below 25 emails. <br /> either block or
+                  whitelist them to remove from this list
+                </span>
+              </td>
             </tr>
           </table>
         </div>
@@ -384,7 +390,7 @@ export const Newsletter = () => {
       <p className='h-[5%] m-0 text-slate-700 mb-[.4rem] font-light text-sm flex items-center justify-center'>
         Fresh Inbox has identified more than
         <u className='mx-1'>{newsletterEmails?.length || '-'}</u>
-        emails as newsletters or as part of a mailing list.
+        emails as newsletters or mailing lists.
       </p>
 
       <div className='h-px w-full bg-slate-300'></div>

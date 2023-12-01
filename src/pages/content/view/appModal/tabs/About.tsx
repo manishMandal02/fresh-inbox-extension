@@ -57,7 +57,7 @@ export const About = ({ onAppDisable }: Props) => {
 
   return (
     <div className='flex flex-col  py-8 px-6 relative h-full'>
-      <div className='text-lg font-medium m-0 mb-1.5 '>
+      <div className='text-lg font-medium m-0 mb-1.5 text-slate-600'>
         Fresh Inbox is
         <span
           className='rounded-sm ml-2 px-[10px]  py-[2px] text-base relative bg-slate-800 text-slate-100'
@@ -91,7 +91,7 @@ export const About = ({ onAppDisable }: Props) => {
       {/*****  divider ****** */}
       <hr className='h-[.5px] w-full bg-slate-100  opacity-25 rounded-sm my-1' />
 
-      <span className='text-slate-900 text-[.9rem] my-0.5 leading-[1.6rem]'>
+      <span className='text-slate-900 text-sm my-0.5 leading-[1.6rem]'>
         Fresh Inbox helps you keep your inbox clean, it can&nbsp;
         <span className='bg-emerald-100 px-1 rounded-sm py-1 font-medium'>
           unsubscribe from unwanted emails
@@ -103,23 +103,22 @@ export const About = ({ onAppDisable }: Props) => {
         .
       </span>
 
-      <span className='text-slate-900 text-[.9rem]  mt-1.5 mb-1 leading-[1.6rem]'>
+      <span className='text-slate-900 text-sm  mt-1.5 mb-1 leading-[1.6rem]'>
         {' '}
         The best part?&nbsp;
         <span className='bg-emerald-100 px-1 rounded-sm py-1 font-medium'>
           Your data never leaves your browser
         </span>
-        —every action is executed securely on your system. You can explore the open-source code on 🔗 GitHub
-        to get an inside look at how Fresh Inbox operates.{' '}
+        —every action is executed securely on your system. You can explore the open-source code on{' '}
         <a
           href='https://freshinbox.xyz/link/github'
           target='_blank'
           rel='noreferrer'
           className='appearance-none underline font-medium'
         >
-          Github {'  '}
-        </a>
-        for you to see how Fresh Inbox works.
+          Github
+        </a>{' '}
+        to get an inside look at how Fresh Inbox operates.
       </span>
 
       {/*****  divider ****** */}

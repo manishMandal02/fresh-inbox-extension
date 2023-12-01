@@ -27,7 +27,7 @@ export const getUserEmailIdFromPage = async (): Promise<string | null> => {
   let email = '';
   await retryAtIntervals({
     retries: 10,
-    interval: 2000,
+    interval: 1500,
     callback: async () => {
       const userEmail = await queryEmailId();
 

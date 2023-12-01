@@ -2,7 +2,7 @@ import '../style.scss';
 import refreshOnUpdate from 'virtual:reload-on-update-in-view';
 import AppModal from '../view/appModal/AppModal';
 import wait from '../utils/wait';
-import { IMessageBody, IMessageEvent } from '../types/content.types';
+import { IMessageEvent } from '../types/content.types';
 import { createRoot } from 'react-dom/client';
 import { onURLChange } from '../utils/onURLChange';
 import { getSyncStorageByKey } from '../utils/getStorageByKey';
@@ -37,14 +37,12 @@ window.freshInboxGlobalVariables = {
 
 (async () => {
   // wait 2s
-  await wait(2000);
+  await wait(1000);
 
   // query for user email id on page
   freshInboxGlobalVariables.userEmail = await getUserEmailIdFromPage();
 
   if (!freshInboxGlobalVariables.userEmail) return;
-
-  // TODO: if app not initialized do something - isAppEnabled
 
   // check if app is enabled or not
   let isAppEnabled = await getSyncStorageByKey<boolean>('IS_APP_ENABLED');
@@ -52,7 +50,7 @@ window.freshInboxGlobalVariables = {
   // is user Authed or not? (handle multiple user) send email id from the content script
   const isTokenValid = await publishEvent({ event: IMessageEvent.CHECK_AUTH_TOKEN });
 
-  // check if status is not updated during the install
+  // check if app status not synced with token/auth
   if (typeof isAppEnabled === 'undefined' && isTokenValid) {
     // update chrome storage
     await chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: true });

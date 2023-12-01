@@ -13,7 +13,6 @@ const googleAuth = async (email: string, clientId: string, interactive: boolean)
   authUrl.searchParams.set('scope', AUTH_SCOPE);
   authUrl.searchParams.set('login_hint', email);
 
-
   try {
     if (!clientId) throw new Error('No client id found.');
     const responseURL = (await chrome.identity.launchWebAuthFlow({
@@ -53,9 +52,11 @@ export const getAuthToken = async (email: string, clientId: string): Promise<str
 // logout user
 export const logoutUser = async (userToken: string, disableApp = true) => {
   try {
-    // revoke userToken from google OAuth service (userToken becomes invalid)
-    const url = 'https://accounts.google.com/o/oauth2/revoke?userToken=' + userToken;
-    await fetch(url);
+    if (userToken) {
+      // revoke userToken from google OAuth service (userToken becomes invalid)
+      const url = 'https://accounts.google.com/o/oauth2/revoke?token=' + userToken;
+      await fetch(url);
+    }
 
     //  update storage after app disabled
 
@@ -64,12 +65,7 @@ export const logoutUser = async (userToken: string, disableApp = true) => {
       setStorage({ type: 'sync', key: storageKeys.IS_APP_ENABLED, value: !disableApp }),
 
       // clear local storage
-      // set newsletter emails
-      setStorage({ type: 'local', key: storageKeys.NEWSLETTER_EMAILS, value: [] }),
-      // set unsubscribed emails
-      setStorage({ type: 'local', key: storageKeys.UNSUBSCRIBED_EMAILS, value: [] }),
-      // set whitelisted emails
-      setStorage({ type: 'local', key: storageKeys.WHITELISTED_EMAILS, value: [] }),
+      chrome.storage.local.clear(),
     ];
 
     // wait for all promises to resolve

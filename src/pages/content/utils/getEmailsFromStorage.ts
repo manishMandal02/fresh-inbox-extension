@@ -1,10 +1,21 @@
-import { IMessageBody, IMessageEvent } from '../types/content.types';
+import { storageKeys } from '../constants/app.constants';
+import { IMessageEvent } from '../types/content.types';
+import { getLocalStorageByKey } from './getStorageByKey';
 import { logger } from './logger';
 import { publishEvent } from './publishEvent';
 
 // get list of unsubscribed emails
 export const getUnsubscribedEmails = async (): Promise<string[]> => {
   try {
+    // get emails from local storage
+    const emailsFromStorage = await getLocalStorageByKey(storageKeys.UNSUBSCRIBED_EMAILS);
+
+    if (emailsFromStorage) {
+      return emailsFromStorage;
+    }
+
+    // emails not found in storage
+
     // publish event to background script to fetch emails
     const emails = await publishEvent<string[]>({ event: IMessageEvent.GET_UNSUBSCRIBED_EMAILS });
 
@@ -26,6 +37,15 @@ export const getUnsubscribedEmails = async (): Promise<string[]> => {
 // get list of whitelisted emails
 export const getWhitelistedEmails = async (): Promise<string[]> => {
   try {
+    // get emails from local storage
+    const emailsFromStorage = await getLocalStorageByKey(storageKeys.WHITELISTED_EMAILS);
+
+    if (emailsFromStorage) {
+      return emailsFromStorage;
+    }
+
+    // emails not found in storage
+
     // publish event to background script to fetch emails
     const emails = await publishEvent<string[]>({ event: IMessageEvent.GET_WHITELISTED_EMAILS });
 

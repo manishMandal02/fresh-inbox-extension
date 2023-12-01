@@ -1,5 +1,11 @@
 import reloadOnUpdate from 'virtual:reload-on-update-in-background-script';
-import { IMessageBody, IMessageEvent, INewsletterEmails, ISession } from './types/background.types';
+import {
+  FILTER_ACTION,
+  IMessageBody,
+  IMessageEvent,
+  INewsletterEmails,
+  ISession,
+} from './types/background.types';
 import { asyncMessageHandler } from './utils/asyncMessageHandler';
 import { logoutUser, getAuthToken, launchGoogleAuthFlow } from './services/auth';
 import {
@@ -15,13 +21,13 @@ import { resubscribeEmail } from './services/api/gmail/handler/resubscribeEmail'
 import { getNewsletterEmailsOnPage } from './services/api/gmail/handler/getNewsletterEmailsOnPage';
 import { logger } from './utils/logger';
 import { StorageKey, UserStorageKey, storageKeys } from './constants/app.constants';
-import { getSessionStorageByKey, getSyncStorageByKey } from './utils/getStorageByKey';
+import { getSessionStorageByKey } from './utils/getStorageByKey';
 import { advanceSearch } from './services/api/gmail/handler/advance-search/advanceSearch';
 import { bulkDelete } from './services/api/gmail/handler/advance-search/bulkDelete';
-import { checkFreshInboxFilters } from './services/api/gmail/helper/checkFreshInboxFilters';
 import { sendMsgToTab } from './utils/sendMsgToTab';
 import { setStorage } from './utils/setStorage';
 import { hasTokenExpired } from './utils/hasTokenExpired';
+import { getFilterId } from './services/api/gmail/helper/getFilterId';
 
 reloadOnUpdate('pages/background');
 
@@ -37,7 +43,6 @@ const currentSession: ISession = {
   expiresAt: '',
 };
 
-
 // google client id from env variables for google auth
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -45,7 +50,7 @@ const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 export const generateStorageKey = (key: StorageKey): UserStorageKey => `${currentSession.email}-${key}`;
 
 // initialize chrome storage on app install
-const initializeStorage = async () => {
+const initializeStorage = async (userToken: string) => {
   try {
     const promises = [
       // sync storage
@@ -53,31 +58,37 @@ const initializeStorage = async () => {
       setStorage({ type: 'sync', key: storageKeys.IS_APP_ENABLED, value: true }),
       // set preference: confirm delete action
       setStorage({ type: 'sync', key: storageKeys.DONT_SHOW_DELETE_CONFIRM_MSG, value: false }),
-      // set unsubscribe filter id
-      setStorage({ type: 'sync', key: storageKeys.UNSUBSCRIBE_FILTER_ID, value: '' }),
-      // set whitelist filter id
-      setStorage({ type: 'sync', key: storageKeys.WHITELIST_FILTER_ID, value: '' }),
 
-      // local storage
-      // set newsletter emails
-      setStorage({ type: 'local', key: storageKeys.NEWSLETTER_EMAILS, value: [] }),
+      //-- checks if app custom filter exists, if not create it (after successful auth)
+      // unsubscribe filter
+      getFilterId({ userToken, filterAction: FILTER_ACTION.TRASH }),
+      // whitelist filter
+      getFilterId({ userToken, filterAction: FILTER_ACTION.INBOX }),
 
-      // set unsubscribed emails
-      setStorage({ type: 'local', key: storageKeys.UNSUBSCRIBED_EMAILS, value: [] }),
+      // local storage - get emails from filters and set to local storage
+      // get/set unsubscribed emails
+      getUnsubscribedEmails(userToken),
 
-      // set whitelisted emails
-      setStorage({ type: 'local', key: storageKeys.WHITELISTED_EMAILS, value: [] }),
+      // get/set whitelisted emails
+      getWhitelistedEmails(userToken),
+
+      // get/set newsletter emails
+      getNewsletterEmails(userToken),
     ];
 
     // wait for all promises to resolve
-    // throw error if any of the promises reject to catch in the catch block
-    await Promise.all(promises.map(promise => promise.catch(err => err)));
+    await Promise.allSettled(promises);
+
+    logger.info(`✅ Successfully initialized chrome storage.`);
+
+    return true;
   } catch (error) {
     logger.error({
       error,
       msg: 'Failed to initialize storage',
       fileTrace: 'background/index.ts:37 ~ initializeStorage() - catch block',
     });
+    return false;
   }
 };
 
@@ -159,16 +170,6 @@ const checkUserSession = async (event: IMessageEvent, userEmail: string) => {
   }
 };
 
-// extension install event listener
-chrome.runtime.onInstalled.addListener(({ reason }) => {
-  (async () => {
-    if (reason === 'install') {
-      await initializeStorage();
-      logger.info('✅ Successfully app initialized on install.');
-    }
-  })();
-});
-
 //SECTION listen for messages from content script
 chrome.runtime.onMessage.addListener(
   asyncMessageHandler<IMessageBody, string | boolean | INewsletterEmails[] | string[]>(async request => {
@@ -213,7 +214,7 @@ chrome.runtime.onMessage.addListener(
 
       case IMessageEvent.CHECKS_AFTER_AUTH: {
         // check app (fresh inbox) custom filters
-        return await checkFreshInboxFilters(currentSession.email);
+        return await initializeStorage(currentSession.token);
       }
 
       // unsubscribe email

@@ -26,7 +26,7 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
       await embedAssistantBtn();
 
       // run checks after successful auth
-      await publishEvent({ event: IMessageEvent.CHECK_AUTH_TOKEN });
+      await publishEvent({ event: IMessageEvent.CHECKS_AFTER_AUTH });
     } else {
       // failed auth
       // show error message

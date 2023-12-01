@@ -14,7 +14,6 @@ const manifest = {
     service_worker: 'src/pages/background/index.js',
     type: 'module',
   },
-  // TODO: check if this works without tabs or activeTab permissions
   permissions: ['identity', 'storage'],
   action: {
     default_popup: 'src/pages/popup/index.html',

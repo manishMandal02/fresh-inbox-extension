@@ -6,11 +6,15 @@ import { getUnsubscribedEmails } from './getUnsubscribedEmails';
 import { getWhitelistedEmails } from './getWhitelistedEmails';
 import { logger } from '@src/pages/background/utils/logger';
 import { apiErrorHandler } from '@src/pages/background/utils/apiErrorHandler';
+import { setStorage } from '@src/pages/background/utils/setStorage';
 
 type GetSendEmailFromIdsParams = {
   messageIds: string[];
   userToken: string;
 };
+
+// minimum emails threshold (find at least 50 newsletter emails)
+const MINIMUM_EMAILS_THRESHOLD = 50;
 
 // get sender emails & name from message/email ids
 const getSenderEmailsFromIds = async ({ messageIds, userToken }: GetSendEmailFromIdsParams) => {
@@ -207,8 +211,15 @@ export const getNewsletterEmails = async (userToken: string) => {
           newsletterEmails.splice(0, 1);
         }
       }
+
+      // stop while loop if found required num of emails
+      if (newsletterEmails.length >= MINIMUM_EMAILS_THRESHOLD) break;
+
       //end of do-while loop
-    } while (nextPageToken !== null && newsletterEmails.length < 100);
+    } while (nextPageToken !== null);
+
+    // save to chrome local storage
+    await setStorage({ type: 'local', key: 'NEWSLETTER_EMAILS', value: newsletterEmails });
 
     return newsletterEmails;
 
