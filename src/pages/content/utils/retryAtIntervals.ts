@@ -9,29 +9,31 @@ interface RetryAtIntervalParams<T> {
 
 // retry a logic for certain interval with certain number of retries until it succeeds
 export const retryAtIntervals = async <T>({ retries, interval, callback }: RetryAtIntervalParams<T>) => {
-  try {
-    let retry = 0;
+  let retry = 0;
 
-    while (retry < retries) {
-      const success = await callback();
+  let success = false;
+
+  while (retry < retries) {
+    try {
+      const callbackSuccess = await callback();
 
       // stop the loop, if the callback is successful
-      if (success) {
+      if (callbackSuccess) {
+        success = true;
         break;
       }
-
+    } catch (error) {
+      logger.error({
+        error,
+        msg: `error in retryAtIntervals for ${callback}`,
+        fileTrace: 'content/utils/retryAtIntervals.ts:35 ~ retryAtIntervals() ~ catch block',
+      });
+      continue;
+    } finally {
+      // wait and then retry again
       await wait(interval);
       retry++;
-
-      console.log('🚀 ~ file: retryAtIntervals.ts:26 ~ retryAtIntervals ~ retry:', retry);
     }
-    return true;
-  } catch (error) {
-    logger.error({
-      error,
-      msg: `error in retryAtIntervals for ${callback}`,
-      fileTrace: 'content/utils/retryAtIntervals.ts:35 ~ retryAtIntervals() ~ catch block',
-    });
-    return null;
   }
+  return success;
 };

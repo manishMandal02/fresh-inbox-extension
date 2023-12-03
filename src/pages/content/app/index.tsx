@@ -4,13 +4,13 @@ import AppModal from '../view/appModal/AppModal';
 import wait from '../utils/wait';
 import { IMessageEvent } from '../types/content.types';
 import { createRoot } from 'react-dom/client';
-import { onURLChange } from '../utils/onURLChange';
 import { getSyncStorageByKey } from '../utils/getStorageByKey';
 import { embedAssistantBtn } from '../view/assistant-button';
-import { watchEmailTableContainerClick } from '../view/assistant-button/helper/watchEmailTableContainerClick';
 import { getUserEmailIdFromPage } from '../view/assistant-button/helper/getEmailIdFromPage';
 import { publishEvent } from '../utils/publishEvent';
 import { storageKeys } from '../constants/app.constants';
+import { watchEmailTableContainerClick } from '../view/assistant-button/helper/watchEmailTableContainerClick';
+import { onURLChange } from '../utils/onURLChange';
 
 // reload on update
 refreshOnUpdate('pages/content');
@@ -68,9 +68,6 @@ window.freshInboxGlobalVariables = {
     // check if inbox or a single email view and re-embed assistant button accordingly
     await watchEmailTableContainerClick(async () => {
       // re-embed assistant button
-
-      console.log('🚀 ~ file: index.tsx:72 ~ await watchEmailTableContainerClick ~ re-embed:');
-
       await embedAssistantBtn();
     });
 

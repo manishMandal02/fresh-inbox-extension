@@ -3,7 +3,6 @@ import { asyncHandler } from '@src/pages/content/utils/asyncHandler';
 import { logger } from '@src/pages/content/utils/logger';
 import { retryAtIntervals } from '@src/pages/content/utils/retryAtIntervals';
 import { throttle } from '@src/pages/content/utils/throttle';
-import wait from '@src/pages/content/utils/wait';
 
 // top most container for inbox and also the single email container
 const getEmailsTableContainer = () => {

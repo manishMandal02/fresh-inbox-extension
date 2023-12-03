@@ -3,8 +3,6 @@ import { addEmailToFilter, removeEmailFromFilter } from '../helper/updateFilter'
 import { getFilterId } from '../helper/getFilterId';
 import { logger } from '@src/pages/background/utils/logger';
 
-// TODO: check if already re-Subscribed, if yes do nothing (update storage)
-
 // handle resubscribe
 export const resubscribeEmail = async ({ userToken, emails }: APIHandleParams) => {
   try {

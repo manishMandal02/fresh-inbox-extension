@@ -156,7 +156,7 @@ export const showHoverCard = async ({ parentElId, email, name, isSingleEmail }: 
   }
 
   // add text to label
-  label.innerHTML = `<p>Email Actions for <strong>${limitCharLength(name, 20)}</strong></p>`;
+  label.innerHTML = `<p>Email Actions for&nbsp;<strong>${limitCharLength(name, 20)}</strong></p>`;
 
   // add tooltip to the label, show email on hover over sender name
   addTooltip(label.firstElementChild.firstElementChild as HTMLElement, email);

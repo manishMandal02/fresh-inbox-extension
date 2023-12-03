@@ -38,15 +38,6 @@ export const getAllMailsOnPage = (): GetAllMailsOnPageReturn => {
 
     const email = mailNode.getAttribute('email');
 
-    // TODO: check if working without the below logic. context: ln:28 checks for the visibility for the nodes that should handle the duplicate node issues
-    // // if duplicate node, remove it from the main array
-    // if ([...allMailNodes.filter(node => mailNode.isEqualNode(node))].length > 1) {
-    //   // remove this duplicate node from array
-
-    //   allMailNodes.splice(idx, 1);
-    //   return;
-    // }
-
     // get id node from mail node
     const idNode = mailNode
       .closest('td')

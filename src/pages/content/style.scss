@@ -10,7 +10,7 @@ html {
 $primary-color: #10b981;
 $light-gray-color: #dde3ea95;
 $danger-color: #f43f5e;
-$text-dark: #282828;
+$text-dark: #292929;
 $text-mid-gray: #505050;
 
 // common tooltip
@@ -117,9 +117,9 @@ $text-mid-gray: #505050;
 
 .freshInbox-assistantBtn.singleEmailAssistantBtn {
   position: absolute;
-  left: -1rem;
+  left: -1.1rem;
   top: 6px;
-  transform: scale(1.35);
+  transform: scale(1.2);
 }
 
 #freshInbox-hoverCard {
@@ -150,12 +150,11 @@ $text-mid-gray: #505050;
     margin-bottom: 2px;
     > p {
       display: flex;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 400;
       margin: 0;
       color: $text-mid-gray;
       > strong {
-        font-weight: 500;
         color: $text-dark;
         opacity: 0.95;
       }
@@ -165,6 +164,7 @@ $text-mid-gray: #505050;
       font-size: 11px;
       color: $text-mid-gray;
       font-weight: 500;
+      opacity: 0.9;
       margin: 0;
     }
   }

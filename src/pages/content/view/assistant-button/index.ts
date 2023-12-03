@@ -91,7 +91,6 @@ const initializeAssistantBtn = ({
   // append the button to container
   assistantBtnContainer.appendChild(assistantBtn);
 
-  //* add event listeners to assistant button
   // on click (currently do nothing, just stop bubbling of event)
   assistantBtn.addEventListener('click', (ev: MouseEvent) => {
     ev.stopPropagation();
@@ -185,6 +184,9 @@ export const embedSingleAssistantBtn = async () => {
   const assistantBtnContainer = printEmailBtn.closest('div').parentElement;
 
   if (!assistantBtnContainer) return;
+
+  // if assistant button is already embedded, do nothing
+  if (assistantBtnContainer.querySelector('span.freshInbox-assistantBtn')!!) return;
 
   // position parent container relative, so assistant button can be positioned absolute to it
   (assistantBtnContainer as HTMLDivElement).style.position = 'relative';

@@ -17,7 +17,6 @@ const Popup = () => {
       </a>
       <div className='absolute bottom-1.5 left-auto text-[.7rem] tracking-tight text-slate-700 font-light'>
         Consider leaving a review if FreshInbox is helpful.&nbsp;
-        {/* TODO: update the review link */}
         <a
           className='underline'
           href='https://freshinbox.xyz/link/chrome'

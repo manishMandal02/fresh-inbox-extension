@@ -14,6 +14,9 @@ import { asyncMessageHandler } from '../../utils/asyncMessageHandler';
 import { logger } from '../../utils/logger';
 import { showSnackbar } from '../elements/snackbar';
 import { removeAssistantBtn } from '../assistant-button/helper/removeAssistantBtn';
+import { watchEmailTableContainerClick } from '../assistant-button/helper/watchEmailTableContainerClick';
+import { embedAssistantBtn } from '../assistant-button';
+import { onURLChange } from '../../utils/onURLChange';
 
 const tabs = ['About', 'Newsletter', 'Unsubscribed', 'Whitelisted', 'Advance Search'] as const;
 
@@ -85,6 +88,26 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
   useEffect(() => {
     setIsAuthed(isTokenValid);
   }, [isTokenValid]);
+
+  useEffect(() => {
+    (async () => {
+      if (isAuthed) {
+        // watch for container change:
+        // check if inbox or a single email view and re-embed assistant button accordingly
+        await watchEmailTableContainerClick(async () => {
+          // re-embed assistant button
+          await embedAssistantBtn();
+        });
+
+        // watch url change:
+        // re-embed assistant button on url changes (if url supported)
+        onURLChange(async () => {
+          // re-embed assistant button
+          await embedAssistantBtn();
+        });
+      }
+    })();
+  }, [isAuthed]);
 
   // open modal by default if the app is enabled and user is not authed
   useEffect(() => {
@@ -160,19 +183,19 @@ const AppModal = ({ appStatus, isTokenValid }: Props) => {
             {isAuthed ? (
               <Tabs tabs={[...tabs]} activeTab={activeTab} setActiveTab={setActiveTab}>
                 {renderActiveTab(activeTab)}
-              </Tabs>
-            ) : (
-              <AuthCard
-                isAppEnabled={isAppEnabled}
-                onClose={isSuccess => {
-                  setIsModalOpen(false);
-                  if (isSuccess) {
-                    setIsAppEnabled(true);
-                    setIsAuthed(true);
-                  }
-                }}
-              />
-            )}
+                </Tabs>
+              ) : (
+                <AuthCard
+                  isAppEnabled={isAppEnabled}
+                  onClose={isSuccess => {
+                    setIsModalOpen(false);
+                    if (isSuccess) {
+                      setIsAppEnabled(true);
+                      setIsAuthed(true);
+                    }
+                  }}
+                />
+              )}
           </div>
         </div>
       ) : null}

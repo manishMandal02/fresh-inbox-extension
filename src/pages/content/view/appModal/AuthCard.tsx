@@ -53,13 +53,22 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
       </div>
       <div className='h-[90%] relative'>
         {/* features container */}
-        <div className='text-slate-900 font-light leading-8  p-8 bg-emerald-100/50 rounded-sm'>
+        <div className='text-slate-700 font-light text-sm leading-8  p-8 bg-emerald-100/50 rounded-sm'>
           ✉️ Fresh Inbox makes keeping your Gmail inbox clean and clutter-free a breeze. <br />
           🧹 Unsubscribe from unwanted newsletters and mailing lists, <br />
           🗑️ Delete hundreds of emails with just a single click. <br />
           🔐 No data leaves your browser, everything happens in your own browser. You're in complete control.
+          Checkout the code on{' '}
+          <a
+            href='https://freshinbox.xyz/link/github'
+            target='_blank'
+            rel='noreferrer'
+            className='appearance-none underline text-sm'
+          >
+            Github
+          </a>{' '}
           <br />
-          <p className='m-0 mt-2.5'>
+          <p className='m-0 mt-2.5 text-slate-700'>
             🎬 Want to learn more? Check out our quick walkthrough here:{' '}
             <a className='underline' href='https://freshinbox.xyz/link/demo' target='_blank' rel='noreferrer'>
               Link
@@ -70,7 +79,7 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
         <div className='mt-6 flex flex-col items-center  '>
           {/* connect to gmail */}
           <div className='flex flex-col items-center justify-center'>
-            <span className=' text-slate-700 text-[1.3rem] font-light mb-5'>
+            <span className=' text-slate-600 text-[1.3rem] font-light mb-5'>
               Allow FreshInbox to access your Gmail securely
             </span>
 

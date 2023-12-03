@@ -25,7 +25,7 @@ export const getNewsletterEmailsOnPage = async ({
     // search query to check if the provided emails are newsletter emails or not
     // filter based on date range, category and folder (so that we get only the emails on the current page not all)
     const searchQuery = `from:(${emails.map(data => data.email).join(' OR ')}) "unsubscribe"
-     after:${dateRange.startDate} before:${dateRange.endDate} 
+     after:${dateRange.startDate || ''} before:${dateRange.endDate || ''} 
     ${category ? `category:${category}` : ''} 
     ${folder === 'all' || folder === 'search' ? '' : `in:${folder}`}
     `;
