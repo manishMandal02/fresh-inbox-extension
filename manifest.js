@@ -7,9 +7,9 @@ import packageJson from './package.json' assert { type: 'json' };
 
 const manifest = {
   manifest_version: 3,
-  name: 'Fresh Inbox',
+  name: 'Fresh Inbox: Clean Gmail with Total Privacy',
   version: '1.0.0',
-  description: 'Clean Inbox, Total Privacy: Fresh Inbox Delivers Both.',
+  description: 'Your go-to Chrome extension for a clutter-free Gmail experience.',
   background: {
     service_worker: 'src/pages/background/index.js',
     type: 'module',

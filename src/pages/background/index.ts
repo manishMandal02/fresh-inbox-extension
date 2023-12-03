@@ -124,7 +124,6 @@ export const clearUserData = async (disableApp = false) => {
 
 chrome.runtime.onInstalled.addListener(async details => {
   if (details.reason === 'install') {
-    
   }
 });
 
@@ -298,7 +297,7 @@ chrome.runtime.onMessage.addListener(
       // disable app
       case IMessageEvent.DISABLE_FRESH_INBOX: {
         // clear user data, revoke userToken, clear storage.
-        await clearUserData();
+        await clearUserData(true);
         return true;
       }
 
