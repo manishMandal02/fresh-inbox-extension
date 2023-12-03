@@ -133,7 +133,12 @@ const checkUserSession = async (event: IMessageEvent, userEmail: string) => {
   logger.info(`Current Session: ${userEmail}`);
 
   // ignore events where tokens are not required
-  if (event === IMessageEvent.CHECK_AUTH_TOKEN || event === IMessageEvent.LAUNCH_AUTH_FLOW) return;
+  if (
+    event === IMessageEvent.CHECK_AUTH_TOKEN ||
+    event === IMessageEvent.LAUNCH_AUTH_FLOW ||
+    event === IMessageEvent.DISABLE_FRESH_INBOX
+  )
+    return;
 
   // check if the user whose session details are stored in currentSession variable is sending emails
   // and also check if the token is valid
@@ -296,6 +301,8 @@ chrome.runtime.onMessage.addListener(
 
       // disable app
       case IMessageEvent.DISABLE_FRESH_INBOX: {
+        // set user email if not set already
+        currentSession.email || (currentSession.email = request.userEmail);
         // clear user data, revoke userToken, clear storage.
         await clearUserData(true);
         return true;

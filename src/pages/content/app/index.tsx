@@ -11,6 +11,7 @@ import { publishEvent } from '../utils/publishEvent';
 import { storageKeys } from '../constants/app.constants';
 import { watchEmailTableContainerClick } from '../view/assistant-button/helper/watchEmailTableContainerClick';
 import { onURLChange } from '../utils/onURLChange';
+import { generateStorageKey } from '../utils/generateStorageKey';
 
 // reload on update
 refreshOnUpdate('pages/content');
@@ -52,8 +53,9 @@ window.freshInboxGlobalVariables = {
 
   // check if app status not synced with token/auth
   if (typeof isAppEnabled === 'undefined') {
+    const userStorageKey = generateStorageKey('IS_APP_ENABLED');
     // update chrome storage
-    await chrome.storage.sync.set({ [storageKeys.IS_APP_ENABLED]: true });
+    await chrome.storage.sync.set({ [userStorageKey]: true });
     isAppEnabled = true;
   }
 

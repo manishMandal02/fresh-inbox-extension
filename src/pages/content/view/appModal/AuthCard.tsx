@@ -37,6 +37,8 @@ const AuthCard = ({ isAppEnabled, onClose }: Props) => {
   // handle disable button click
 
   const handleDisableBtnClick = async () => {
+    // close modal
+    onClose(false);
     await disableApp();
   };
 
