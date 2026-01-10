@@ -1,0 +1,173 @@
+/* Email Card Container */
+.fi-email-card {
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  background-color: var(--fi-bg-main);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  display: flex;
+  grid-template-columns: 48px 1fr auto; /* Avatar | Content | Meta */
+  gap: 12px;
+  align-items: flex-start; /* Align to top to handle multi-line content */
+  position: relative;
+  height: 96px; /* Increased height for 3 lines of text */
+  overflow: hidden;
+}
+
+/* Hover Effect */
+.fi-email-card:hover {
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  z-index: 10;
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Active/Selected State */
+.fi-email-card.fi-active {
+  background-color: #e8f0fe;
+  border-color: #d2e3fc;
+  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.15);
+}
+.fi-email-card.fi-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  background-color: var(--fi-primary);
+  border-radius: 0 4px 4px 0;
+}
+
+[data-theme='dark'] .fi-email-card.fi-active {
+  background-color: #1e2a3b;
+  border-color: #4285f4;
+}
+
+/* Unread State */
+.fi-email-card.fi-unread {
+  background-color: #fff;
+}
+.fi-email-card.fi-unread .fi-card-sender {
+  font-weight: 800; /* Extra bold for unread sender */
+  color: var(--fi-text-primary);
+}
+.fi-email-card.fi-unread .fi-card-subject {
+  font-weight: 700;
+  color: var(--fi-text-primary);
+}
+
+/* Avatar */
+.fi-card-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #f1f3f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 600;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  margin-top: 4px; /* Align with first line of text visually */
+}
+
+/* Content Column */
+.fi-card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 2px;
+  min-width: 0;
+  height: 100%;
+}
+
+.fi-card-sender {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fi-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+.fi-card-subject {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fi-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+.fi-card-snippet {
+  font-size: 13px;
+  color: var(--fi-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+/* Meta Column */
+.fi-card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  height: 100%;
+  padding-top: 2px;
+  min-width: 80px;
+}
+
+.fi-card-date {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fi-text-muted);
+  white-space: nowrap;
+}
+
+/* Actions */
+.fi-card-actions {
+  display: flex;
+  gap: 8px; /* More spacing between icons */
+  margin-top: 8px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.fi-email-card:hover .fi-card-actions {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.fi-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: none;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--fi-text-secondary);
+  transition: all 0.1s;
+}
+
+.fi-action-btn:hover {
+  background-color: var(--fi-bg-hover);
+  color: var(--fi-text-primary);
+}

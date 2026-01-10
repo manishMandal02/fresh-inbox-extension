@@ -1,0 +1,13 @@
+@import './variables.css';
+@import './themes.css';
+@import './layout.css';
+@import './header.css';
+@import './sidebar.css';
+@import './emailList.css';
+@import './threadPanel.css';
+
+/* Global resets or base styles for injected components */
+.fi-root {
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  color: var(--fi-text-primary);
+}/* Force reload */

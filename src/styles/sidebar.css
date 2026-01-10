@@ -1,0 +1,55 @@
+.fi-logo-area {
+  display: flex;
+  align-items: center;
+  padding: 0 16px 24px 16px;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--fi-primary);
+}
+
+.fi-logo-icon {
+  margin-right: 8px;
+  font-size: 24px;
+}
+
+.fi-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fi-nav-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: var(--fi-text-secondary);
+  border-radius: 0 24px 24px 0;
+  margin-right: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.15s;
+}
+
+.fi-nav-item:hover {
+  background-color: var(--fi-bg-hover);
+  color: var(--fi-text-primary);
+}
+
+.fi-nav-item.fi-active {
+  background-color: #e8f0fe;
+  color: var(--fi-primary);
+  font-weight: 700;
+}
+
+[data-theme='dark'] .fi-nav-item.fi-active {
+  background-color: #174ea6;
+  color: #8ab4f8;
+}
+
+.fi-nav-icon {
+  margin-right: 12px;
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}

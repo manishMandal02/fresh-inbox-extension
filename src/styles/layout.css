@@ -1,0 +1,97 @@
+/* Full screen overlay to "hide" Gmail */
+.fi-layout {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background-color: var(--fi-bg-main);
+  
+  display: grid;
+  grid-template-columns: var(--fi-sidebar-width) 1fr; /* Sidebar | Main Content */
+  grid-template-rows: 64px 1fr; /* Header | Content */
+  grid-template-areas: 
+    "sidebar header"
+    "sidebar content";
+  
+  transition: background-color var(--fi-transition-normal);
+  overflow: hidden;
+}
+
+.fi-layout.fi-sidebar-collapsed {
+  grid-template-columns: var(--fi-sidebar-collapsed-width) 1fr;
+}
+
+/* Header */
+.fi-header {
+  grid-area: header;
+  background-color: var(--fi-bg-main);
+  border-bottom: 1px solid var(--fi-border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 5;
+}
+
+/* Sidebar */
+.fi-sidebar {
+  grid-area: sidebar;
+  background-color: var(--fi-bg-sidebar);
+  border-right: 1px solid var(--fi-border);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0; /* Vertical padding */
+  overflow-y: auto;
+  z-index: 6; 
+}
+
+/* Main Content Area (List + Sliding Panel) */
+.fi-main-content {
+  grid-area: content;
+  position: relative; /* For absolute positioning of sliding panel */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.fi-email-list {
+  background-color: var(--fi-bg-main);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  /* Use flex grow instead of fixed height for better reliability in flex container */
+  flex: 1; 
+  height: 100%; /* Fallback */
+  width: 100%;
+}
+
+/* Thread Panel - Sliding Drawer */
+.fi-thread-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--fi-thread-panel-width); 
+  min-width: 600px;
+  height: 100%;
+  background-color: var(--fi-bg-main);
+  border-left: 1px solid var(--fi-border);
+  box-shadow: -4px 0 16px rgba(0,0,0,0.1);
+  z-index: 10;
+  
+  transform: translateX(100%); 
+  transition: transform var(--fi-transition-normal);
+  display: flex;
+  flex-direction: column;
+}
+
+.fi-thread-panel.fi-open {
+  transform: translateX(0);
+}
+
+@media (max-width: 900px) {
+  .fi-thread-panel {
+    width: 100%;
+    min-width: 0;
+  }
+}

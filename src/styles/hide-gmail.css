@@ -1,0 +1,16 @@
+/* Immediately hide Gmail's main UI to prevent flash */
+/* We target the main role to keep the background/loading spinner visible if possible, 
+   or just body if we want a blank slate. */
+
+/* Hiding body is aggressive but effective. 
+   We will unset this in our main.css or via JS when ready. */
+body.fi-loading > *:not(.fi-root) {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Ensure our root is always visible */
+.fi-root {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}

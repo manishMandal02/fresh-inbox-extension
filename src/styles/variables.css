@@ -1,0 +1,50 @@
+:root {
+  /* Colors - Light Theme (Default) */
+  --fi-primary: #1a73e8;
+  --fi-primary-hover: #1765cc;
+  --fi-bg-main: #ffffff;
+  --fi-bg-sidebar: #f6f8fc;
+  --fi-bg-hover: rgba(60, 64, 67, 0.08);
+  
+  --fi-text-primary: #202124;
+  --fi-text-secondary: #5f6368;
+  --fi-text-muted: #70757a;
+  
+  --fi-border: #dadce0;
+  
+  /* Layout */
+  --fi-sidebar-width: 240px;
+  --fi-sidebar-collapsed-width: 72px;
+  --fi-thread-panel-width: 600px; /* Wider panel for reading */
+  
+  /* Transitions */
+  --fi-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --fi-transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='dark'] {
+  --fi-bg-main: #111111;
+  --fi-bg-sidebar: #1a1a1a;
+  --fi-bg-hover: rgba(255, 255, 255, 0.08);
+  
+  --fi-text-primary: #e8eaed;
+  --fi-text-secondary: #9aa0a6;
+  --fi-text-muted: #80868b;
+  
+  --fi-border: #3c4043;
+}
+
+/* Spinner */
+.fi-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--fi-border);
+  border-top: 3px solid var(--fi-primary);
+  border-radius: 50%;
+  animation: fi-spin 1s linear infinite;
+}
+
+@keyframes fi-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
