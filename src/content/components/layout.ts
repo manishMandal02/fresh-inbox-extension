@@ -20,27 +20,23 @@ export class Layout {
     });
 
     // 2. Create Structure based on new Grid
-    this.sidebarContainer = sidebar.render(); 
+    this.sidebarContainer = sidebar.render();
     this.headerContainer = header.render();
 
-    this.mainContent = dom.create('div', { classes: ['fi-main-content'] });
+        this.mainContent = dom.create('div', { classes: ['fi-main-content'] });
+        const emailListEl = emailList.render();
+        emailListEl.classList.add('fi-email-list');
+        this.mainContent.appendChild(emailListEl);
     
-    // Main Content holds Email List + Sliding Panel
-    const emailListEl = emailList.render();
-    emailListEl.classList.add('fi-email-list');
+        // Thread Panel - sibling of mainContent in the grid
+        this.threadPanel = dom.create('main', { classes: ['fi-thread-panel'] });
+        this.threadPanel.appendChild(threadPanelContent.render());
     
-    // Thread Panel
-    this.threadPanel = dom.create('main', { classes: ['fi-thread-panel'] });
-    this.threadPanel.appendChild(threadPanelContent.render());
-
-    this.mainContent.appendChild(emailListEl);
-    this.mainContent.appendChild(this.threadPanel);
-
-    // 3. Assemble Grid
-    this.container.appendChild(this.sidebarContainer);
-    this.container.appendChild(this.headerContainer);
-    this.container.appendChild(this.mainContent);
-
+        // 3. Assemble Grid
+        this.container.appendChild(this.sidebarContainer);
+        this.container.appendChild(this.headerContainer);
+        this.container.appendChild(this.mainContent);
+        this.container.appendChild(this.threadPanel); // Correct: Append to grid root
     // 4. Initialize State Listeners
     this.initStateListeners();
 
@@ -59,9 +55,10 @@ export class Layout {
 
       // Thread Panel Slide
       if (state.ui.selectedThreadId) {
-        console.log('[Layout] Opening thread panel for:', state.ui.selectedThreadId);
+        this.container.classList.add('fi-thread-open');
         this.threadPanel.classList.add('fi-open');
       } else {
+        this.container.classList.remove('fi-thread-open');
         this.threadPanel.classList.remove('fi-open');
       }
     });

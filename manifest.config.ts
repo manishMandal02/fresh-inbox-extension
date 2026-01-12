@@ -17,6 +17,7 @@ export default defineManifest({
     {
       matches: ['https://mail.google.com/*'],
       js: ['src/content/index.ts'],
+      run_at: 'document_start',
     },
   ],
   icons: {

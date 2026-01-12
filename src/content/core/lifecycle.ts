@@ -10,8 +10,6 @@ export class LifecycleManager {
   async init(): Promise<void> {
     if (this.isInitialized) return;
     
-    console.log('[Lifecycle] Initializing Fresh Inbox...');
-
     try {
       // 0. Wait for Gmail to load basic structure
       await this.waitForGmailLoad();
@@ -25,10 +23,18 @@ export class LifecycleManager {
       // 3. Start Gmail Services
       this.startGmailServices();
 
+      // 4. Setup Theme Listener
+      stateManager.subscribe((state) => {
+        document.body.setAttribute('data-theme', state.settings.theme);
+        const root = document.getElementById('fi-root');
+        if (root) {
+            root.setAttribute('data-theme', state.settings.theme);
+        }
+      });
+
       this.isInitialized = true;
-      console.log('[Lifecycle] Fresh Inbox initialized successfully.');
     } catch (error) {
-      console.error('[Lifecycle] Initialization failed:', error);
+      // Silent fail or minimal error
     }
   }
 
@@ -48,11 +54,13 @@ export class LifecycleManager {
 
     // Observe router for view changes
     gmailRouter.subscribe((route) => {
-      console.log(`[Router] View changed: ${route.view}`);
+      const isListView = route.view !== 'thread' && route.view !== 'unknown' && route.view !== 'settings';
       
-      if (route.view === 'inbox' || route.view === 'search' || route.view === 'label') {
-        // Re-sync if we moved back to inbox
+      if (isListView) {
+        // Trigger manual sync after a short delay to allow Gmail to start rendering
+        // The MutationObserver will handle the rest, but this ensures we don't miss the transition
         setTimeout(() => gmailService.syncThreads(), 500); 
+        setTimeout(() => gmailService.syncThreads(), 1500); // Second attempt for slow loads
       } else if (route.view === 'thread' && route.params.threadId) {
         // Scrape thread content
         this.handleThreadView(route.params.threadId);
@@ -61,21 +69,17 @@ export class LifecycleManager {
   }
 
   private async handleThreadView(threadId: string) {
-    console.log(`[Lifecycle] Waiting for message view for thread ${threadId}...`);
     try {
         // Wait for message container
         const msgContainer = await dom.waitForEl('[role="listitem"], .adn, .gs', 5000); 
         
         if (msgContainer) {
-            console.log('[Lifecycle] Message container found:', msgContainer.className);
-            
             // Expand all messages to ensure we scrape full content
             await gmailService.expandThread();
 
             // Short delay for images/rendering
             setTimeout(() => {
                 const { messages, subject } = gmailService.getOpenedThreadData();
-                console.log(`[Lifecycle] Scraped ${messages.length} messages. Subject: ${subject}`);
                 
                 // Update state with full details
                 stateManager.update(state => {
@@ -104,11 +108,9 @@ export class LifecycleManager {
                     };
                 });
             }, 1000);
-        } else {
-            console.error('[Lifecycle] Message container NOT found (timeout).');
         }
     } catch (e) {
-        console.error('[Lifecycle] Error waiting for thread view:', e);
+        // Error handling
     }
   }
 

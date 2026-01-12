@@ -2,10 +2,14 @@ import { dom } from '../../utils/dom';
 import { stateManager } from '../../core/state';
 import { EmailThread } from '../../../types/email';
 import { icons } from '../icons';
+import { gmailActions } from '../../services/actions';
+import { toast } from '../toast';
+import { gmailService } from '../../services/gmail';
 
 export class ThreadPanel {
   element: HTMLElement;
   private currentThreadId: string | null = null;
+  private isPerformingAction = false;
 
   constructor() {
     this.element = this.createDOM();
@@ -17,42 +21,34 @@ export class ThreadPanel {
     el.innerHTML = `
       <header class="fi-thread-header">
         <div class="fi-thread-actions-left">
-          <button class="fi-btn-icon" id="fi-close-thread" title="Close">${icons.archive}</button> <!-- Using archive icon as placeholder for back/close or add generic back icon -->
+          <button class="fi-btn-icon" id="fi-close-thread" title="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+          </button>
         </div>
         <div class="fi-thread-actions-right">
-          <button class="fi-btn-icon" title="Archive">${icons.archive}</button>
-          <button class="fi-btn-icon" title="Delete">${icons.trash}</button>
-          <button class="fi-btn-icon" title="Mark Unread">${icons.mail}</button>
+          <button class="fi-btn-icon fi-action-star" title="Pin">${icons.star}</button>
+          <button class="fi-btn-icon fi-action-archive" title="Archive">${icons.archive}</button>
+          <button class="fi-btn-icon fi-action-delete" title="Delete">${icons.trash}</button>
+          <button class="fi-btn-icon fi-action-snooze" title="Remind Later">${icons.snooze}</button>
+          <button class="fi-btn-icon fi-action-read" title="Mark Unread">${icons.mail}</button>
         </div>
       </header>
       <div class="fi-thread-scroll-area">
         <h1 class="fi-thread-subject"></h1>
-        <div class="fi-thread-labels"></div>
-        <div class="fi-messages-list">
-           <!-- Messages go here -->
-        </div>
+        <div class="fi-messages-list"></div>
       </div>
     `;
-
-    // Fix Close Icon
-    el.querySelector(
-      '#fi-close-thread'
-    )!.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>`; // X icon
-
     return el;
   }
 
   private initListeners() {
-    // State subscription
     stateManager.subscribe(state => {
       const threadId = state.ui.selectedThreadId;
+      // console.log('[ThreadPanel] State selectedThreadId:', threadId);
       if (threadId) {
-        // Always try to render if selected, data might have updated (e.g. messages loaded)
         this.currentThreadId = threadId;
         const thread = state.threads.get(threadId);
-
         if (thread) {
-          // Optimization: Could check if data actually changed hash/timestamp
           this.renderThread(thread);
         } else {
           this.renderLoading();
@@ -62,71 +58,119 @@ export class ThreadPanel {
       }
     });
 
-    // Close button
-    this.element.querySelector('#fi-close-thread')?.addEventListener('click', () => {
-      this.close();
-    });
+    this.element.querySelector('#fi-close-thread')?.addEventListener('click', () => this.close());
 
-    // Global Escape
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && stateManager.get().ui.selectedThreadId) {
-        this.close();
+    this.element
+      .querySelector('.fi-action-archive')
+      ?.addEventListener('click', () => this.handleAction('archive'));
+    this.element
+      .querySelector('.fi-action-delete')
+      ?.addEventListener('click', () => this.handleAction('delete'));
+    this.element.querySelector('.fi-action-read')?.addEventListener('click', () => this.handleAction('read'));
+    this.element
+      .querySelector('.fi-action-snooze')
+      ?.addEventListener('click', () => this.handleAction('snooze'));
+    this.element.querySelector('.fi-action-star')?.addEventListener('click', () => this.handleAction('star'));
+
+    document.addEventListener(
+      'keydown',
+      e => {
+        if (e.key === 'Escape' && stateManager.get().ui.selectedThreadId) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.close();
+        }
+      },
+      true
+    ); // Use capture phase to catch it first
+  }
+
+  private async handleAction(action: 'archive' | 'delete' | 'read' | 'snooze' | 'star') {
+    if (!this.currentThreadId || this.isPerformingAction) return;
+    this.isPerformingAction = true;
+
+    // Trigger the Gmail action.
+    const actionSuccess = gmailActions.performOpenedAction(action);
+
+    if (actionSuccess) {
+      if (action === 'snooze') {
+        toast.success('Select a time to remind you');
+      } else {
+        toast.success(`${action.charAt(0).toUpperCase() + action.slice(1)}d`);
       }
-    });
+
+      if (action !== 'read' && action !== 'star') {
+        this.close();
+        stateManager.update(state => {
+          const newThreads = new Map(state.threads);
+          newThreads.delete(this.currentThreadId!);
+
+          return { threads: newThreads };
+        });
+      }
+    } else {
+      toast.error('Gmail action failed');
+    }
+
+    setTimeout(() => {
+      this.isPerformingAction = false;
+    }, 500);
   }
 
   private close() {
-    stateManager.setUI({ selectedThreadId: null });
-    this.currentThreadId = null;
-    window.location.hash = '#inbox'; // Reset URL
+    // SINGLE SOURCE OF TRUTH: Just change the URL.
+    // The GmailRouter will detect this, set selectedThreadId to null,
+    // and this panel will slide closed automatically via the state subscription.
+    const hash = window.location.hash;
+    if (hash.includes('/')) {
+      window.location.hash = hash.substring(0, hash.lastIndexOf('/'));
+    } else {
+      window.location.hash = '#inbox';
+    }
   }
 
   private renderLoading() {
     const subjectEl = this.element.querySelector('.fi-thread-subject')!;
     const listEl = this.element.querySelector('.fi-messages-list')!;
-    subjectEl.textContent = '';
 
-    // CSS Spinner
+    subjectEl.innerHTML = `<div class="fi-skeleton fi-skeleton-title"></div>`;
     listEl.innerHTML = `
-      <div style="display: flex; justify-content: center; padding: 40px;">
-        <div class="fi-spinner"></div>
+      <div class="fi-message-card">
+        <div class="fi-message-header">
+          <div class="fi-meta">
+            <div class="fi-skeleton fi-skeleton-header"></div>
+            <div class="fi-skeleton fi-skeleton-header" style="width: 20%"></div>
+          </div>
+        </div>
+        <div class="fi-skeleton fi-skeleton-text"></div>
+        <div class="fi-skeleton fi-skeleton-text"></div>
+        <div class="fi-skeleton fi-skeleton-text" style="width: 80%"></div>
       </div>
     `;
   }
 
   private renderThread(thread: EmailThread) {
-    // console.log('[ThreadPanel] Rendering thread:', thread.id, 'Messages:', thread.messages?.length);
     const subjectEl = this.element.querySelector('.fi-thread-subject')!;
     const listEl = this.element.querySelector('.fi-messages-list')!;
 
-    // Update subject if changed
-    if (subjectEl.textContent !== thread.subject) {
-      subjectEl.textContent = thread.subject;
+    subjectEl.textContent = thread.subject === 'Loading subject...' ? '' : thread.subject;
+    if (thread.subject === 'Loading subject...') {
+      subjectEl.innerHTML = `<div class="fi-skeleton fi-skeleton-title"></div>`;
     }
 
-    // Check if we have messages
     if (thread.messages && thread.messages.length > 0) {
-      // Simple diff: If message count matches, assume it's the same for now to prevent flash
-      if (listEl.childElementCount === thread.messages.length && !listEl.querySelector('.fi-spinner')) {
+      // Prevent re-render if content is same (simple check)
+      if (listEl.childElementCount === thread.messages.length && !listEl.querySelector('.fi-skeleton')) {
         return;
       }
 
-      listEl.innerHTML = ''; // Clear previous/spinner
+      listEl.innerHTML = '';
 
-      // Render full conversation
       thread.messages.forEach((msg: any) => {
         const msgEl = dom.create('div', { classes: ['fi-message-card'] });
 
-        // Avatar logic
-        const senderName = msg.from?.name || '?';
-        const initial = (senderName[0] || '?').toUpperCase();
-        const avatarStyle = msg.from?.avatarUrl
-          ? `background-image: url(${msg.from.avatarUrl}); background-color: transparent; color: transparent; background-size: cover;`
-          : '';
-
         msgEl.innerHTML = `
               <div class="fi-message-header">
-                <div class="fi-avatar" style="${avatarStyle}">${initial}</div>
                 <div class="fi-meta">
                   <div class="fi-sender-name">${
                     msg.from?.name || 'Unknown'
@@ -141,15 +185,9 @@ export class ThreadPanel {
         listEl.appendChild(msgEl);
       });
     } else {
-      // If no messages, Show Spinner!
-      // Don't re-render spinner if already there
-      if (listEl.querySelector('.fi-spinner')) return;
-
-      listEl.innerHTML = `
-          <div style="display: flex; justify-content: center; padding: 40px;">
-            <div class="fi-spinner"></div>
-          </div>
-        `;
+      // If we have no messages but thread exists, show skeletons
+      if (listEl.querySelector('.fi-skeleton')) return;
+      this.renderLoading();
     }
   }
 

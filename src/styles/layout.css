@@ -9,18 +9,29 @@
   background-color: var(--fi-bg-main);
   
   display: grid;
-  grid-template-columns: var(--fi-sidebar-width) 1fr; /* Sidebar | Main Content */
-  grid-template-rows: 64px 1fr; /* Header | Content */
+  /* Sidebar | List | (Thread Panel Area) */
+  grid-template-columns: var(--fi-sidebar-width) 1fr 0px; 
+  grid-template-rows: 64px 1fr;
   grid-template-areas: 
-    "sidebar header"
-    "sidebar content";
+    "sidebar header header"
+    "sidebar content thread";
   
-  transition: background-color var(--fi-transition-normal);
+  transition: all var(--fi-transition-normal);
   overflow: hidden;
 }
 
+/* Sidebar Collapsed State */
 .fi-layout.fi-sidebar-collapsed {
-  grid-template-columns: var(--fi-sidebar-collapsed-width) 1fr;
+  grid-template-columns: var(--fi-sidebar-collapsed-width) 1fr 0px;
+}
+
+/* When thread is open, give it space in the grid */
+.fi-layout.fi-thread-open {
+  grid-template-columns: var(--fi-sidebar-width) 1fr var(--fi-thread-panel-width);
+}
+
+.fi-layout.fi-sidebar-collapsed.fi-thread-open {
+  grid-template-columns: var(--fi-sidebar-collapsed-width) 1fr var(--fi-thread-panel-width);
 }
 
 /* Header */
@@ -41,18 +52,19 @@
   border-right: 1px solid var(--fi-border);
   display: flex;
   flex-direction: column;
-  padding: 16px 0; /* Vertical padding */
+  padding: 16px 0;
   overflow-y: auto;
   z-index: 6; 
 }
 
-/* Main Content Area (List + Sliding Panel) */
+/* Main Content Area */
 .fi-main-content {
   grid-area: content;
-  position: relative; /* For absolute positioning of sliding panel */
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+  min-width: 0; /* Allow shrinking */
 }
 
 .fi-email-list {
@@ -60,38 +72,40 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  /* Use flex grow instead of fixed height for better reliability in flex container */
   flex: 1; 
-  height: 100%; /* Fallback */
+  height: 100%;
   width: 100%;
 }
 
-/* Thread Panel - Sliding Drawer */
+/* Thread Panel - Now part of grid for automatic shrinking */
 .fi-thread-panel {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: var(--fi-thread-panel-width); 
-  min-width: 600px;
-  height: 100%;
+  grid-area: thread;
   background-color: var(--fi-bg-main);
   border-left: 1px solid var(--fi-border);
-  box-shadow: -4px 0 16px rgba(0,0,0,0.1);
+  box-shadow: -4px 0 16px rgba(0,0,0,0.05);
   z-index: 10;
-  
-  transform: translateX(100%); 
-  transition: transform var(--fi-transition-normal);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  
+  /* Slide logic still works but now grid handles the layout shift */
+  transform: translateX(100%);
+  transition: transform var(--fi-transition-normal);
 }
 
 .fi-thread-panel.fi-open {
   transform: translateX(0);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
+  .fi-layout.fi-thread-open {
+    /* Overlay on smaller screens */
+    grid-template-columns: var(--fi-sidebar-width) 1fr 0px;
+  }
   .fi-thread-panel {
-    width: 100%;
-    min-width: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 80%;
   }
 }

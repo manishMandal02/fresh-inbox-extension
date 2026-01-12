@@ -5,6 +5,7 @@
 @import './sidebar.css';
 @import './emailList.css';
 @import './threadPanel.css';
+@import './toast.css';
 
 /* Global resets or base styles for injected components */
 .fi-root {

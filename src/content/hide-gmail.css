@@ -1,0 +1,70 @@
+/* 
+  PRECISE GMAIL UI SUPPRESSION
+  Only hide Gmail's original components, never touch our extension's UI.
+*/
+
+/* 1. Hide specific Gmail UI sections using roles/classes */
+/* We target only children of body that are NOT our extension root */
+body > header[role="banner"],
+body > [role="navigation"],
+body > [role="complementary"],
+.aeN, /* Left nav container */
+.bqX  /* Right side rail */ {
+  display: none !important;
+}
+
+/* 2. Hide Gmail's main area while preserving layout for scraping */
+[role='main'] {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 3. Whitelist Gmail's Compose, Dialogs, and Popups */
+/* We ensure they stay visible and on top of our overlay */
+.AD,  /* Compose window */
+.dw,  /* Dialogs wrapper */
+.aSs, /* Compose wrapper */
+.J-M, /* Dropdown menus */
+.JP,  /* Snooze/Time picker popups */
+.a98  /* Action menus */ {
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 2147483647 !important;
+}
+
+/* 4. Force-hide the modal backdrops that Gmail creates */
+/* This removes the dark overlay and lets you click through to Compose */
+.Kj-JD-Kz,
+.Kj-JD-Jl,
+.Kj-JD,
+.Kj-JD-Kz-Kj-JD {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 5. Ensure our application overlay is visible and on top of Gmail's base */
+#fi-root,
+.fi-root {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: grid !important;
+  pointer-events: auto !important;
+  z-index: 10000 !important; /* Above Gmail base, below their high-level dialogs */
+  background-color: var(--fi-bg-main);
+}
+
+/* 6. Ensure toasts are always on top */
+#fi-toast-container {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: flex !important;
+  pointer-events: none !important;
+  z-index: 2147483647 !important;
+}
+
+/* 7. Final Safety: allow pointer events on whitelisted Gmail UI */
+.AD *, .dw *, .aSs *, .J-M *, .JP *, .a98 * {
+  pointer-events: auto !important;
+}

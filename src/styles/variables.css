@@ -15,7 +15,7 @@
   /* Layout */
   --fi-sidebar-width: 240px;
   --fi-sidebar-collapsed-width: 72px;
-  --fi-thread-panel-width: 600px; /* Wider panel for reading */
+  --fi-thread-panel-width: 750px; /* Increased for better reading */
   
   /* Transitions */
   --fi-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -42,6 +42,29 @@
   border-top: 3px solid var(--fi-primary);
   border-radius: 50%;
   animation: fi-spin 1s linear infinite;
+}
+
+/* Skeleton Base - More Subtle */
+.fi-skeleton {
+  background: linear-gradient(90deg, 
+    rgba(0,0,0,0.03) 25%, 
+    rgba(0,0,0,0.06) 50%, 
+    rgba(0,0,0,0.03) 75%);
+  background-size: 200% 100%;
+  animation: fi-skeleton-loading 2s infinite ease-in-out;
+  border-radius: 4px;
+}
+
+[data-theme='dark'] .fi-skeleton {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0.02) 25%, 
+    rgba(255,255,255,0.05) 50%, 
+    rgba(255,255,255,0.02) 75%);
+}
+
+@keyframes fi-skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 @keyframes fi-spin {

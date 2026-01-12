@@ -14,6 +14,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'starred', label: 'Starred', icon: icons.star, path: '#starred' },
   { id: 'sent', label: 'Sent', icon: icons.send, path: '#sent' },
   { id: 'drafts', label: 'Drafts', icon: icons.draft, path: '#drafts' },
+  { id: 'all', label: 'All Mail', icon: icons.archive, path: '#all' },
   { id: 'trash', label: 'Trash', icon: icons.trash, path: '#trash' },
 ];
 
@@ -28,9 +29,15 @@ export class Sidebar {
   private createDOM(): HTMLElement {
     const el = dom.create('aside', { classes: ['fi-sidebar'] });
     el.innerHTML = `
-      <div class="fi-logo-area">
-        <span class="fi-logo-icon">${icons.logo}</span>
-        <span class="fi-logo-text">Fresh Inbox</span>
+      <div class="fi-sidebar-top">
+        <div class="fi-logo-area">
+          <span class="fi-logo-icon">${icons.logo}</span>
+          <span class="fi-logo-text">Fresh</span>
+        </div>
+        <button class="fi-compose-btn">
+          <span class="fi-compose-icon">${icons.compose}</span>
+          <span class="fi-compose-text">Compose</span>
+        </button>
       </div>
       <nav class="fi-nav-list"></nav>
     `;
@@ -55,14 +62,31 @@ export class Sidebar {
   }
 
   private initListeners() {
+    // Compose button click
+    const composeBtn = this.element.querySelector('.fi-compose-btn') as HTMLElement;
+    composeBtn?.addEventListener('click', () => {
+        // Trigger Gmail's compose button (T-I-KE is standard)
+        const gmailCompose = document.querySelector('.T-I.T-I-KE') as HTMLElement;
+        if (gmailCompose) {
+            console.log('[Sidebar] Clicking Gmail Compose');
+            const opts = { bubbles: true, cancelable: true, view: window };
+            gmailCompose.dispatchEvent(new MouseEvent('mousedown', opts));
+            gmailCompose.dispatchEvent(new MouseEvent('mouseup', opts));
+            gmailCompose.click();
+        } else {
+            // Fallback: try keyboard shortcut 'c'
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'c', bubbles: true }));
+        }
+    });
+
     stateManager.subscribe(state => {
-      // Highlight active route
       const currentView = state.ui.currentView;
-      // Simple mapping for demo
       const items = this.element.querySelectorAll('.fi-nav-item');
       items.forEach(el => {
         el.classList.remove('fi-active');
-        if (el.getAttribute('href') === `#${currentView}`) {
+        // Check if hash matches
+        const href = el.getAttribute('href');
+        if (href === `#${currentView}` || (currentView === 'inbox' && href === '#inbox')) {
           el.classList.add('fi-active');
         }
       });

@@ -17,7 +17,31 @@
 
 .fi-thread-actions-right {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+}
+
+.fi-thread-header .fi-btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--fi-text-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.fi-thread-header .fi-btn-icon:hover {
+  background-color: var(--fi-bg-hover);
+  color: var(--fi-text-primary);
+}
+
+.fi-thread-header .fi-btn-icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .fi-thread-scroll-area {
@@ -82,6 +106,11 @@
   color: var(--fi-text-primary);
 }
 
+.fi-message-body * {
+  color: inherit !important;
+  background-color: transparent !important;
+}
+
 .fi-btn-link {
   background: none;
   border: none;
@@ -91,6 +120,29 @@
   font: inherit;
   text-decoration: underline;
 }
+
+/* Skeleton Loading */
+.fi-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: fi-skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+[data-theme='dark'] .fi-skeleton {
+  background: linear-gradient(90deg, #222 25%, #333 50%, #222 75%);
+  background-size: 200% 100%;
+}
+
+@keyframes fi-skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.fi-skeleton-text { height: 14px; margin-bottom: 8px; width: 100%; }
+.fi-skeleton-title { height: 24px; margin-bottom: 16px; width: 60%; }
+.fi-skeleton-avatar { width: 40px; height: 40px; border-radius: 50%; }
+.fi-skeleton-header { height: 12px; width: 30%; margin-bottom: 4px; }
 
 /* Gmail Quoted Text Handling */
 /* Force expand hidden history/quotes so user can read everything */

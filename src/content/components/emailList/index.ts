@@ -1,22 +1,21 @@
 import { dom } from '../../utils/dom';
 import { stateManager } from '../../core/state';
-import { VirtualScroller } from './virtualScroll';
+import { EmailCard } from './emailCard';
 import { EmailThread } from '../../../types/email';
 import { gmailActions } from '../../services/actions';
-import { gmailRouter } from '../../core/router';
+import { toast } from '../toast';
+
+const MAX_EMAILS = 50;
 
 export class EmailList {
   container: HTMLElement;
-  private scroller: VirtualScroller;
   private threads: EmailThread[] = [];
 
   constructor() {
     this.container = dom.create('div', { 
       classes: ['fi-list-container'],
-      attributes: { tabindex: '0' } // Make focusable for keyboard events
+      attributes: { tabindex: '0' } 
     });
-    
-    this.scroller = new VirtualScroller(this.container);
     
     this.initListeners();
     this.initKeyboard();
@@ -24,48 +23,50 @@ export class EmailList {
 
   private initListeners() {
     stateManager.subscribe(state => {
-      // Convert Map to Array for list
-      // Note: In real app, we might sort/filter here
-      this.threads = Array.from(state.threads.values());
-      
-      console.log(`[EmailList] Received ${this.threads.length} threads from state.`);
+      if (state.ui.isLoading) {
+          this.renderSkeletons();
+          return;
+      }
 
-      this.scroller.setData(
-        this.threads,
-        state.ui.selection,
-        state.ui.selectedThreadId
-      );
+      this.threads = Array.from(state.threads.values()).slice(0, MAX_EMAILS);
+      this.renderThreads(state.ui.selection, state.ui.selectedThreadId);
     });
 
     // Click Delegation
     this.container.addEventListener('click', (e) => {
-      // console.log('[EmailList] Clicked:', e.target);
       const target = e.target as HTMLElement;
+      
+      // 1. Check for action buttons
+      const actionBtn = target.closest('.fi-action-btn');
+      const starBtn = target.closest('.fi-card-star-btn');
       const card = target.closest('.fi-email-card');
+      
+      if ((actionBtn || starBtn) && card) {
+        e.stopPropagation(); 
+        const id = card.getAttribute('data-id');
+        const action = actionBtn?.getAttribute('data-action') || 'star';
+        if (id && action) this.performAction(id, action, target);
+        return;
+      }
       
       if (card) {
         const id = card.getAttribute('data-id');
-        // console.log('[EmailList] Card selected:', id);
-        
         if (id) {
-          stateManager.setUI({ selectedThreadId: id });
+          // BRIDGE: Save the local ID before navigation
+          stateManager.setUI({ pendingActiveId: id });
           
-          // Strategy: Simulate click on the real Gmail row to let Gmail handle navigation
-          // This avoids hash format mismatches
           const gmailRow = document.querySelector(`tr[data-thread-id="${id}"]`) || 
                            document.querySelector(`tr[data-legacy-thread-id="${id}"]`) ||
-                           document.getElementById(id); // fallback
+                           document.getElementById(id); 
+//...
                            
           if (gmailRow) {
-              console.log('[EmailList] Triggering Gmail row click');
-              // Gmail requires mousedown + mouseup + click sequence often
               const opts = { bubbles: true, cancelable: true, view: window };
               gmailRow.dispatchEvent(new MouseEvent('mousedown', opts));
               gmailRow.dispatchEvent(new MouseEvent('mouseup', opts));
               (gmailRow as HTMLElement).click();
           } else {
-              console.warn('[EmailList] Could not find underlying Gmail row for navigation');
-              // Fallback to manual hash if row not found (e.g. virtualized out by Gmail?)
+              // Fallback to manual hash if row is missing
               window.location.hash = `#inbox/${id}`;
           }
         }
@@ -73,11 +74,80 @@ export class EmailList {
     });
   }
 
+  private renderThreads(selection: Set<string>, activeId: string | null) {
+    this.container.innerHTML = '';
+    
+    this.threads.forEach(thread => {
+        const card = new EmailCard();
+        // Simple exact match now works because IDs are migrated to match the URL
+        const isActive = activeId === thread.id;
+        
+        card.update(thread, selection.has(thread.id), isActive);
+        this.container.appendChild(card.element);
+    });
+  }
+
+  private renderSkeletons() {
+    this.container.innerHTML = '';
+    for (let i = 0; i < 15; i++) {
+        const card = new EmailCard();
+        card.update(null, false, false);
+        this.container.appendChild(card.element);
+    }
+  }
+
+  private async performAction(id: string, action: string, target: HTMLElement) {
+    const success = gmailActions.selectThread(id, true);
+    if (!success) {
+      toast.error('Could not select thread');
+      return;
+    }
+
+    await new Promise(r => setTimeout(r, 200));
+
+    // 3. Click the toolbar button
+    let actionSuccess = false;
+    switch (action) {
+      case 'archive':
+        actionSuccess = gmailActions.archiveSelected();
+        if (actionSuccess) toast.success('Thread archived');
+        break;
+      case 'delete':
+        actionSuccess = gmailActions.deleteSelected();
+        if (actionSuccess) toast.success('Thread deleted');
+        break;
+      case 'read':
+        actionSuccess = gmailActions.markAsRead();
+        if (actionSuccess) toast.success('Status updated');
+        break;
+      case 'snooze':
+        actionSuccess = gmailActions.snooze();
+        if (actionSuccess) toast.success('Select a time to remind you');
+        break;
+    }
+
+    // Special case for Star (doesn't use toolbar in list usually)
+    if (target.closest('.fi-card-star-btn')) {
+        actionSuccess = gmailActions.toggleStar(id);
+        if (actionSuccess) toast.success('Pin updated');
+    }
+
+    if (!actionSuccess && !target.closest('.fi-card-star-btn')) {
+        toast.error(`Action failed`);
+        return;
+    }
+
+    if (action === 'delete' || action === 'archive' || action === 'snooze') {
+      stateManager.update(state => {
+        const newThreads = new Map(state.threads);
+        newThreads.delete(id);
+        return { threads: newThreads };
+      });
+    }
+  }
+
   private initKeyboard() {
     this.container.addEventListener('keydown', (e) => {
-      // Only handle if we have focus or body has focus (global shortcuts)
-      // For now, let's assume global shortcuts for J/K
-      
       const state = stateManager.get();
       const currentId = state.ui.selectedThreadId;
       const currentIndex = this.threads.findIndex(t => t.id === currentId);
@@ -90,7 +160,6 @@ export class EmailList {
         this.selectThreadAtIndex(prevIndex);
       } else if (e.key === 'x') {
         if (currentId) {
-          // Toggle selection
           const newSelection = new Set(state.ui.selection);
           if (newSelection.has(currentId)) {
             newSelection.delete(currentId);
@@ -102,10 +171,7 @@ export class EmailList {
           stateManager.setUI({ selection: newSelection });
         }
       } else if (e.key === 'Enter') {
-        if (currentId) {
-          // Navigate to thread
-          window.location.hash = `#inbox/${currentId}`; // Gmail's hash structure
-        }
+        if (currentId) window.location.hash = `#inbox/${currentId}`;
       }
     });
   }
@@ -113,11 +179,14 @@ export class EmailList {
   private selectThreadAtIndex(index: number) {
     if (index >= 0 && index < this.threads.length) {
       const thread = this.threads[index];
-      stateManager.setUI({ selectedThreadId: thread.id });
-      
-      // Also update Gmail's internal selection logic if needed? 
-      // Usually we just want to update our view state. 
-      // Gmail might sync via URL hash if we want full sync.
+      // Find row and click it
+      const gmailRow = document.querySelector(`tr[data-thread-id="${thread.id}"]`) || 
+                       document.querySelector(`tr[data-legacy-thread-id="${thread.id}"]`);
+      if (gmailRow) {
+          (gmailRow as HTMLElement).click();
+      } else {
+          window.location.hash = `#inbox/${thread.id}`;
+      }
     }
   }
 

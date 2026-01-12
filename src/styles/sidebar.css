@@ -1,34 +1,74 @@
+.fi-sidebar-top {
+  padding: 0 16px 24px 16px;
+}
+
 .fi-logo-area {
   display: flex;
   align-items: center;
-  padding: 0 16px 24px 16px;
-  font-size: 20px;
-  font-weight: 500;
-  color: var(--fi-primary);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--fi-text-primary);
+  margin-bottom: 24px;
 }
 
 .fi-logo-icon {
   margin-right: 8px;
-  font-size: 24px;
+  color: var(--fi-primary);
+}
+
+.fi-compose-btn {
+  width: auto;
+  min-width: 140px;
+  height: 48px;
+  border-radius: 24px;
+  border: none;
+  background-color: var(--fi-bg-main);
+  color: var(--fi-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+  border: 1px solid var(--fi-border);
+  margin-bottom: 12px;
+}
+
+.fi-compose-btn:hover {
+  background-color: var(--fi-bg-hover);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+
+.fi-compose-btn:active {
+  transform: translateY(0);
+}
+
+.fi-compose-icon {
+  display: flex;
+  align-items: center;
 }
 
 .fi-nav-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .fi-nav-item {
   display: flex;
   align-items: center;
-  padding: 10px 16px;
+  padding: 12px 24px;
   text-decoration: none;
   color: var(--fi-text-secondary);
   border-radius: 0 24px 24px 0;
-  margin-right: 8px;
+  margin-right: 12px;
   font-size: 14px;
   font-weight: 500;
-  transition: background-color 0.15s;
+  transition: all 0.2s;
 }
 
 .fi-nav-item:hover {
@@ -48,8 +88,9 @@
 }
 
 .fi-nav-icon {
-  margin-right: 12px;
-  font-size: 16px;
-  width: 20px;
+  margin-right: 16px;
+  width: 24px;
   text-align: center;
+  display: flex;
+  justify-content: center;
 }

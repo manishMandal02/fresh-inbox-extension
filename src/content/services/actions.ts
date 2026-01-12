@@ -10,77 +10,97 @@ export class GmailActions {
 
     if (input && btn) {
       input.value = query;
-      // Trigger input events so Gmail knows value changed
       input.dispatchEvent(new Event('input', { bubbles: true }));
       input.dispatchEvent(new Event('focus', { bubbles: true }));
-      
-      // Click search
       btn.click();
-    } else {
-      console.error('[Actions] Search bar not found');
     }
   }
 
   /**
-   * Select a specific thread by ID (using Gmail's checkbox).
-   * Note: This requires the thread to be visible in the list.
+   * Select a specific thread by ID.
    */
   selectThread(threadId: string, select = true): boolean {
-    const row = document.querySelector(`tr[data-thread-id="${threadId}"]`);
+    const row =
+      document.querySelector(`tr[data-thread-id="${threadId}"]`) ||
+      document.querySelector(`tr[data-legacy-thread-id="${threadId}"]`) ||
+      document.getElementById(threadId);
+
     if (!row) return false;
 
-    const checkbox = row.querySelector('div[role="checkbox"]') as HTMLElement;
+    const checkbox = (row.querySelector('[role="checkbox"]') || row.querySelector('.oZ-jc')) as HTMLElement;
+
     if (!checkbox) return false;
 
     const isChecked = checkbox.getAttribute('aria-checked') === 'true';
     if (isChecked !== select) {
-      checkbox.click(); // Trigger Gmail's selection logic
+      const opts = { bubbles: true, cancelable: true, view: window };
+      checkbox.dispatchEvent(new MouseEvent('mousedown', opts));
+      checkbox.dispatchEvent(new MouseEvent('mouseup', opts));
+      checkbox.click();
     }
     return true;
   }
 
-  /**
-   * Archive selected threads.
-   */
-  archiveSelected(): void {
-    // Find the Archive button in the sticky toolbar
-    // Usually has aria-label="Archive"
-    this.clickToolbarButton('Archive');
+  archiveSelected(): boolean { return this.clickToolbarButton('Archive'); }
+  deleteSelected(): boolean { return this.clickToolbarButton('Delete'); }
+  markAsRead(): boolean { return this.clickToolbarButton('Mark as read') || this.clickToolbarButton('Mark as unread'); }
+  snooze(): boolean { return this.clickToolbarButton('Snooze'); }
+  
+  toggleStar(threadId: string): boolean {
+    const row = document.querySelector(`tr[data-thread-id="${threadId}"]`) || 
+                document.querySelector(`tr[data-legacy-thread-id="${threadId}"]`);
+    if (!row) return false;
+    
+    const starBtn = row.querySelector('[role="checkbox"]').parentElement.parentElement.querySelector('.T-KT') as HTMLElement;
+    if (starBtn) {
+        starBtn.click();
+        return true;
+    }
+    return false;
   }
 
-  /**
-   * Delete selected threads.
-   */
-  deleteSelected(): void {
-    this.clickToolbarButton('Delete');
+  performOpenedAction(action: 'archive' | 'delete' | 'read' | 'snooze' | 'star'): boolean {
+    switch (action) {
+      case 'archive': return this.archiveSelected();
+      case 'delete': return this.deleteSelected();
+      case 'read': return this.markAsRead();
+      case 'snooze': return this.snooze();
+      case 'star': {
+          // In opened thread, star is usually at the top right of the message
+          const starBtn = document.querySelector('.T-KT') as HTMLElement;
+          if (starBtn) { starBtn.click(); return true; }
+          return false;
+      }
+      default: return false;
+    }
   }
 
-  /**
-   * Mark selected as read.
-   */
-  markAsRead(): void {
-    this.clickToolbarButton('Mark as read');
-  }
+  private clickToolbarButton(ariaLabelPart: string): boolean {
+    const toolbars = Array.from(document.querySelectorAll('.G-atb:not([style*="display: none"])'));
+    const allButtons: HTMLElement[] = [];
+    toolbars.forEach(t => {
+      allButtons.push(...(Array.from(t.querySelectorAll('[role="button"], [role="menuitem"], .T-I, [aria-label], [title]')) as HTMLElement[]));
+    });
 
-  private clickToolbarButton(ariaLabelPart: string): void {
-    // The toolbar is usually in .G-tF or .aqK depending on view
-    // We search for a button/div with matching aria-label
-    const buttons = Array.from(document.querySelectorAll('[role="button"], [role="menuitem"]'));
-    const target = buttons.find(b => {
-      const label = b.getAttribute('aria-label') || b.getAttribute('title');
-      return label && label.includes(ariaLabelPart);
-    }) as HTMLElement;
+    const searchTerms = [ariaLabelPart.toLowerCase()];
+    if (ariaLabelPart.toLowerCase() === 'archive') searchTerms.push('archive (e)');
+    if (ariaLabelPart.toLowerCase() === 'delete') searchTerms.push('delete (#)', 'move to trash');
+    if (ariaLabelPart.toLowerCase() === 'mark as read') searchTerms.push('mark as read (i)');
+    if (ariaLabelPart.toLowerCase() === 'snooze') searchTerms.push('snooze (b)');
+
+    const target = allButtons.find(b => {
+      const label = (b.getAttribute('aria-label') || b.getAttribute('title') || '').toLowerCase();
+      return searchTerms.some(term => label === term || label.includes(term));
+    });
 
     if (target) {
-      // Mouse down/up is sometimes required for Gmail buttons
-      const opts = { bubbles: true, cancelable: true, view: window };
-      target.dispatchEvent(new MouseEvent('mousedown', opts));
-      target.dispatchEvent(new MouseEvent('mouseup', opts));
+      const mouseEvent = (type: string) => new MouseEvent(type, { bubbles: true, cancelable: true, view: window, buttons: 1 });
+      target.dispatchEvent(mouseEvent('mousedown'));
+      target.dispatchEvent(mouseEvent('mouseup'));
       target.click();
-      console.log(`[Actions] Clicked "${ariaLabelPart}"`);
-    } else {
-      console.warn(`[Actions] Toolbar button "${ariaLabelPart}" not found`);
+      return true;
     }
+    return false;
   }
 }
 

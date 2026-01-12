@@ -9,6 +9,7 @@ export interface AppSettings {
 export interface UIState {
   currentView: 'inbox' | 'thread' | 'settings' | 'label' | 'search';
   selectedThreadId: string | null;
+  pendingActiveId: string | null; // Temp storage for ID migration
   selection: Set<string>; // Selected email IDs
   searchQuery: string;
   isLoading: boolean;
