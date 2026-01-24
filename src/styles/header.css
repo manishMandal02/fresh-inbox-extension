@@ -1,3 +1,21 @@
+/**
+ * HEADER STYLING
+ * 
+ * Styles for Fresh Inbox header component
+ * injected into Gmail's header
+ */
+
+/* ===== HEADER CONTAINER ===== */
+.fi-header {
+  width: 100%;
+  background-color: var(--fi-bg-main);
+  border-bottom: 1px solid var(--fi-border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  height: 64px;
+}
+
 .fi-header-left {
   flex: 1;
   display: flex;
@@ -20,7 +38,7 @@
 .fi-search-bar:focus-within {
   background-color: var(--fi-bg-main);
   border-color: var(--fi-primary);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .fi-search-icon {

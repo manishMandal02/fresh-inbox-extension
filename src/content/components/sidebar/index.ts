@@ -30,10 +30,6 @@ export class Sidebar {
     const el = dom.create('aside', { classes: ['fi-sidebar'] });
     el.innerHTML = `
       <div class="fi-sidebar-top">
-        <div class="fi-logo-area">
-          <span class="fi-logo-icon">${icons.logo}</span>
-          <span class="fi-logo-text">Fresh</span>
-        </div>
         <button class="fi-compose-btn">
           <span class="fi-compose-icon">${icons.compose}</span>
           <span class="fi-compose-text">Compose</span>
@@ -64,18 +60,18 @@ export class Sidebar {
   private initListeners() {
     // Compose button click
     const composeBtn = this.element.querySelector('.fi-compose-btn') as HTMLElement;
-    composeBtn?.addEventListener('click', () => {
-        // Trigger Gmail's compose button (T-I-KE is standard)
+    composeBtn?.addEventListener('click', (e) => {
+        // Stop propagation to prevent bubbling
+        e.stopPropagation();
+        
+        // Trigger Gmail's compose button
         const gmailCompose = document.querySelector('.T-I.T-I-KE') as HTMLElement;
         if (gmailCompose) {
-            console.log('[Sidebar] Clicking Gmail Compose');
-            const opts = { bubbles: true, cancelable: true, view: window };
-            gmailCompose.dispatchEvent(new MouseEvent('mousedown', opts));
-            gmailCompose.dispatchEvent(new MouseEvent('mouseup', opts));
+            // Just click. If it doesn't work, we'll try dispatchEvent
             gmailCompose.click();
         } else {
-            // Fallback: try keyboard shortcut 'c'
-            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'c', bubbles: true }));
+            // Fallback
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'c' }));
         }
     });
 
@@ -84,7 +80,6 @@ export class Sidebar {
       const items = this.element.querySelectorAll('.fi-nav-item');
       items.forEach(el => {
         el.classList.remove('fi-active');
-        // Check if hash matches
         const href = el.getAttribute('href');
         if (href === `#${currentView}` || (currentView === 'inbox' && href === '#inbox')) {
           el.classList.add('fi-active');

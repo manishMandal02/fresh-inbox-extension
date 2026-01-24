@@ -1,70 +1,47 @@
 /* 
-  PRECISE GMAIL UI SUPPRESSION
-  Only hide Gmail's original components, never touch our extension's UI.
+  FRESH INBOX - HYBRID STRATEGY
+  1. We inject our own Sidebar.
+  2. We style the native Email List.
 */
 
-/* 1. Hide specific Gmail UI sections using roles/classes */
-/* We target only children of body that are NOT our extension root */
-body > header[role="banner"],
-body > [role="navigation"],
-body > [role="complementary"],
-.aeN, /* Left nav container */
-.bqX  /* Right side rail */ {
+/* 1. Hide Standard Sidebar Content (Native Navigation) */
+/* Hide all children of the sidebar container EXCEPT our injected component */
+/* 1. Hide Standard Sidebar Content (Native Navigation) */
+/* Hide all children of the sidebar container EXCEPT our injected component */
+.aeN > *:not(#fi-sidebar-root),
+[role="navigation"] > *:not(#fi-sidebar-root),
+.z0, /* Floating Action Button container */
+.T-I-KE, /* Native Compose Button */
+.L3, /* Large buttons (Compose) */
+.Y3, .Yl, /* Sidebar bottom tools */
+div[gh="cm"], /* Attribute-based Compose Selector */
+div[role="button"][aria-label="Compose"] /* Aria-based Selector */ {
   display: none !important;
-}
-
-/* 2. Hide Gmail's main area while preserving layout for scraping */
-[role='main'] {
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
 }
 
-/* 3. Whitelist Gmail's Compose, Dialogs, and Popups */
-/* We ensure they stay visible and on top of our overlay */
-.AD,  /* Compose window */
-.dw,  /* Dialogs wrapper */
-.aSs, /* Compose wrapper */
-.J-M, /* Dropdown menus */
-.JP,  /* Snooze/Time picker popups */
-.a98  /* Action menus */ {
-  visibility: visible !important;
-  opacity: 1 !important;
-  z-index: 2147483647 !important;
-}
-
-/* 4. Force-hide the modal backdrops that Gmail creates */
-/* This removes the dark overlay and lets you click through to Compose */
-.Kj-JD-Kz,
-.Kj-JD-Jl,
-.Kj-JD,
-.Kj-JD-Kz-Kj-JD {
-  display: none !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-/* 5. Ensure our application overlay is visible and on top of Gmail's base */
-#fi-root,
-.fi-root {
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: grid !important;
-  pointer-events: auto !important;
-  z-index: 10000 !important; /* Above Gmail base, below their high-level dialogs */
-  background-color: var(--fi-bg-main);
-}
-
-/* 6. Ensure toasts are always on top */
-#fi-toast-container {
-  opacity: 1 !important;
-  visibility: visible !important;
+/* Ensure our sidebar takes full height */
+.aeN, [role="navigation"] {
   display: flex !important;
-  pointer-events: none !important;
-  z-index: 2147483647 !important;
+  flex-direction: column !important;
 }
 
-/* 7. Final Safety: allow pointer events on whitelisted Gmail UI */
-.AD *, .dw *, .aSs *, .J-M *, .JP *, .a98 * {
-  pointer-events: auto !important;
+/* 2. Hide Right Side Rail */
+.bqX, [role="complementary"] {
+  display: none !important;
+}
+
+/* 3. Ensure our injected sidebar is visible */
+#fi-sidebar-root {
+  display: flex !important;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+/* 4. Ensure Toast is top */
+#fi-toast-container {
+  z-index: 2147483647 !important;
 }

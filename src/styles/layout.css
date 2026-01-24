@@ -1,70 +1,39 @@
-/* Full screen overlay to "hide" Gmail */
-.fi-layout {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 9999;
-  background-color: var(--fi-bg-main);
-  
-  display: grid;
-  /* Sidebar | List | (Thread Panel Area) */
-  grid-template-columns: var(--fi-sidebar-width) 1fr 0px; 
-  grid-template-rows: 64px 1fr;
-  grid-template-areas: 
-    "sidebar header header"
-    "sidebar content thread";
-  
-  transition: all var(--fi-transition-normal);
-  overflow: hidden;
-}
+/* 
+  INJECTED COMPONENT STYLES
+  These apply to the containers we inject into Gmail's DOM.
+*/
 
-/* Sidebar Collapsed State */
-.fi-layout.fi-sidebar-collapsed {
-  grid-template-columns: var(--fi-sidebar-collapsed-width) 1fr 0px;
-}
-
-/* When thread is open, give it space in the grid */
-.fi-layout.fi-thread-open {
-  grid-template-columns: var(--fi-sidebar-width) 1fr var(--fi-thread-panel-width);
-}
-
-.fi-layout.fi-sidebar-collapsed.fi-thread-open {
-  grid-template-columns: var(--fi-sidebar-collapsed-width) 1fr var(--fi-thread-panel-width);
+/* Sidebar */
+.fi-injected-sidebar {
+  height: 100%;
+  width: 100%;
+  background-color: var(--fi-bg-sidebar);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+  box-sizing: border-box;
 }
 
 /* Header */
-.fi-header {
-  grid-area: header;
+.fi-injected-header {
+  width: 100%;
+  height: 64px;
   background-color: var(--fi-bg-main);
   border-bottom: 1px solid var(--fi-border);
   display: flex;
   align-items: center;
   padding: 0 24px;
-  z-index: 5;
+  box-sizing: border-box;
 }
 
-/* Sidebar */
-.fi-sidebar {
-  grid-area: sidebar;
-  background-color: var(--fi-bg-sidebar);
-  border-right: 1px solid var(--fi-border);
+/* Main Content */
+.fi-injected-main {
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: column;
-  padding: 16px 0;
-  overflow-y: auto;
-  z-index: 6; 
-}
-
-/* Main Content Area */
-.fi-main-content {
-  grid-area: content;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  flex-direction: column; /* Column to stack list and handle resizing */
   position: relative;
-  min-width: 0; /* Allow shrinking */
+  background-color: var(--fi-bg-main);
 }
 
 .fi-email-list {
@@ -77,35 +46,41 @@
   width: 100%;
 }
 
-/* Thread Panel - Now part of grid for automatic shrinking */
+/* Thread Panel - Slide Over */
+/* Since it's inside fi-injected-main, it can be absolute */
 .fi-thread-panel {
-  grid-area: thread;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--fi-thread-panel-width); 
+  height: 100%;
   background-color: var(--fi-bg-main);
   border-left: 1px solid var(--fi-border);
   box-shadow: -4px 0 16px rgba(0,0,0,0.05);
   z-index: 10;
-  overflow: hidden;
+  
+  transform: translateX(100%); 
+  transition: transform var(--fi-transition-normal);
   display: flex;
   flex-direction: column;
-  
-  /* Slide logic still works but now grid handles the layout shift */
-  transform: translateX(100%);
-  transition: transform var(--fi-transition-normal);
 }
 
 .fi-thread-panel.fi-open {
   transform: translateX(0);
 }
 
-@media (max-width: 1200px) {
-  .fi-layout.fi-thread-open {
-    /* Overlay on smaller screens */
-    grid-template-columns: var(--fi-sidebar-width) 1fr 0px;
-  }
+/* Layout Shift for Main Content */
+/* When thread panel opens, we might want to shrink the list. */
+/* But since we don't have a grid, we rely on the panel overlaying the list. */
+/* If we want to shrink the list: */
+.fi-injected-main.fi-thread-open .fi-email-list {
+  /* margin-right: var(--fi-thread-panel-width); */
+  /* Using margin right effectively shrinks the content area */
+  /* But transitions might be jerky. */
+}
+
+@media (max-width: 900px) {
   .fi-thread-panel {
-      position: absolute;
-      right: 0;
-      top: 0;
-      width: 80%;
+    width: 100%;
   }
 }

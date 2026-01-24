@@ -12,11 +12,11 @@ export class EmailList {
   private threads: EmailThread[] = [];
 
   constructor() {
-    this.container = dom.create('div', { 
+    this.container = dom.create('div', {
       classes: ['fi-list-container'],
-      attributes: { tabindex: '0' } 
+      attributes: { tabindex: '0' }
     });
-    
+
     this.initListeners();
     this.initKeyboard();
   }
@@ -24,8 +24,8 @@ export class EmailList {
   private initListeners() {
     stateManager.subscribe(state => {
       if (state.ui.isLoading) {
-          this.renderSkeletons();
-          return;
+        this.renderSkeletons();
+        return;
       }
 
       this.threads = Array.from(state.threads.values()).slice(0, MAX_EMAILS);
@@ -33,41 +33,42 @@ export class EmailList {
     });
 
     // Click Delegation
-    this.container.addEventListener('click', (e) => {
+    this.container.addEventListener('click', e => {
       const target = e.target as HTMLElement;
-      
+
       // 1. Check for action buttons
       const actionBtn = target.closest('.fi-action-btn');
       const starBtn = target.closest('.fi-card-star-btn');
       const card = target.closest('.fi-email-card');
-      
+
       if ((actionBtn || starBtn) && card) {
-        e.stopPropagation(); 
+        e.stopPropagation();
         const id = card.getAttribute('data-id');
         const action = actionBtn?.getAttribute('data-action') || 'star';
         if (id && action) this.performAction(id, action, target);
         return;
       }
-      
+
       if (card) {
         const id = card.getAttribute('data-id');
         if (id) {
           // BRIDGE: Save the local ID before navigation
           stateManager.setUI({ pendingActiveId: id });
-          
-          const gmailRow = document.querySelector(`tr[data-thread-id="${id}"]`) || 
-                           document.querySelector(`tr[data-legacy-thread-id="${id}"]`) ||
-                           document.getElementById(id); 
-//...
-                           
+
+          const gmailRow =
+            document.querySelector(`tr[data-thread-id="${id}"]`) ||
+            document.querySelector(`tr[data-legacy-thread-id="${id}"]`) ||
+            document.getElementById(id);
+          //...
+
           if (gmailRow) {
-              const opts = { bubbles: true, cancelable: true, view: window };
-              gmailRow.dispatchEvent(new MouseEvent('mousedown', opts));
-              gmailRow.dispatchEvent(new MouseEvent('mouseup', opts));
-              (gmailRow as HTMLElement).click();
+            const opts = { bubbles: true, cancelable: true, view: window };
+            gmailRow.dispatchEvent(new MouseEvent('mousedown', opts));
+            gmailRow.dispatchEvent(new MouseEvent('mouseup', opts));
+            (gmailRow as HTMLElement).click();
           } else {
-              // Fallback to manual hash if row is missing
-              window.location.hash = `#inbox/${id}`;
+            // Fallback to manual hash if row is missing
+            window.location.hash = `#inbox/${id}`;
           }
         }
       }
@@ -76,23 +77,34 @@ export class EmailList {
 
   private renderThreads(selection: Set<string>, activeId: string | null) {
     this.container.innerHTML = '';
-    
+
+    if (this.threads.length === 0) {
+      // Show empty state instead of blank list
+      const emptyMsg = dom.create('div', {
+        classes: ['fi-empty-state'],
+        attributes: { style: 'padding: 32px 16px; text-align: center; color: var(--fi-text-secondary);' }
+      });
+      emptyMsg.textContent = 'No emails found. Check your Gmail connection.';
+      this.container.appendChild(emptyMsg);
+      return;
+    }
+
     this.threads.forEach(thread => {
-        const card = new EmailCard();
-        // Simple exact match now works because IDs are migrated to match the URL
-        const isActive = activeId === thread.id;
-        
-        card.update(thread, selection.has(thread.id), isActive);
-        this.container.appendChild(card.element);
+      const card = new EmailCard();
+      // Simple exact match now works because IDs are migrated to match the URL
+      const isActive = activeId === thread.id;
+
+      card.update(thread, selection.has(thread.id), isActive);
+      this.container.appendChild(card.element);
     });
   }
 
   private renderSkeletons() {
     this.container.innerHTML = '';
     for (let i = 0; i < 15; i++) {
-        const card = new EmailCard();
-        card.update(null, false, false);
-        this.container.appendChild(card.element);
+      const card = new EmailCard();
+      card.update(null, false, false);
+      this.container.appendChild(card.element);
     }
   }
 
@@ -128,13 +140,13 @@ export class EmailList {
 
     // Special case for Star (doesn't use toolbar in list usually)
     if (target.closest('.fi-card-star-btn')) {
-        actionSuccess = gmailActions.toggleStar(id);
-        if (actionSuccess) toast.success('Pin updated');
+      actionSuccess = gmailActions.toggleStar(id);
+      if (actionSuccess) toast.success('Pin updated');
     }
 
     if (!actionSuccess && !target.closest('.fi-card-star-btn')) {
-        toast.error(`Action failed`);
-        return;
+      toast.error(`Action failed`);
+      return;
     }
 
     if (action === 'delete' || action === 'archive' || action === 'snooze') {
@@ -147,45 +159,43 @@ export class EmailList {
   }
 
   private initKeyboard() {
-    this.container.addEventListener('keydown', (e) => {
-      const state = stateManager.get();
-      const currentId = state.ui.selectedThreadId;
-      const currentIndex = this.threads.findIndex(t => t.id === currentId);
+    // Moved to global listener
+  }
 
-      if (e.key === 'j' || e.key === 'ArrowDown') {
-        const nextIndex = Math.min(this.threads.length - 1, currentIndex + 1);
-        this.selectThreadAtIndex(nextIndex);
-      } else if (e.key === 'k' || e.key === 'ArrowUp') {
-        const prevIndex = Math.max(0, currentIndex - 1);
-        this.selectThreadAtIndex(prevIndex);
-      } else if (e.key === 'x') {
-        if (currentId) {
-          const newSelection = new Set(state.ui.selection);
-          if (newSelection.has(currentId)) {
-            newSelection.delete(currentId);
-            gmailActions.selectThread(currentId, false);
-          } else {
-            newSelection.add(currentId);
-            gmailActions.selectThread(currentId, true);
-          }
-          stateManager.setUI({ selection: newSelection });
-        }
-      } else if (e.key === 'Enter') {
-        if (currentId) window.location.hash = `#inbox/${currentId}`;
-      }
-    });
+  public selectNext() {
+    const state = stateManager.get();
+    const currentId = state.ui.selectedThreadId;
+    const currentIndex = this.threads.findIndex(t => t.id === currentId);
+    const nextIndex = Math.min(this.threads.length - 1, currentIndex + 1);
+    this.selectThreadAtIndex(nextIndex);
+  }
+
+  public selectPrev() {
+    const state = stateManager.get();
+    const currentId = state.ui.selectedThreadId;
+    const currentIndex = this.threads.findIndex(t => t.id === currentId);
+    const prevIndex = Math.max(0, currentIndex - 1);
+    this.selectThreadAtIndex(prevIndex);
+  }
+
+  public openSelected() {
+    const state = stateManager.get();
+    if (state.ui.selectedThreadId) {
+      window.location.hash = `#inbox/${state.ui.selectedThreadId}`;
+    }
   }
 
   private selectThreadAtIndex(index: number) {
     if (index >= 0 && index < this.threads.length) {
       const thread = this.threads[index];
       // Find row and click it
-      const gmailRow = document.querySelector(`tr[data-thread-id="${thread.id}"]`) || 
-                       document.querySelector(`tr[data-legacy-thread-id="${thread.id}"]`);
+      const gmailRow =
+        document.querySelector(`tr[data-thread-id="${thread.id}"]`) ||
+        document.querySelector(`tr[data-legacy-thread-id="${thread.id}"]`);
       if (gmailRow) {
-          (gmailRow as HTMLElement).click();
+        (gmailRow as HTMLElement).click();
       } else {
-          window.location.hash = `#inbox/${thread.id}`;
+        window.location.hash = `#inbox/${thread.id}`;
       }
     }
   }

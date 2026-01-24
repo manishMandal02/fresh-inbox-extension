@@ -1,0 +1,46 @@
+/* 
+  COMPOSE MODAL - ENSURE VISIBILITY ABOVE OVERLAY
+  
+  Compose modal needs z-index: 99998 to appear above Fresh Inbox overlay.
+  All sub-components must be interactive and visible.
+*/
+
+/* Main compose modal */
+[role='dialog'],
+.dw,
+.aSs,
+.lhSoJf,
+.goog-modalpopup,
+[aria-label='Compose'] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  z-index: 99998 !important;
+}
+
+/* Children of compose must be clickable */
+[role='dialog'] *,
+.dw *,
+.aSs *,
+.lhSoJf * {
+  pointer-events: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Compose sub-components (color picker, font menu, dropdown lists, etc.) */
+[role='listbox'],
+[role='menu'],
+[role='option'],
+.Dn,
+.mv-daynames-container,
+.gsrt,
+.goog-menu,
+.goog-menuitem {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  z-index: 99999 !important;
+}

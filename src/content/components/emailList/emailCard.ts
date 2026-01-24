@@ -1,11 +1,9 @@
-import { EmailThread } from '../../../../types/email';
+import { EmailThread } from '../../../types/email';
 import { dom } from '../../utils/dom';
-import { sha256 } from '../../utils/crypto';
 import { icons } from '../icons';
 
 export class EmailCard {
   element: HTMLElement;
-  private currentThreadId: string = '';
 
   constructor() {
     this.element = this.createDOM();
@@ -49,22 +47,21 @@ export class EmailCard {
     const starActionBtn = this.element.querySelector('[data-action="star"]') as HTMLElement;
 
     if (!thread) {
-        this.element.classList.add('fi-card-skeleton');
-        this.element.classList.remove('fi-unread', 'fi-selected', 'fi-active');
-        senderEl.innerHTML = '<div class="fi-skeleton" style="width: 80px; height: 12px;"></div>';
-        countEl.style.display = 'none';
-        subjectEl.innerHTML = '<div class="fi-skeleton" style="width: 150px; height: 10px;"></div>';
-        snippetEl.innerHTML = '<div class="fi-skeleton" style="width: 200px; height: 8px;"></div>';
-        dateEl.innerHTML = '<div class="fi-skeleton" style="width: 30px; height: 8px;"></div>';
-        actionsEl.style.display = 'none';
-        starIndicator.style.display = 'none';
-        return;
+      this.element.classList.add('fi-card-skeleton');
+      this.element.classList.remove('fi-unread', 'fi-selected', 'fi-active');
+      senderEl.innerHTML = '<div class="fi-skeleton" style="width: 80px; height: 12px;"></div>';
+      countEl.style.display = 'none';
+      subjectEl.innerHTML = '<div class="fi-skeleton" style="width: 150px; height: 10px;"></div>';
+      snippetEl.innerHTML = '<div class="fi-skeleton" style="width: 200px; height: 8px;"></div>';
+      dateEl.innerHTML = '<div class="fi-skeleton" style="width: 30px; height: 8px;"></div>';
+      actionsEl.style.display = 'none';
+      starIndicator.style.display = 'none';
+      return;
     }
 
     this.element.classList.remove('fi-card-skeleton');
-    actionsEl.style.display = ''; 
-    
-    this.currentThreadId = thread.id;
+    actionsEl.style.display = '';
+
     this.element.setAttribute('data-id', thread.id);
     this.element.classList.toggle('fi-selected', isSelected);
     this.element.classList.toggle('fi-active', isActive);
@@ -82,11 +79,11 @@ export class EmailCard {
     const senderName = (thread as any).from?.name || 'Unknown';
     const dateText = (thread as any).date || '';
     const count = thread.participantCount || 1;
-    
+
     senderEl.textContent = senderName;
     countEl.textContent = count > 1 ? count.toString() : '';
     countEl.style.display = count > 1 ? 'inline-block' : 'none';
-    
+
     subjectEl.textContent = thread.subject;
     snippetEl.textContent = thread.snippet;
     dateEl.textContent = dateText;

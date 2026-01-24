@@ -1,1 +1,209 @@
-/* src/styles/themes.css */
+/* Dark Theme Specific Styles */
+
+[data-theme='dark'] {
+  /* Email List Styles */
+  .fi-email-card {
+    border-bottom-color: var(--fi-border);
+    background-color: transparent;
+  }
+
+  .fi-email-card:hover {
+    background-color: var(--fi-bg-hover);
+  }
+
+  .fi-email-card.active {
+    background-color: rgba(26, 115, 232, 0.15);
+  }
+
+  .fi-card-sender {
+    color: var(--fi-text-primary);
+  }
+
+  .fi-card-subject {
+    color: var(--fi-text-primary);
+  }
+
+  .fi-card-snippet {
+    color: var(--fi-text-secondary);
+  }
+
+  .fi-card-date {
+    color: var(--fi-text-muted);
+  }
+
+  /* Unread styling */
+  .fi-email-card.unread .fi-card-subject {
+    font-weight: 600;
+  }
+
+  .fi-card-unread-indicator {
+    background-color: #5f6368;
+  }
+
+  /* Header Styles */
+  .fi-header {
+    border-bottom-color: var(--fi-border);
+    background-color: var(--fi-bg-main);
+  }
+
+  .fi-search-input {
+    background-color: var(--fi-bg-sidebar);
+    color: var(--fi-text-primary);
+    border-color: var(--fi-border);
+  }
+
+  .fi-search-input::placeholder {
+    color: var(--fi-text-muted);
+  }
+
+  .fi-search-input:focus {
+    border-color: var(--fi-primary);
+    background-color: var(--fi-bg-main);
+  }
+
+  /* Button Styles */
+  .fi-icon-button {
+    color: var(--fi-text-secondary);
+  }
+
+  .fi-icon-button:hover {
+    background-color: var(--fi-bg-hover);
+    color: var(--fi-text-primary);
+  }
+
+  /* Sidebar Styles */
+  .fi-sidebar {
+    background-color: var(--fi-bg-sidebar);
+    border-right-color: var(--fi-border);
+  }
+
+  .fi-nav-item {
+    color: var(--fi-text-secondary);
+  }
+
+  .fi-nav-item:hover {
+    background-color: var(--fi-bg-hover);
+    color: var(--fi-text-primary);
+  }
+
+  .fi-nav-item.active {
+    background-color: rgba(26, 115, 232, 0.1);
+    color: var(--fi-primary);
+  }
+
+  .fi-compose-btn {
+    background-color: var(--fi-primary);
+    color: white;
+  }
+
+  .fi-compose-btn:hover {
+    background-color: var(--fi-primary-hover);
+  }
+
+  /* Thread Panel Styles */
+  .fi-thread-panel {
+    background-color: var(--fi-bg-main);
+    border-left-color: var(--fi-border);
+  }
+
+  .fi-thread-subject {
+    color: var(--fi-text-primary);
+  }
+
+  .fi-thread-message {
+    border-top-color: var(--fi-border);
+    background-color: transparent;
+  }
+
+  .fi-message-sender {
+    color: var(--fi-text-primary);
+  }
+
+  .fi-message-date {
+    color: var(--fi-text-muted);
+  }
+
+  .fi-message-body {
+    color: var(--fi-text-primary);
+  }
+
+  .fi-message-body a {
+    color: var(--fi-primary);
+  }
+
+  /* Toast Styles */
+  .fi-toast {
+    background-color: #323232;
+    color: #ffffff;
+  }
+
+  .fi-toast.success {
+    background-color: #1b5e20;
+  }
+
+  .fi-toast.error {
+    background-color: #b71c1c;
+  }
+
+  .fi-toast.info {
+    background-color: #01579b;
+  }
+
+  /* Action Buttons in Cards/Threads */
+  .fi-action-button {
+    color: var(--fi-text-secondary);
+  }
+
+  .fi-action-button:hover {
+    color: var(--fi-primary);
+    background-color: var(--fi-bg-hover);
+  }
+}
+
+/* Light Theme Specific Styles (Optional - for completeness) */
+[data-theme='light'] {
+  .fi-email-card {
+    border-bottom-color: #e8eaed;
+    background-color: #ffffff;
+  }
+
+  .fi-email-card:hover {
+    background-color: #f8f9fa;
+  }
+
+  .fi-card-sender {
+    color: #202124;
+  }
+
+  .fi-card-subject {
+    color: #202124;
+  }
+
+  .fi-card-snippet {
+    color: #5f6368;
+  }
+
+  .fi-card-date {
+    color: #80868b;
+  }
+
+  .fi-header {
+    background-color: #ffffff;
+    border-bottom-color: #dadce0;
+  }
+
+  .fi-sidebar {
+    background-color: #f6f8fc;
+    border-right-color: #dadce0;
+  }
+
+  .fi-thread-panel {
+    background-color: #ffffff;
+    border-left-color: #dadce0;
+  }
+
+  .fi-toast {
+    background-color: #323232;
+    color: #ffffff;
+  }
+}

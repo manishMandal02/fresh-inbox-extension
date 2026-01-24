@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { GmailSelectors } from '../../types/gmail';
 import { EmailThread } from '../../types/email';
 import { dom } from '../utils/dom';
@@ -21,24 +22,51 @@ export const GMAIL_SELECTORS: GmailSelectors = {
 export class GmailService {
   /**
    * Parse the email thread list from the DOM.
+   * NOTE: Gmail UI is hidden with display:none, so we can't use offsetHeight to check visibility
    */
   getThreadsOnPage(): EmailThread[] {
+    // Find the main container - even if it's hidden, it still has the DOM
     const mains = Array.from(document.querySelectorAll('[role="main"]')) as HTMLElement[];
-    const activeMain = mains.find(m => m.offsetHeight > 0) || mains[0];
 
-    if (!activeMain) return [];
+    console.log(`[Gmail] Found ${mains.length} [role="main"] containers`);
 
+    if (mains.length === 0) {
+      // Fallback: try finding by class
+      const fallbackMains = Array.from(document.querySelectorAll('.Rv8yCc, .AHe75, .aHe75')) as HTMLElement[];
+      console.log(`[Gmail] Fallback search found ${fallbackMains.length} containers`);
+      if (fallbackMains.length === 0) {
+        console.warn('[Gmail] No main container found - Gmail might not be loaded yet');
+        return [];
+      }
+      mains.push(...fallbackMains);
+    }
+
+    const activeMain = mains[0]; // Just get the first one, even if hidden
+
+    if (!activeMain) {
+      console.warn('[Gmail] No main container selected');
+      return [];
+    }
+
+    // Get rows - Gmail UI is hidden, so we don't filter by visibility
     let rows = Array.from(activeMain.querySelectorAll('tr.zA')) as HTMLElement[];
+    console.log(`[Gmail] Found ${rows.length} tr.zA rows`);
 
     if (rows.length === 0) {
       rows = Array.from(activeMain.querySelectorAll('tr[role="row"]')).filter(r =>
         r.querySelector('[role="checkbox"]')
       ) as HTMLElement[];
+      console.log(`[Gmail] Found ${rows.length} tr[role="row"] rows`);
     }
 
-    const visibleRows = rows.filter(row => row.offsetHeight > 0);
+    if (rows.length === 0) {
+      console.warn('[Gmail] No email rows found in main container');
+      return [];
+    }
 
-    return visibleRows.map(row => this.parseThreadRow(row)).filter(Boolean) as EmailThread[];
+    const parsed = rows.map(row => this.parseThreadRow(row)).filter(Boolean) as EmailThread[];
+    console.log(`[Gmail] Successfully parsed ${parsed.length} threads`);
+    return parsed;
   }
 
   /**
@@ -47,6 +75,8 @@ export class GmailService {
   syncThreads(): void {
     const view = stateManager.get().ui.currentView;
     const threads = this.getThreadsOnPage();
+
+    console.log(`[Gmail] Syncing threads for view: ${view}, found: ${threads.length}`);
 
     const listViewTypes = [
       'inbox',
@@ -120,14 +150,14 @@ export class GmailService {
     try {
       // 1. Try data-thread-id (Canonical ID for URLs)
       let id = row.getAttribute('data-thread-id') || row.getAttribute('data-legacy-thread-id');
-      
+
       // 2. Fallback to row links (extracting from href="#inbox/ID")
       if (!id) {
-          const link = row.querySelector('a[href*="#"]') as HTMLAnchorElement;
-          if (link) {
-              const href = link.getAttribute('href') || '';
-              id = href.split('/').pop() || '';
-          }
+        const link = row.querySelector('a[href*="#"]') as HTMLAnchorElement;
+        if (link) {
+          const href = link.getAttribute('href') || '';
+          id = href.split('/').pop() || '';
+        }
       }
 
       // 3. Last resort fallback
@@ -159,23 +189,19 @@ export class GmailService {
       // Date Parsing
       const dateText = dateEl ? dateEl.getAttribute('title') || dateEl.textContent || '' : '';
 
-                  // Thread Count Parsing
+      // Thread Count Parsing
 
-                  // 1. Find the parent TD container
+      // 1. Find the parent TD container
 
-                  const countContainer = row.querySelector('td.yX.xY.ulKHrd');
+      const countContainer = row.querySelector('td.yX.xY.ulKHrd');
 
-                  // 2. Find the specific count element within that container
+      // 2. Find the specific count element within that container
 
-                  const countEl = countContainer?.querySelector('span.bx0') || 
+      const countEl = countContainer?.querySelector('span.bx0') || row.querySelector('.ru, .Y2, .bsU');
 
-                                  row.querySelector('.ru, .Y2, .bsU');
+      const countMatch = countEl?.textContent?.match(/\d+/);
 
-                  
-
-                  const countMatch = countEl?.textContent?.match(/\d+/);
-
-                  const participantCount = countMatch ? parseInt(countMatch[0], 10) : 1;
+      const participantCount = countMatch ? parseInt(countMatch[0], 10) : 1;
 
       console.log(`[GmailService] Found thread with ${participantCount} messages: ${id}`);
 
@@ -273,7 +299,8 @@ export class GmailService {
           });
           const expanders = clone.querySelectorAll('[aria-label="Show trimmed content"], .adM, .ajR, .mq');
           expanders.forEach(btn => btn.remove());
-          body = clone.innerHTML;
+          // Sanitize HTML content to prevent XSS attacks
+          body = DOMPurify.sanitize(clone.innerHTML);
         }
 
         const name = senderEl?.textContent || 'Unknown';

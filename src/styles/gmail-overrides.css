@@ -1,0 +1,173 @@
+/* 
+  GMAIL UI OVERRIDES - CARD STYLE V3 (POLISHED)
+*/
+
+:root {
+  --fi-bg-body: #f6f8fc;
+  --fi-bg-card: #ffffff;
+  --fi-bg-sidebar: #f6f8fc;
+  --fi-text-primary: #202124;
+  --fi-text-secondary: #5f6368;
+  --fi-text-date: #80868b;
+  --fi-font-family: 'Google Sans', Roboto, Helvetica, Arial, sans-serif;
+  --fi-radius: 16px; /* Increased radius for modern look */
+}
+
+/* Global Backgrounds */
+body, .wl, .aoI, .vp, .ha {
+  background-color: var(--fi-bg-body) !important;
+}
+
+/* Remove table borders & spacing */
+table.F {
+  border-collapse: separate !important;
+  border-spacing: 0 10px !important; /* Increased vertical gap */
+  padding: 0 20px !important; /* Global side padding */
+}
+
+/* --- THE CARD (ROW) --- */
+tr.zA {
+  background-color: var(--fi-bg-card) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+  border-radius: var(--fi-radius) !important;
+  transition: box-shadow 0.2s ease, transform 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+/* Hover State */
+tr.zA:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08) !important;
+  transform: translateY(-2px) !important;
+  z-index: 10 !important;
+  background-color: #fff !important;
+}
+
+/* Selected/Checked State */
+tr.x7 {
+  background-color: #e8f0fe !important; /* Light blue tint */
+  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.2) !important;
+}
+
+/* --- CELL POLISH --- */
+tr.zA td {
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+  border-bottom: none !important;
+  vertical-align: middle !important; /* Ensure vertical centering */
+}
+
+/* Left Edge (Checkbox) */
+tr.zA td:first-child {
+  border-top-left-radius: var(--fi-radius) !important;
+  border-bottom-left-radius: var(--fi-radius) !important;
+  padding-left: 20px !important; /* More breathing room */
+}
+
+/* Right Edge (Date) */
+tr.zA td:last-child {
+  border-top-right-radius: var(--fi-radius) !important;
+  border-bottom-right-radius: var(--fi-radius) !important;
+  padding-right: 24px !important; /* More breathing room */
+}
+
+/* --- TYPOGRAPHY --- */
+
+/* Sender */
+.yX {
+  font-family: var(--fi-font-family) !important;
+  font-size: 15px !important;
+  color: var(--fi-text-primary) !important;
+  font-weight: 500 !important;
+  padding-right: 16px !important;
+}
+
+/* Subject (The actual title) */
+.bog {
+  font-family: var(--fi-font-family) !important;
+  font-size: 14px !important;
+  color: var(--fi-text-primary) !important;
+  font-weight: 600 !important; /* Bolder subject */
+  margin-right: 8px !important;
+}
+
+/* Snippet (The preview text) */
+.y2 {
+  color: var(--fi-text-secondary) !important;
+  font-weight: 400 !important;
+  font-size: 14px !important;
+}
+
+/* Date */
+.xW {
+  font-family: var(--fi-font-family) !important;
+  font-size: 12px !important;
+  color: var(--fi-text-date) !important;
+  font-weight: 500 !important;
+}
+
+/* --- UNREAD STATE --- */
+tr.zE {
+  background-color: #ffffff !important;
+}
+
+/* The Blue Bar Indicator */
+tr.zE td:first-child {
+  /* Instead of a border which shifts content, use box-shadow inset */
+  box-shadow: inset 4px 0 0 0 #1a73e8 !important; 
+}
+
+tr.zE .yX, tr.zE .bog {
+  font-weight: 800 !important; /* Extra bold for unread */
+  color: #000 !important;
+}
+
+tr.zE .xW {
+  color: #1a73e8 !important; /* Blue date for unread */
+  font-weight: 700 !important;
+}
+
+/* --- SIDEBAR POLISH (Keeping previous fixes) --- */
+.aeN { background-color: var(--fi-bg-sidebar) !important; }
+
+.T-I-KE {
+  background-color: #c2e7ff !important;
+  color: #001d35 !important;
+  box-shadow: none !important;
+  border-radius: 16px !important;
+  height: 56px !important;
+  min-width: 140px !important;
+  font-weight: 600 !important;
+  font-family: var(--fi-font-family) !important;
+  margin-left: 8px !important;
+}
+
+.aeN .n3, .n6 .n3 {
+  border-radius: 0 24px 24px 0 !important;
+  margin-right: 16px !important;
+  padding-left: 24px !important;
+  height: 40px !important;
+  display: block !important;
+  padding: 0 !important;
+}
+
+.aeN .n3 > .n2, .n6 .n3 > a {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  padding-left: 26px !important;
+  text-decoration: none !important;
+}
+
+.aeN .n3 .qj, .n6 .n3 .qj {
+  margin: 0 18px 0 0 !important;
+  width: 20px !important;
+  height: 20px !important;
+  opacity: 0.7 !important;
+}
+
+.aeN .n3 .bsU, .n6 .n3 .bsU {
+  color: var(--fi-text-primary) !important;
+  font-weight: 600 !important;
+  margin-left: auto !important;
+  padding-right: 12px !important;
+}

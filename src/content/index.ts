@@ -1,39 +1,49 @@
-import './hide-gmail.css'; // Load this FIRST to hide Gmail
+import '../styles/gmail-overrides.css';
 import '../styles/main.css';
 import { lifecycle } from './core/lifecycle';
 import { layout } from './components/layout';
-import { stateManager } from './core/state';
 
-const boot = async () => {
-  // 1. Render UI IMMEDIATELY
-  // This replaces the white screen with our layout shell
-  const appRoot = layout.render();
-  document.body.appendChild(appRoot);
+const findAndHideCompose = () => {
+  // Find all elements containing "Compose" text
+  const xpath = "//*[contains(text(), 'Compose')]";
+  const result = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+
+  for (let i = 0; i < result.snapshotLength; i++) {
+    const el = result.snapshotItem(i) as HTMLElement;
+    // Skip our own button
+    if (el.closest('.fi-compose-btn')) continue;
+    
+    // Find the button wrapper (usually a few levels up)
+    const buttonWrapper = el.closest('[role="button"]') || el.closest('.T-I');
+    
+    if (buttonWrapper) {
+      console.log('[Fresh Inbox] Hiding Native Compose:', buttonWrapper);
+      (buttonWrapper as HTMLElement).style.display = 'none';
+      (buttonWrapper as HTMLElement).style.visibility = 'hidden';
+    } else {
+        // Fallback: Hide the text span's parent if it looks like a button
+        el.parentElement!.style.display = 'none';
+    }
+  }
   
-  // 2. Initialize Core/Data in background
-  // We don't 'await' this before rendering because we want the UI visible now
-  lifecycle.init().then(() => {
-    // 3. Global Keyboard Shortcuts
-    window.addEventListener('keydown', (e) => {
-      const state = stateManager.get();
-      const threadId = state.ui.selectedThreadId;
-      
-      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
-
-      if (threadId) {
-        if (e.key === 'e') {
-          const archiveBtn = document.querySelector('.fi-action-archive') as HTMLElement;
-          archiveBtn?.click();
-        } else if (e.key === '#') {
-          const deleteBtn = document.querySelector('.fi-action-delete') as HTMLElement;
-          deleteBtn?.click();
-        }
-      }
-    });
-  });
+  // Also look for the FAB (Floating Action Button) which might just have an icon
+  const fab = document.querySelector('.z0');
+  if (fab) (fab as HTMLElement).style.display = 'none';
 };
 
-// Use a more robust check for body existence
+const boot = async () => {
+  console.log('[Fresh Inbox] Enhancement Booted');
+  
+  // 1. Initialize Layout (Applies Theme classes)
+  layout.render();
+  
+  // 2. Initialize Core
+  lifecycle.init();
+
+  // 3. Brutal Compose Hiding Loop
+  setInterval(findAndHideCompose, 1000);
+};
+
 if (document.body) {
   boot();
 } else {

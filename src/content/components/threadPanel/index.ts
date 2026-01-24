@@ -4,7 +4,6 @@ import { EmailThread } from '../../../types/email';
 import { icons } from '../icons';
 import { gmailActions } from '../../services/actions';
 import { toast } from '../toast';
-import { gmailService } from '../../services/gmail';
 
 export class ThreadPanel {
   element: HTMLElement;
@@ -71,18 +70,6 @@ export class ThreadPanel {
       .querySelector('.fi-action-snooze')
       ?.addEventListener('click', () => this.handleAction('snooze'));
     this.element.querySelector('.fi-action-star')?.addEventListener('click', () => this.handleAction('star'));
-
-    document.addEventListener(
-      'keydown',
-      e => {
-        if (e.key === 'Escape' && stateManager.get().ui.selectedThreadId) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.close();
-        }
-      },
-      true
-    ); // Use capture phase to catch it first
   }
 
   private async handleAction(action: 'archive' | 'delete' | 'read' | 'snooze' | 'star') {

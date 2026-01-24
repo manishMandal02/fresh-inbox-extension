@@ -1,3 +1,21 @@
+/**
+ * SIDEBAR STYLING
+ * 
+ * Styles for Fresh Inbox sidebar component (.fi-sidebar)
+ * injected into Gmail's sidebar (.aeN)
+ */
+
+/* ===== SIDEBAR CONTAINER ===== */
+.fi-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: var(--fi-bg-sidebar);
+  padding: 0;
+  overflow-y: auto;
+}
+
+/* ===== SIDEBAR TOP SECTION ===== */
 .fi-sidebar-top {
   padding: 0 16px 24px 16px;
 }
@@ -31,7 +49,7 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.2s;
   border: 1px solid var(--fi-border);
   margin-bottom: 12px;
@@ -39,7 +57,7 @@
 
 .fi-compose-btn:hover {
   background-color: var(--fi-bg-hover);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
 }
 
