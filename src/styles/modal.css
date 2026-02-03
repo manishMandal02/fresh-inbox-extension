@@ -1,0 +1,122 @@
+/* 
+  BULK ACTIONS / MODAL CSS 
+*/
+
+/* Backdrop */
+.fi-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fi-fade-in 0.2s ease-out;
+}
+
+/* Content */
+.fi-modal-content {
+  background: white;
+  width: 500px;
+  max-width: 90%;
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  padding: 24px;
+  animation: fi-scale-in 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Header */
+.fi-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.fi-modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-family: 'Google Sans', sans-serif;
+}
+
+.fi-close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #5f6368;
+}
+
+/* Body */
+.fi-cleaner-step {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.fi-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e8eaed;
+  border-top-color: #1a73e8;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  animation: fi-spin 1s linear infinite;
+}
+
+.fi-subscription-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+
+.fi-subscription-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.fi-btn-danger {
+  background-color: #fce8e6;
+  color: #c5221f;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+}
+.fi-btn-danger:hover {
+  background-color: #fad2cf;
+}
+
+/* Animations */
+@keyframes fi-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fi-scale-in {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes fi-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

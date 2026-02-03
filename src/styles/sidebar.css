@@ -1,73 +1,70 @@
-/**
- * SIDEBAR STYLING
- * 
- * Styles for Fresh Inbox sidebar component (.fi-sidebar)
- * injected into Gmail's sidebar (.aeN)
- */
+/* 
+  SIDEBAR COMPONENT STYLES 
+*/
 
-/* ===== SIDEBAR CONTAINER ===== */
 .fi-sidebar {
+  width: 256px;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  background-color: var(--fi-bg-sidebar);
-  padding: 0;
+  padding: 12px;
+  box-sizing: border-box;
+  font-family: 'Google Sans', Roboto, sans-serif;
   overflow-y: auto;
 }
 
-/* ===== SIDEBAR TOP SECTION ===== */
+/* --- Compose Button --- */
 .fi-sidebar-top {
-  padding: 0 16px 24px 16px;
-}
-
-.fi-logo-area {
-  display: flex;
-  align-items: center;
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--fi-text-primary);
-  margin-bottom: 24px;
-}
-
-.fi-logo-icon {
-  margin-right: 8px;
-  color: var(--fi-primary);
+  padding-bottom: 24px;
 }
 
 .fi-compose-btn {
-  width: auto;
-  min-width: 140px;
-  height: 48px;
-  border-radius: 24px;
-  border: none;
-  background-color: var(--fi-bg-main);
-  color: var(--fi-primary);
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  width: 140px;
+  height: 56px;
+  background-color: #c2e7ff;
+  color: #001d35;
+  border-radius: 16px;
+  border: none;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s;
-  border: 1px solid var(--fi-border);
-  margin-bottom: 12px;
+  transition:
+    box-shadow 0.2s,
+    background-color 0.2s;
+  font-family: inherit;
 }
 
 .fi-compose-btn:hover {
-  background-color: var(--fi-bg-hover);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
-}
-
-.fi-compose-btn:active {
-  transform: translateY(0);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  background-color: #b3d7ef;
 }
 
 .fi-compose-icon {
+  margin-right: 12px;
   display: flex;
   align-items: center;
+}
+
+.fi-compose-text {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* --- Nav Groups --- */
+.fi-nav-group {
+  margin-bottom: 24px;
+}
+
+.fi-nav-title {
+  padding-left: 26px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fi-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .fi-nav-list {
@@ -76,39 +73,51 @@
   gap: 2px;
 }
 
+/* --- Nav Items --- */
 .fi-nav-item {
   display: flex;
   align-items: center;
-  padding: 12px 24px;
+  height: 36px;
+  padding: 0 12px 0 26px;
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
   text-decoration: none;
-  color: var(--fi-text-secondary);
-  border-radius: 0 24px 24px 0;
-  margin-right: 12px;
+  color: var(--fi-text-primary);
+  transition: background-color 0.15s;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
 }
 
 .fi-nav-item:hover {
-  background-color: var(--fi-bg-hover);
-  color: var(--fi-text-primary);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .fi-nav-item.fi-active {
-  background-color: #e8f0fe;
-  color: var(--fi-primary);
+  background-color: #d3e3fd; /* Active blue tint */
+  color: #001d35;
   font-weight: 700;
-}
-
-[data-theme='dark'] .fi-nav-item.fi-active {
-  background-color: #174ea6;
-  color: #8ab4f8;
 }
 
 .fi-nav-icon {
   margin-right: 16px;
-  width: 24px;
-  text-align: center;
+  opacity: 0.7;
+  width: 20px;
   display: flex;
   justify-content: center;
+}
+
+.fi-nav-item.fi-active .fi-nav-icon {
+  opacity: 1;
+}
+
+/* --- Footer --- */
+.fi-sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 12px;
 }

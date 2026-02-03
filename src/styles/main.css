@@ -6,9 +6,11 @@
 @import './emailList.css';
 @import './threadPanel.css';
 @import './toast.css';
+@import './modal.css';
+@import './bundles.css';
 
 /* Global resets or base styles for injected components */
 .fi-root {
   font-family: 'Google Sans', Roboto, Arial, sans-serif;
   color: var(--fi-text-primary);
-}/* Force reload */
+}

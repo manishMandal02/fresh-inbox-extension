@@ -1,0 +1,28 @@
+/* 
+  BUNDLE VISUALS
+  Applied when body has .fi-view-[bundle] class
+*/
+
+/* Finance Bundle - Green Tint */
+.fi-view-finance .zA {
+  border-left: 4px solid #188038 !important; /* Google Green */
+}
+.fi-view-finance .nA {
+  /* The legacy checkboxes */
+  background-color: rgba(24, 128, 56, 0.05) !important;
+}
+
+/* Updates Bundle - Orange Tint */
+.fi-view-updates .zA {
+  border-left: 4px solid #f29900 !important; /* Google Yellow/Orange */
+}
+
+/* Promos Bundle - Blue/Purple Tint */
+.fi-view-promos .zA {
+  border-left: 4px solid #1a73e8 !important; /* Google Blue */
+}
+
+/* Header/Title Injection (Pseudo-element on the list container?) 
+   Hard to do robustly without DOM injection. 
+   We rely on the colored borders to indicate context.
+*/

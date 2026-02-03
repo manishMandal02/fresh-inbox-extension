@@ -1,173 +1,607 @@
 /* 
-  GMAIL UI OVERRIDES - CARD STYLE V3 (POLISHED)
+  FRESH INBOX - MAIN OVERRIDES (PREMIUM)
+  Strategy: "Hybrid Injection" - Enhance existing native elements.
 */
 
 :root {
-  --fi-bg-body: #f6f8fc;
-  --fi-bg-card: #ffffff;
-  --fi-bg-sidebar: #f6f8fc;
-  --fi-text-primary: #202124;
+  /* --- PALETTE (Modern & Clean) --- */
+  --fi-bg-base: #f0f2f5;
+  --fi-bg-surface: #ffffff;
+  --fi-bg-sidebar: #f0f2f5;
+  --fi-bg-hover: #f5f7fa;
+
+  --fi-text-primary: #1a1a1a;
   --fi-text-secondary: #5f6368;
-  --fi-text-date: #80868b;
-  --fi-font-family: 'Google Sans', Roboto, Helvetica, Arial, sans-serif;
-  --fi-radius: 16px; /* Increased radius for modern look */
+  --fi-text-tertiary: #9aa0a6;
+
+  --fi-accent: #2d2d2d; /* Minimalist Black Accent */
+  --fi-accent-light: #e8eaed;
+
+  --fi-font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --fi-radius: 12px;
+  --fi-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.1);
+  --fi-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Global Backgrounds */
-body, .wl, .aoI, .vp, .ha {
-  background-color: var(--fi-bg-body) !important;
+/* --- 1. SCAFFOLDING & CLEANUP --- */
+
+/* Hide Native Sidebar (but keep structure for injection) */
+.aeN .ajl {
+  display: none !important;
+} /* Native Navigation List */
+.aeN .T-I-KE {
+  display: none !important;
+} /* Native Compose Button */
+.aeN .n3 {
+  display: none !important;
+} /* Native Links */
+
+/* Global Background */
+body,
+.wl,
+.aoI,
+.vp,
+.ha {
+  background-color: var(--fi-bg-base) !important;
+  font-family: var(--fi-font-main) !important;
 }
 
-/* Remove table borders & spacing */
-table.F {
+/* --- 2. SIDEBAR CONTAINER --- */
+.aeN {
+  background-color: var(--fi-bg-sidebar) !important;
+  border-right: none !important;
+  padding-top: 16px !important;
+}
+
+/* --- 2b. ACTION TOOLBAR & PAGINATION --- */
+
+/* The Main Toolbar Container top of the list */
+.G-atb {
+  background-color: var(--fi-bg-base) !important; /* Match background */
+  border: none !important;
+  box-shadow: none !important;
+  padding: 8px 16px 4px 16px !important;
+  margin-bottom: 0 !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+}
+
+/* Toolbar Buttons (Refresh, More, etc) */
+.G-atb .T-I {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--fi-text-secondary) !important;
+  border-radius: 8px !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  padding: 0 4px !important;
+  margin-right: 4px !important;
+}
+
+.G-atb .T-I:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  color: var(--fi-text-primary) !important;
+}
+
+/* Checkbox in Toolbar */
+.G-atb .T-Jo {
+  opacity: 0.5 !important;
+}
+.G-atb .T-Jo:hover {
+  opacity: 1 !important;
+}
+
+/* Pagination Text (1-50 of 1000) */
+.G-atb .Dj {
+  color: var(--fi-text-secondary) !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+}
+
+/* Pagination Arrows */
+.G-atb .amD,
+.G-atb .amF,
+.G-atb .aad {
+  opacity: 0.6 !important;
+}
+.G-atb .amD:hover,
+.G-atb .amF:hover,
+.G-atb .aad:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  border-radius: 50% !important;
+  opacity: 1 !important;
+}
+
+/* 5. DYNAMIC AVATAR STYLES (Injected via JS) */
+.fi-avatar {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+
+  width: 32px !important; /* Compact Size */
+  height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  color: #fff !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  font-family: var(--fi-font-main) !important;
+  text-transform: uppercase !important;
+
+  z-index: 2 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  pointer-events: none !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+/* --- 2c. CATEGORIES (TABS) - MERGED LOOK --- */
+/* The Container */
+.aKh {
+  background-color: var(--fi-bg-base) !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  height: 48px !important;
+}
+
+/* The Individual Tabs */
+.aKz {
+  border: none !important;
+  background: transparent !important;
+  color: var(--fi-text-secondary) !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  box-shadow: none !important;
+  padding: 0 16px !important;
+  opacity: 0.7 !important;
+}
+
+/* Active Tab */
+.aKz.J-KL {
+  border-bottom: 3px solid var(--fi-text-primary) !important;
+  color: var(--fi-text-primary) !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+  background: transparent !important;
+}
+
+/* Hover Tab */
+.aKz:hover {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+  opacity: 1 !important;
+  color: var(--fi-text-primary) !important;
+}
+
+/* Hide the ugly "Social/Promotions" icons if desired, or keep them minimal */
+.aKz .aKt {
+  display: none !important; /* Hiding the icons for a cleaner text-only look */
+}
+
+/* --- 3. THE EMAIL LIST (MODERN CARD UI) --- */
+
+/* The Table Container - NARROW & SPACED (FORCE UPDATE) */
+table.F,
+table.TL,
+table[role='grid'] {
   border-collapse: separate !important;
-  border-spacing: 0 10px !important; /* Increased vertical gap */
-  padding: 0 20px !important; /* Global side padding */
+  border-spacing: 0 16px !important; /* Huge gap (16px) */
+  padding: 0 64px !important;
+  background: transparent !important;
 }
 
-/* --- THE CARD (ROW) --- */
+/* Ensure tbody doesn't block spacing */
+table.F tbody,
+table.TL tbody {
+  background: transparent !important;
+}
+
+/* The Card (Row) */
 tr.zA {
-  background-color: var(--fi-bg-card) !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
-  border-radius: var(--fi-radius) !important;
-  transition: box-shadow 0.2s ease, transform 0.2s ease !important;
-  cursor: pointer !important;
+  background-color: var(--fi-bg-surface) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important; /* Subtle base shadow */
+  border-radius: 12px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important; /* Subtle border */
+  margin-top: 8px !important;
+  position: relative !important; /* Context for absolute actions */
+  z-index: 1 !important;
+  /* overflow: hidden !important; PROPERLY contain everything inside the card */
+  /* transform: translateZ(0) !important;  Force GPU layer / Containing Block context */
+  will-change: transform !important; /* Helper for context */
 }
 
 /* Hover State */
 tr.zA:hover {
-  box-shadow: 0 6px 16px rgba(0,0,0,0.08) !important;
-  transform: translateY(-2px) !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08) !important; /* Lift effect */
   z-index: 10 !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Selected State */
+tr.x7 {
+  background-color: #e8f0fe !important;
+  box-shadow: none !important;
+}
+
+/* Unread State */
+tr.zE {
   background-color: #fff !important;
 }
-
-/* Selected/Checked State */
-tr.x7 {
-  background-color: #e8f0fe !important; /* Light blue tint */
-  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.2) !important;
+tr.zE td {
+  font-weight: 600 !important;
+  color: var(--fi-text-primary) !important;
 }
 
-/* --- CELL POLISH --- */
+/* --- CELL TWEAKS (ULTRA COMPACT) --- */
 tr.zA td {
-  padding-top: 14px !important;
-  padding-bottom: 14px !important;
+  padding-top: 2px !important; /* Ultra Compact */
+  padding-bottom: 2px !important;
   border-bottom: none !important;
-  vertical-align: middle !important; /* Ensure vertical centering */
+  vertical-align: middle !important;
+  height: 40px !important; /* Force row height */
 }
 
-/* Left Edge (Checkbox) */
+/* Fix specific alignment for Actions and Calendar */
+tr.zA td.bq4,
+tr.zA td.yX,
+tr.zA td.xW {
+  vertical-align: middle !important;
+  height: 40px !important;
+}
+
+/* Star Cell - ZERO WIDTH (Ghost Column) */
+tr.zA td.apU {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important; /* Allow star to float out */
+}
+
+/* The Action Button Container - FLOATING OVERLAY */
+/* 
+   We collapse the cell (td) so it takes 0 width in the table flow, 
+   allowing the Subject to extend fully. 
+   Then we position the container (.bq4) comfortably on the right.
+*/
+tr.zA td.bq4 {
+  /* Absolute Position the entire CELL */
+  position: absolute !important;
+  right: 0 !important;
+  top: 0 !important;
+  height: 100% !important;
+  width: auto !important;
+
+  display: flex !important;
+  align-items: center !important;
+  padding-right: 8px !important;
+  padding-left: 24px !important; /* Gradient fade space */
+
+  /* Background Mask (Solid White for now, or use gradient) */
+  background: linear-gradient(to right, transparent, var(--fi-bg-surface) 20%) !important;
+
+  opacity: 0 !important;
+  transition: opacity 0.1s ease-in-out !important;
+  z-index: 10 !important;
+  border-top-right-radius: 12px !important;
+  border-bottom-right-radius: 12px !important;
+  pointer-events: none !important; /* Allow clicks through when hidden */
+}
+
+/* Ensure inner content is visible and interactive */
+tr.zA td.bq4 > * {
+  pointer-events: auto !important;
+}
+
+/* Show Actions on Row Hover */
+tr.zA:hover td.bq4,
+tr.zA:focus-within td.bq4 {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* First/Last Radius Fixes for the Row */
 tr.zA td:first-child {
-  border-top-left-radius: var(--fi-radius) !important;
-  border-bottom-left-radius: var(--fi-radius) !important;
-  padding-left: 20px !important; /* More breathing room */
+  border-top-left-radius: 16px !important;
+  border-bottom-left-radius: 16px !important;
 }
-
-/* Right Edge (Date) */
 tr.zA td:last-child {
-  border-top-right-radius: var(--fi-radius) !important;
-  border-bottom-right-radius: var(--fi-radius) !important;
-  padding-right: 24px !important; /* More breathing room */
+  border-top-right-radius: 16px !important;
+  border-bottom-right-radius: 16px !important;
 }
 
-/* --- TYPOGRAPHY --- */
+/* --- 4. AVATAR / CHECKBOX LOGIC (CLEAN & VISIBLE) --- */
 
-/* Sender */
-.yX {
-  font-family: var(--fi-font-family) !important;
+/* 1. The Cell containing the checkbox */
+tr.zA td:has(.T-Jo) {
+  position: relative !important;
+  width: 56px !important; /* slightly reduce width for compact look */
+  min-width: 56px !important;
+
+  /* Flexbox is the only reliable way to center vertically in Gmail's quirky table rows */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  min-height: 40px !important; /* Matches row height */
+
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* 3. The Native Checkbox (Clickable Overlays) */
+.T-Jo {
+  opacity: 0 !important;
+  z-index: 5 !important; /* Sits ON TOP of avatar */
+
+  /* Absolute positioning to prevent movement/layout shift */
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+
+  margin: 0 !important;
+  cursor: pointer !important;
+}
+
+/* 4. Hover/Selected State logic */
+
+/* When hovering row or selected, transform the Avatar into a "Grey Checkbox Background" */
+tr.zA:hover .fi-avatar,
+tr.x7 .fi-avatar,
+tr.zA:has(.T-Jo-Jp) .fi-avatar {
+  background-color: #dadce0 !important; /* Grey Background */
+  color: transparent !important; /* Hide Initials */
+  box-shadow: none !important;
+  transform: translate(-50%, -50%) scale(1) !important; /* Ensure centered transform persists */
+  opacity: 1 !important; /* Keep visible as background */
+}
+
+/* Hide fallback pseudo if any (redundant safety) */
+tr.zA:hover td:has(.T-Jo)::before,
+tr.x7 td:has(.T-Jo)::before,
+tr.zA:has(.T-Jo-Jp) td:has(.T-Jo)::before {
+  display: none !important;
+}
+
+tr.zA:hover .T-Jo,
+tr.x7 .T-Jo,
+.T-Jo-Jp {
+  opacity: 1 !important;
+  transform: translate(-50%, -50%) scale(1) !important; /* Keep centered */
+}
+
+/* Drag Indicator - Hide */
+.PF {
+  display: none !important;
+}
+
+/* --- STAR LOGIC: TOTAL REPLACEMENT (Custom SVGs) --- */
+
+/* 1. Container Setup */
+.T-KT {
+  transition: opacity 0.1s ease-out !important;
+  will-change: opacity !important;
+
+  /* Reset Absolute Positioning */
+  position: static !important;
+  right: auto !important;
+  top: auto !important;
+  transform: none !important;
+
+  /* Flex Layout Specs */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  /* Fixed Dimensions */
+  width: 20px !important;
+  min-width: 20px !important;
+  height: 20px !important;
+  flex: 0 0 20px !important;
+
+  margin-left: 3px !important;
+  padding: 0 !important;
+
+  z-index: 100 !important;
+  order: 99 !important;
+
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+/* 2. Hide Native Star Image PERMANENTLY (Image inside button) */
+.T-KT img {
+  display: none !important;
+}
+
+/* 
+   HIDE ORIGINAL STAR BUTTON PERMANENTLY (.apU is the native star column)
+   We must hide it via CSS to prevent 'Flicker' or 'Double Stars' during row re-renders.
+   The Proxy Star (in sender cell) is now the ONLY star.
+*/
+tr.zA td.apU .T-KT {
+  display: none !important;
+  width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* 3. The Custom Icon Layer (using ::before) */
+.T-KT::before {
+  content: '' !important;
+  display: block !important;
+  width: 20px !important;
+  height: 20px !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+  pointer-events: none !important; /* Pass clicks to parent */
+}
+
+/* --- STATE 1: UNSTARRED (Outline / Grey) --- */
+/* Strictly Target: NOT checked AND NOT having the starred class */
+.T-KT:not([aria-checked='true']):not(.T-KT-Jp)::before {
+  /* Star Outline SVG (Grey) */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='20' viewBox='0 -960 960 960' width='20' fill='%235f6368'%3E%3Cpath d='m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z'/%3E%3C/svg%3E") !important;
+}
+
+/* Unstarred Visibility: Hidden by default */
+.T-KT:not([aria-checked='true']):not(.T-KT-Jp) {
+  opacity: 0 !important;
+}
+
+/* Unstarred Visibility: Show 70% on Row Hover */
+tr.zA:hover .T-KT:not([aria-checked='true']):not(.T-KT-Jp) {
+  opacity: 0.7 !important;
+  visibility: visible !important;
+}
+
+/* Unstarred Visibility: Show 100% on Star Hover */
+tr.zA:hover .T-KT:not([aria-checked='true']):not(.T-KT-Jp):hover {
+  opacity: 1 !important;
+}
+
+/* --- STATE 2: STARRED (Filled / Yellow) --- */
+/* Target either Aria Checked OR the special class */
+.T-KT[aria-checked='true'],
+.T-KT.T-KT-Jp {
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  /* STRICTLY MATCH UNSTARRED DIMENSIONS to prevent jumps */
+  width: 20px !important;
+  min-width: 20px !important;
+  flex: 0 0 20px !important;
+  height: 20px !important;
+  padding: 0 !important;
+  margin-left: 3px !important;
+}
+
+.T-KT[aria-checked='true']::before,
+.T-KT.T-KT-Jp::before {
+  /* Star Filled SVG (Yellow/Orange) */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='20' viewBox='0 -960 960 960' width='20' fill='%23f4b400'%3E%3Cpath d='m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z'/%3E%3C/svg%3E") !important;
+
+  opacity: 1 !important;
+}
+
+/* Sender Name - Natural Width + Flex */
+/* We target the class injected by JS (.fi-sender-cell) OR fallbacks */
+/* Sender Name - Natural Width + Flex */
+/* We target the class injected by JS (.fi-sender-cell) OR fallbacks */
+/* Sender Name - Natural Width + Flex */
+/* We target the class injected by JS (.fi-sender-cell) OR fallbacks */
+.yX,
+td.fi-sender-cell {
+  font-weight: 600 !important;
+  color: var(--fi-text-primary) !important;
   font-size: 15px !important;
-  color: var(--fi-text-primary) !important;
-  font-weight: 500 !important;
-  padding-right: 16px !important;
+  white-space: nowrap !important;
+
+  /* RESTORE FIXED WIDTH for Alignment */
+  width: 168px !important;
+  min-width: 168px !important;
+  max-width: 168px !important;
+
+  /* Make cell a flex container for Name + Star */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important; /* Pack items to left */
+  overflow: visible !important; /* Allow star to be seen if close to edge */
 }
 
-/* Subject (The actual title) */
+/* Constrain the text container (.yX div, span, or the moved wrapper) inside the Flex TD */
+td.fi-sender-cell > div,
+td.fi-sender-cell > span,
+.yX {
+  flex: 0 1 auto !important; /* DONT GROW, Just shrink */
+  width: auto !important;
+  min-width: 0 !important; /* Allow shrinking below content */
+  max-width: calc(100% - 24px) !important; /* FORCE ROOM FOR STAR */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Ensure the span inside .yX doesn't shrink awkwardly */
+.yX span,
+.yX div {
+  white-space: nowrap !important;
+}
+
+/* Subject */
 .bog {
-  font-family: var(--fi-font-family) !important;
-  font-size: 14px !important;
+  font-weight: 500 !important;
   color: var(--fi-text-primary) !important;
-  font-weight: 600 !important; /* Bolder subject */
-  margin-right: 8px !important;
+  font-size: 14px !important;
 }
 
-/* Snippet (The preview text) */
+/* Snippet */
 .y2 {
-  color: var(--fi-text-secondary) !important;
+  color: var(--fi-text-tertiary) !important;
   font-weight: 400 !important;
-  font-size: 14px !important;
 }
 
 /* Date */
 .xW {
-  font-family: var(--fi-font-family) !important;
+  color: var(--fi-text-tertiary) !important;
   font-size: 12px !important;
-  color: var(--fi-text-date) !important;
   font-weight: 500 !important;
 }
 
-/* --- UNREAD STATE --- */
-tr.zE {
-  background-color: #ffffff !important;
+/* --- ATTACHMENTS (Compact Chips) --- */
+.brd {
+  margin-top: 4px !important;
+}
+.brc,
+.bzB {
+  height: 24px !important; /* NANO Size */
+  line-height: 16px !important;
+  padding: 2px 4px !important;
+  border-radius: 8px !important;
+  margin-top: 1px !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
-/* The Blue Bar Indicator */
-tr.zE td:first-child {
-  /* Instead of a border which shifts content, use box-shadow inset */
-  box-shadow: inset 4px 0 0 0 #1a73e8 !important; 
+/* Attachment Icon */
+.brc img,
+.brc .brf {
+  width: 12px !important;
+  height: 12px !important;
+  opacity: 0.85 !important;
+  /* background-size: 10px !important; */
+  margin-right: 4px !important;
 }
 
-tr.zE .yX, tr.zE .bog {
-  font-weight: 800 !important; /* Extra bold for unread */
-  color: #000 !important;
+/* Attachment file name */
+.brc .brg {
+  font-size: 10px !important;
 }
 
-tr.zE .xW {
-  color: #1a73e8 !important; /* Blue date for unread */
-  font-weight: 700 !important;
-}
-
-/* --- SIDEBAR POLISH (Keeping previous fixes) --- */
-.aeN { background-color: var(--fi-bg-sidebar) !important; }
-
-.T-I-KE {
-  background-color: #c2e7ff !important;
-  color: #001d35 !important;
+/* --- 5. ACTION BUTTONS (Hover Actions) --- */
+.bA {
+  background: transparent !important;
   box-shadow: none !important;
-  border-radius: 16px !important;
-  height: 56px !important;
-  min-width: 140px !important;
-  font-weight: 600 !important;
-  font-family: var(--fi-font-family) !important;
-  margin-left: 8px !important;
 }
-
-.aeN .n3, .n6 .n3 {
-  border-radius: 0 24px 24px 0 !important;
-  margin-right: 16px !important;
-  padding-left: 24px !important;
-  height: 40px !important;
-  display: block !important;
-  padding: 0 !important;
+/* Icons in hover menu */
+.bA .T-I {
+  opacity: 0.6 !important;
 }
-
-.aeN .n3 > .n2, .n6 .n3 > a {
-  display: flex !important;
-  align-items: center !important;
-  height: 100% !important;
-  padding-left: 26px !important;
-  text-decoration: none !important;
-}
-
-.aeN .n3 .qj, .n6 .n3 .qj {
-  margin: 0 18px 0 0 !important;
-  width: 20px !important;
-  height: 20px !important;
-  opacity: 0.7 !important;
-}
-
-.aeN .n3 .bsU, .n6 .n3 .bsU {
-  color: var(--fi-text-primary) !important;
-  font-weight: 600 !important;
-  margin-left: auto !important;
-  padding-right: 12px !important;
+.bA .T-I:hover {
+  opacity: 1 !important;
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  border-radius: 50% !important;
 }

@@ -1,5 +1,3 @@
-import { dom } from '../utils/dom';
-
 export class GmailActions {
   /**
    * Execute a search in Gmail.
@@ -13,6 +11,16 @@ export class GmailActions {
       input.dispatchEvent(new Event('input', { bubbles: true }));
       input.dispatchEvent(new Event('focus', { bubbles: true }));
       btn.click();
+    }
+  }
+
+  refresh(): void {
+    // Try native refresh button (often div with act="20" or .nu)
+    const refreshBtn = document.querySelector('div[act="20"], .nu[role="button"]') as HTMLElement;
+    if (refreshBtn) {
+      refreshBtn.click();
+    } else {
+      window.location.reload();
     }
   }
 
@@ -41,37 +49,57 @@ export class GmailActions {
     return true;
   }
 
-  archiveSelected(): boolean { return this.clickToolbarButton('Archive'); }
-  deleteSelected(): boolean { return this.clickToolbarButton('Delete'); }
-  markAsRead(): boolean { return this.clickToolbarButton('Mark as read') || this.clickToolbarButton('Mark as unread'); }
-  snooze(): boolean { return this.clickToolbarButton('Snooze'); }
-  
+  archiveSelected(): boolean {
+    return this.clickToolbarButton('Archive');
+  }
+  deleteSelected(): boolean {
+    return this.clickToolbarButton('Delete');
+  }
+  markAsRead(): boolean {
+    return this.clickToolbarButton('Mark as read') || this.clickToolbarButton('Mark as unread');
+  }
+  snooze(): boolean {
+    return this.clickToolbarButton('Snooze');
+  }
+
   toggleStar(threadId: string): boolean {
-    const row = document.querySelector(`tr[data-thread-id="${threadId}"]`) || 
-                document.querySelector(`tr[data-legacy-thread-id="${threadId}"]`);
+    const row =
+      document.querySelector(`tr[data-thread-id="${threadId}"]`) ||
+      document.querySelector(`tr[data-legacy-thread-id="${threadId}"]`);
     if (!row) return false;
-    
-    const starBtn = row.querySelector('[role="checkbox"]').parentElement.parentElement.querySelector('.T-KT') as HTMLElement;
+
+    const starBtn = row
+      .querySelector('[role="checkbox"]')
+      ?.parentElement?.parentElement?.querySelector('.T-KT') as HTMLElement;
+
     if (starBtn) {
-        starBtn.click();
-        return true;
+      starBtn.click();
+      return true;
     }
     return false;
   }
 
   performOpenedAction(action: 'archive' | 'delete' | 'read' | 'snooze' | 'star'): boolean {
     switch (action) {
-      case 'archive': return this.archiveSelected();
-      case 'delete': return this.deleteSelected();
-      case 'read': return this.markAsRead();
-      case 'snooze': return this.snooze();
+      case 'archive':
+        return this.archiveSelected();
+      case 'delete':
+        return this.deleteSelected();
+      case 'read':
+        return this.markAsRead();
+      case 'snooze':
+        return this.snooze();
       case 'star': {
-          // In opened thread, star is usually at the top right of the message
-          const starBtn = document.querySelector('.T-KT') as HTMLElement;
-          if (starBtn) { starBtn.click(); return true; }
-          return false;
+        // In opened thread, star is usually at the top right of the message
+        const starBtn = document.querySelector('.T-KT') as HTMLElement;
+        if (starBtn) {
+          starBtn.click();
+          return true;
+        }
+        return false;
       }
-      default: return false;
+      default:
+        return false;
     }
   }
 
@@ -79,7 +107,11 @@ export class GmailActions {
     const toolbars = Array.from(document.querySelectorAll('.G-atb:not([style*="display: none"])'));
     const allButtons: HTMLElement[] = [];
     toolbars.forEach(t => {
-      allButtons.push(...(Array.from(t.querySelectorAll('[role="button"], [role="menuitem"], .T-I, [aria-label], [title]')) as HTMLElement[]));
+      allButtons.push(
+        ...(Array.from(
+          t.querySelectorAll('[role="button"], [role="menuitem"], .T-I, [aria-label], [title]')
+        ) as HTMLElement[])
+      );
     });
 
     const searchTerms = [ariaLabelPart.toLowerCase()];
@@ -94,7 +126,8 @@ export class GmailActions {
     });
 
     if (target) {
-      const mouseEvent = (type: string) => new MouseEvent(type, { bubbles: true, cancelable: true, view: window, buttons: 1 });
+      const mouseEvent = (type: string) =>
+        new MouseEvent(type, { bubbles: true, cancelable: true, view: window, buttons: 1 });
       target.dispatchEvent(mouseEvent('mousedown'));
       target.dispatchEvent(mouseEvent('mouseup'));
       target.click();
