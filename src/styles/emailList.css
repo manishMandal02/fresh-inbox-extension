@@ -201,6 +201,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   color: var(--fi-text-secondary);
+}
+
+/* Star Button Logic: only show outline (unstarred) on hover */
+.fi-action-btn[data-action='star']:not(.fi-starred) {
+  opacity: 0;
+}
+.fi-email-card:hover .fi-action-btn[data-action='star'] {
+  opacity: 1 !important;
 }

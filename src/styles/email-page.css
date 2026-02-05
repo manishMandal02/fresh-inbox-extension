@@ -1,0 +1,250 @@
+/* ==========================================================================
+   EMAIL PAGE STYLING (The Reading Pane)
+   Overrides for the open email view ("Thread View").
+   ========================================================================== */
+
+/* 1. LAYOUT & CONSTRAINTS - "Focused Reading Mode" */
+/* Gmail Structure: .Nh (Wrapper) > .aoI (Scroll Area) > .hC (Content) */
+
+/* Ensure the scroll area background is transparent so we can see the main bg */
+body .Nh .aoI {
+  background-color: transparent !important;
+}
+
+body .h7,
+body .kv {
+  padding: 0 50px !important;
+}
+
+body .Nh .aoI .hC,
+body .Nh .aoI .h7 {
+  max-width: 750px !important; /* Slightly narrower for better reading */
+  margin: 0 auto !important;
+  padding: 0 48px !important;
+}
+
+/* Ensure main background is light grey for "Card" contrast */
+body .Nh {
+  background-color: #f0f2f5 !important;
+}
+
+/* 3. SUBJECT LINE CLEANUP */
+/* Target the Subject Title (.hP) and its containers (.if, .Ha) */
+body .if,
+body .ha,
+body .hP {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* ... (Skipping unaffected lines) ... */
+
+/* 7. GENERAL POLISH & "CARD" UI for Messages */
+/* .gs = Message Wrapper, .adn = Message Content */
+
+/* Spacing */
+body .gs {
+  margin-bottom: 24px !important;
+}
+
+/* Message Card */
+body .gs .adn {
+  border: 1px solid #dadce0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important; /* "Pop" effect */
+  border-radius: 12px !important;
+  background: white !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+/* Avatar Container Spacing in open message */
+body .qt {
+  margin-right: 16px !important;
+  padding-top: 4px !important;
+}
+
+/* 8. HIDE RIGHT-SIDE ADS/SIDEBAR IN THREAD */
+body .y3 {
+  width: auto !important;
+}
+
+/* 9. REPLY BOX POLISH */
+body .ip {
+  border-radius: 16px !important;
+  border: 1px solid #dadce0 !important;
+  overflow: hidden !important;
+}
+
+/* Attachment file name */
+.brc .brg {
+  font-size: 11px !important;
+}
+
+/* 10. SENDER LAYOUT: STACK NAME & EMAIL */
+/* Use Block layout instead of Flex to ensure natural flow and container expansion */
+
+/* Wrapper (.gE) - Allow it to grow height */
+body .gE {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  height: auto !important;
+  vertical-align: top !important; /* Critical: Aligns "to me" with Name (Top), not Email (Bottom) */
+  line-height: normal !important;
+}
+
+/* Sender Name - First Line */
+body .gD {
+  display: block !important;
+  font-weight: 700 !important;
+  color: #202124 !important;
+  font-size: 15px !important;
+  line-height: 1.4 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Sender Email - Second Line */
+body .go {
+  display: block !important;
+  color: #5f6368 !important;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+  margin-top: 1px !important;
+}
+
+/* 11. HIDE METADATA CLUTTER */
+/* Hide "to me" details (.hb) and the "Show details" arrow (.ajy) */
+body .hb,
+body .ajy,
+body .g2 {
+  display: none !important;
+}
+
+/* 11. HIDE EMOJI BUTTON (Comprehensive) */
+/* Hide ALL "Add reaction" buttons in the thread view, including the one after the star */
+body .Nh .aoI [aria-label='Add reaction'],
+body .Nh .aoI [data-tooltip='Add reaction'],
+body .Nh .aoI .T-I-ax7[aria-label='Add reaction'] {
+  display: none !important;
+}
+/* Also target the specific container that sits after star often */
+body .ac5 .T-I-ax7 {
+  display: none !important;
+}
+
+/* 13. HIDE DUPLICATE REPLY BUTTON (Header) */
+body .DILLkc,
+body .Nh .aoI .acZ [aria-label='Reply'],
+body .Nh .aoI .acZ [data-tooltip='Reply'],
+body .Nh .aoI .gK [aria-label='Reply'] {
+  display: none !important;
+}
+
+/* 12. BODY CONTENT SPACING */
+/* Add space between sender details (Header) and the Email Body */
+body .a3s {
+  padding-top: 24px !important;
+}
+
+/* 14. COMPACT BOTTOM REPLY SECTION */
+/* The container for Reply/Forward buttons */
+body .ams {
+  margin: 16px 0 0 0 !important;
+  padding: 16px 0 0 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+
+  /* Divider */
+  border-top: 1px solid #bdc1c6 !important; /* Slightly darker for visibility */
+  width: auto !important; /* Fix: Don't force 100% width if it breaks children */
+
+  /* STRICT FLEX ROW */
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  flex-wrap: nowrap !important;
+}
+
+/* The Buttons (Reply / Reply all / Forward) */
+body .amr .amn > .ams,
+body .ams .bkH,
+body .ams .bkI,
+body .ams .jA .bkG {
+  height: 32px !important;
+  line-height: 30px !important;
+  padding: 0 16px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  font-family: 'Google Sans', Roboto, sans-serif !important;
+  color: #444746 !important;
+
+  background-color: #fff !important;
+  border: 1px solid #dadce0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  text-transform: none !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: auto !important;
+  min-width: auto !important;
+  flex: 0 0 auto !important; /* Don't grow/shrink */
+
+  margin: 0 8px 0 0 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+body .amr .amn > .ams:hover,
+body .ams .bkH:hover,
+body .ams .bkI:hover,
+body .ams .jA .bkG:hover {
+  background-color: #fff !important;
+  border-color: #c1c1c1 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-1px) !important;
+  color: #1a1a1a !important;
+  z-index: 1 !important;
+}
+
+/* Fix vertical alignment of the emoji button next to reply */
+/* Using user-identified selector .LS5phe */
+body .LS5phe,
+body .ams .T-I-ax7 {
+  height: 32px !important;
+  width: 32px !important;
+  min-width: 32px !important;
+  line-height: 32px !important;
+
+  vertical-align: middle !important;
+  margin: 0 !important; /* Reset margins */
+
+  /* Match the Chip Button Style (Circular) */
+  border: 1px solid #c1c1c1 !important;
+  background-color: #fff !important;
+  /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important; */
+  border-radius: 50% !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+body .LS5phe:hover,
+body .ams .T-I-ax7:hover {
+  background-color: #fff !important;
+  border-color: #c1c1c1 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-1px) !important;
+  color: #1a1a1a !important;
+  z-index: 1 !important;
+}
+
+/* The "Click here to reply" placeholder box */
+/* We hide this because we have the modern Buttons/Chips below */
+body .ip {
+  display: none !important;
+}

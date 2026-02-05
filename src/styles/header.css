@@ -65,6 +65,7 @@ body div:has(> a[aria-label*='Google Account']) {
   justify-content: flex-end !important;
   gap: 4px !important;
   padding-right: 8px !important;
+  pointer-events: none !important; /* GHOSTBUSTERS: Don't block clicks underneath! */
 }
 
 /* Items to HIDE by default (Collapse functionality) */
@@ -78,6 +79,7 @@ body div:has(> [aria-label*='Google Account']) [aria-label*='Support'] {
   overflow: hidden !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   pointer-events: none !important;
+  visibility: hidden !important; /* SAFETY: Ensure it can't be clicked */
 }
 
 /* REVEAL on HOVER of the Container */
@@ -88,6 +90,7 @@ body div:has(> [aria-label*='Google Account']):hover [aria-label*='Support'] {
   max-width: 40px !important; /* Restore width */
   pointer-events: auto !important;
   margin: 0 4px !important;
+  visibility: visible !important; /* Restore visibility */
 }
 
 /* Items to KEEP VISIBLE (Avatar & Side Panel Arrow) */
@@ -96,4 +99,47 @@ body [aria-label*="Side panel"],  /* The Arrow */
 body [aria-label*="side panel"] {
   opacity: 1 !important;
   z-index: 10 !important;
+  pointer-events: auto !important; /* Restore clicks */
+}
+
+/* 6. COMPACT SEARCH DROPDOWN & SUGGESTIONS */
+/* Establish High Z-Index for all search related popups */
+body .gssb_c, /* Suggestions Dropdown */
+body .ZF-Av,  /* Advanced Search Modal (Filter Options) */
+body .gkpD8e, /* Alternative Modal wrapper */
+body [role="listbox"][style*="position: absolute"] {
+  z-index: 99999 !important; /* Force above everything (Nuclear Option) */
+}
+
+/* Center and Constrain the Search Filter Modal */
+body .ZF-Av,
+body .gkpD8e {
+  max-width: 480px !important;
+  width: 480px !important;
+  min-width: 480px !important;
+
+  /* Center Relative to Body/Screen since it's absolute */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+
+  /* Visuals */
+  border-radius: 16px !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  top: 70px !important; /* Hardcode top to sit below pill */
+}
+
+/* Constrain Suggestions Dropdown too */
+body .gssb_c {
+  max-width: 480px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  left: 0 !important;
+  right: 0 !important; /* Trick to center if parent allows, or use transform if body-relative */
+}
+
+/* If suggestions are body-relative, force transform centering */
+body > .gssb_c {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
 }

@@ -64,7 +64,7 @@ body,
   margin-bottom: 0 !important;
   position: sticky !important;
   top: 0 !important;
-  z-index: 100 !important;
+  z-index: 4 !important;
 }
 
 /* Toolbar Buttons (Refresh, More, etc) */
@@ -225,7 +225,7 @@ tr.zA {
 tr.zA:hover {
   background-color: #ffffff !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08) !important; /* Lift effect */
-  z-index: 10 !important;
+  z-index: 2 !important; /* Low Z-Index: Just enough to be above other rows (1), but below modals (100+) */
   border-color: rgba(0, 0, 0, 0.1) !important;
   transform: translateY(-1px) !important;
 }
@@ -459,8 +459,8 @@ tr.zA td.apU .T-KT {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='20' viewBox='0 -960 960 960' width='20' fill='%235f6368'%3E%3Cpath d='m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z'/%3E%3C/svg%3E") !important;
 }
 
-/* Unstarred Visibility: Hidden by default */
-.T-KT:not([aria-checked='true']):not(.T-KT-Jp) {
+/* Unstarred Visibility: Hidden by default (SCOPED TO LIST ROW) */
+tr.zA .T-KT:not([aria-checked='true']):not(.T-KT-Jp) {
   opacity: 0 !important;
 }
 
@@ -501,16 +501,16 @@ tr.zA:hover .T-KT:not([aria-checked='true']):not(.T-KT-Jp):hover {
 
 /* Sender Name - Natural Width + Flex */
 /* We target the class injected by JS (.fi-sender-cell) OR fallbacks */
-/* Sender Name - Natural Width + Flex */
-/* We target the class injected by JS (.fi-sender-cell) OR fallbacks */
-/* Sender Name - Natural Width + Flex */
-/* We target the class injected by JS (.fi-sender-cell) OR fallbacks */
 .yX,
 td.fi-sender-cell {
   font-weight: 600 !important;
   color: var(--fi-text-primary) !important;
   font-size: 15px !important;
   white-space: nowrap !important;
+
+  /* FORCE CLICK-THROUGH ON NAME */
+  /* This prevents the unwanted "Google Contact Card" from popping up */
+  pointer-events: none !important;
 
   /* RESTORE FIXED WIDTH for Alignment */
   width: 168px !important;
@@ -522,6 +522,18 @@ td.fi-sender-cell {
   align-items: center !important;
   justify-content: flex-start !important; /* Pack items to left */
   overflow: visible !important; /* Allow star to be seen if close to edge */
+}
+
+/* RECURSIVE DISABLE: Ensure NO child span triggers the hover card */
+.yX *,
+td.fi-sender-cell * {
+  pointer-events: none !important;
+}
+
+/* EXCEPTION: The Star Proxy MUST be clickable */
+.fi-star-proxy {
+  pointer-events: auto !important;
+  cursor: pointer !important;
 }
 
 /* Constrain the text container (.yX div, span, or the moved wrapper) inside the Flex TD */
@@ -586,22 +598,31 @@ td.fi-sender-cell > span,
   margin-right: 4px !important;
 }
 
-/* Attachment file name */
-.brc .brg {
-  font-size: 10px !important;
+/* --- 6. PROXY STAR VISIBILITY (Explicit Override) --- */
+/* --- 6. PROXY STAR VISIBILITY (Explicit Override) --- */
+/* Ensure the unstarred proxy star is strictly hidden unless row is hovered */
+.fi-star-proxy:not([aria-checked='true']):not(.T-KT-Jp) {
+  opacity: 0 !important;
+  transition: opacity 0.15s ease !important;
+  pointer-events: auto !important; /* Ensure clickable if visible state changes */
 }
 
-/* --- 5. ACTION BUTTONS (Hover Actions) --- */
-.bA {
-  background: transparent !important;
-  box-shadow: none !important;
+/* Ensure ALL proxy stars are clickable despite parent disables */
+/* Ensure ALL proxy stars are clickable despite parent disables */
+/* High Specificity to override .yX * wildcard */
+.fi-star-proxy,
+td.fi-sender-cell .fi-star-proxy,
+.yX .fi-star-proxy {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 1000 !important;
+  position: relative !important; /* Ensure z-index works */
 }
-/* Icons in hover menu */
-.bA .T-I {
-  opacity: 0.6 !important;
+
+tr.zA:hover .fi-star-proxy:not([aria-checked='true']):not(.T-KT-Jp) {
+  opacity: 0.7 !important;
 }
-.bA .T-I:hover {
+
+tr.zA:hover .fi-star-proxy:not([aria-checked='true']):not(.T-KT-Jp):hover {
   opacity: 1 !important;
-  background-color: rgba(0, 0, 0, 0.05) !important;
-  border-radius: 50% !important;
 }

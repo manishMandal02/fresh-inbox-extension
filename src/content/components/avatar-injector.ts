@@ -26,14 +26,51 @@ const getColor = (name: string) => {
 };
 
 export const avatarInjector = {
+  observer: null as MutationObserver | null,
+
   init: () => {
-    // Run frequently to catch virtual scrolling updates
-    setInterval(avatarInjector.processRows, 500);
-    avatarInjector.processRows(); // Immediate run
+    // 1. Immediate Run
+    avatarInjector.processRows();
+
+    // 2. Set up MutationObserver for INSTANT reaction to new rows
+    const listContainer = document.querySelector('div[role="main"]') || document.body;
+
+    // DEBOUNCE LOGIC (Performance Fix)
+    let timeoutId: any = null;
+
+    avatarInjector.observer = new MutationObserver(mutations => {
+      let shouldProcess = false;
+      for (const mutation of mutations) {
+        if (mutation.addedNodes.length > 0) {
+          shouldProcess = true;
+          break;
+        }
+      }
+
+      if (shouldProcess) {
+        // Clear pending execution
+        if (timeoutId) clearTimeout(timeoutId);
+
+        // Schedule new execution (50ms debounce)
+        timeoutId = setTimeout(() => {
+          avatarInjector.processRows();
+          timeoutId = null;
+        }, 50);
+      }
+    });
+
+    avatarInjector.observer.observe(listContainer, {
+      childList: true,
+      subtree: true
+    });
+
+    // 3. Fallback Interval (keep it, but slower is fine - mostly for attribute changes)
+    setInterval(avatarInjector.processRows, 1500);
   },
 
   processRows: () => {
-    // Find all email rows that haven't been processed
+    // OPTIMIZATION: Only find rows that lack the 'processed' marker.
+    // This reduces the scan from O(n) to O(1) for most updates.
     const rows = document.querySelectorAll('tr.zA:not(.fi-avatar-processed)');
 
     rows.forEach(row => {

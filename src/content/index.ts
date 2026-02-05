@@ -1,5 +1,7 @@
-import '../styles/gmail-overrides.css';
+import '../styles/gmail-main-view.css';
+import '../styles/email-page.css';
 import '../styles/main.css';
+
 import { lifecycle } from './core/lifecycle';
 import { layout } from './components/layout';
 import { avatarInjector } from './components/avatar-injector';
@@ -30,6 +32,46 @@ const findAndHideCompose = () => {
   // Also look for the FAB (Floating Action Button) which might just have an icon
   const fab = document.querySelector('.z0');
   if (fab) (fab as HTMLElement).style.display = 'none';
+
+  // Run cleanup for email brackets
+  stripEmailBrackets();
+  cleanDateText();
+  hideHeaderEmoji();
+};
+
+const stripEmailBrackets = () => {
+  // Find all sender email containers
+  const emails = document.querySelectorAll('.go');
+  emails.forEach(el => {
+    // Check if it has brackets
+    if (el.textContent && (el.textContent.includes('<') || el.textContent.includes('>'))) {
+      // Replace only the brackets, safer than regex replacing everything
+      el.textContent = el.textContent.replace(/[<>]/g, '').trim();
+    }
+  });
+};
+
+const cleanDateText = () => {
+  // Find date elements (usually .g3 in opened emails)
+  const dates = document.querySelectorAll('.g3');
+  dates.forEach(el => {
+    // Look for text like "(6 days ago)"
+    if (el.textContent && el.textContent.includes('ago)')) {
+      // Logic: Split by '(' and keep the first part, or regex replace the "ago" parenthetical
+      // Regex: Find ( ... ago) and remove it.
+      el.textContent = el.textContent.replace(/\s*\(.*?ago\)/g, '').trim();
+    }
+  });
+};
+
+const hideHeaderEmoji = () => {
+  // Aggressively find 'Add reaction' buttons in the Thread View (.Nh .aoI)
+  const buttons = document.querySelectorAll(
+    '.Nh .aoI [aria-label="Add reaction"], .Nh .aoI [data-tooltip="Add reaction"]'
+  );
+  buttons.forEach(btn => {
+    (btn as HTMLElement).style.display = 'none';
+  });
 };
 
 const boot = async () => {
