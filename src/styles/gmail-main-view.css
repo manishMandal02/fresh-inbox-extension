@@ -134,7 +134,7 @@ body,
 
   color: #fff !important;
   font-weight: 600 !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
   line-height: 1 !important;
   font-family: var(--fi-font-main) !important;
   text-transform: uppercase !important;
@@ -208,12 +208,13 @@ table.TL tbody {
 
 /* The Card (Row) */
 tr.zA {
+  padding: 6px 0px !important;
   background-color: var(--fi-bg-surface) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important; /* Subtle base shadow */
   border-radius: 12px !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   border: 1px solid rgba(0, 0, 0, 0.06) !important; /* Subtle border */
-  margin-top: 8px !important;
+  margin-bottom: 8px !important;
   position: relative !important; /* Context for absolute actions */
   z-index: 1 !important;
   /* overflow: hidden !important; PROPERLY contain everything inside the card */
@@ -501,6 +502,8 @@ tr.zA:hover .T-KT:not([aria-checked='true']):not(.T-KT-Jp):hover {
 
 /* Sender Name - Natural Width + Flex */
 /* We target the class injected by JS (.fi-sender-cell) OR fallbacks */
+/* Sender Name - Natural Width + Flex */
+/* We target the class injected by JS (.fi-sender-cell) OR fallbacks */
 .yX,
 td.fi-sender-cell {
   font-weight: 600 !important;
@@ -508,14 +511,13 @@ td.fi-sender-cell {
   font-size: 15px !important;
   white-space: nowrap !important;
 
-  /* FORCE CLICK-THROUGH ON NAME */
-  /* This prevents the unwanted "Google Contact Card" from popping up */
-  pointer-events: none !important;
+  /* ALLOW HOVER FOR PROFILE CARD */
+  pointer-events: auto !important;
 
   /* RESTORE FIXED WIDTH for Alignment */
-  width: 168px !important;
-  min-width: 168px !important;
-  max-width: 168px !important;
+  width: 145px !important;
+  min-width: 145px !important;
+  max-width: 145px !important;
 
   /* Make cell a flex container for Name + Star */
   display: flex !important;
@@ -524,11 +526,11 @@ td.fi-sender-cell {
   overflow: visible !important; /* Allow star to be seen if close to edge */
 }
 
-/* RECURSIVE DISABLE: Ensure NO child span triggers the hover card */
-.yX *,
+/* RECURSIVE DISABLE: REMOVED to allow hover */
+/* .yX *,
 td.fi-sender-cell * {
   pointer-events: none !important;
-}
+} */
 
 /* EXCEPTION: The Star Proxy MUST be clickable */
 .fi-star-proxy {
@@ -576,7 +578,7 @@ td.fi-sender-cell > span,
 
 /* --- ATTACHMENTS (Compact Chips) --- */
 .brd {
-  margin-top: 4px !important;
+  margin-top: 2px !important;
 }
 .brc,
 .bzB {
@@ -584,7 +586,7 @@ td.fi-sender-cell > span,
   line-height: 16px !important;
   padding: 2px 4px !important;
   border-radius: 8px !important;
-  margin-top: 1px !important;
+  margin-top: 0spx !important;
   border: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
@@ -626,3 +628,45 @@ tr.zA:hover .fi-star-proxy:not([aria-checked='true']):not(.T-KT-Jp) {
 tr.zA:hover .fi-star-proxy:not([aria-checked='true']):not(.T-KT-Jp):hover {
   opacity: 1 !important;
 }
+
+/* --- 7. DATE HEADERS & SMOOTHNESS --- */
+
+/* Date Header Row (DIV implementation) */
+div.fi-date-header {
+  padding: 16px 0 8px 14px !important; /* Adjusted padding */
+  font-family: 'Google Sans', Roboto, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--fi-text-secondary) !important;
+  background-color: transparent !important;
+  pointer-events: none !important;
+
+  /* Layout constraints for div inside tbody */
+  display: table-caption !important; /* Trick to make it render somewhat sanely? */
+  caption-side: top !important;
+  /* OR plain block if Chrome allows it */
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+
+  /* Visual separation */
+  margin-top: 8px !important;
+  margin-bottom: -4px !important;
+}
+
+/* Smooth Transitions for Email Rows */
+tr.zA {
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    background-color 0.2s ease !important;
+  will-change: transform, box-shadow;
+}
+
+/* --- 8. HIDE IMPORTANT MARKER --- */
+td.WA {
+  display: none !important;
+}
+
+/* Optional: Add a subtle separator text style */
+/* (Merged with above) */

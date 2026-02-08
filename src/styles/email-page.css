@@ -58,6 +58,10 @@ body .gs .adn {
   padding: 0 !important;
 }
 
+body .xD {
+  display: none !important;
+}
+
 /* Avatar Container Spacing in open message */
 body .qt {
   margin-right: 16px !important;
@@ -85,31 +89,88 @@ body .ip {
 /* Use Block layout instead of Flex to ensure natural flow and container expansion */
 
 /* Wrapper (.gE) - Allow it to grow height */
+/* CHANGED: Use block instead of flex-column so inline elements (Name + Verified Icon) stay together */
+/* Wrapper (.gE) - Allow it to grow height */
+/* STRATEGY: Flexbox with 'order' provides the ONLY way to move Unsubscribe (DOM position #3) to visual position #2 (next to name), while keeping Email (DOM position #2) on a new line. */
+/* Wrapper (.gE) - Allow it to grow height */
+/* STRATEGY: Block Layout (Supported by JS Reordering) */
+/* The JS `fixSenderLayout` will physically move the Unsubscribe button to sit between Name and Email. */
 body .gE {
-  display: inline-flex !important;
-  flex-direction: column !important;
+  display: block !important;
   height: auto !important;
-  vertical-align: top !important; /* Critical: Aligns "to me" with Name (Top), not Email (Bottom) */
-  line-height: normal !important;
+  width: 100% !important;
 }
 
-/* Sender Name - First Line */
+/* 1. Sender Name */
 body .gD {
-  display: block !important;
+  display: inline-block !important;
   font-weight: 700 !important;
   color: #202124 !important;
   font-size: 15px !important;
   line-height: 1.4 !important;
-  margin-bottom: 0 !important;
+  margin-right: 4px !important;
+  vertical-align: middle !important;
 }
 
-/* Sender Email - Second Line */
+/* 2. Verified Icon (if present) */
+body .gE .aHq {
+  display: inline-flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+  margin-right: 8px !important;
+}
+
+/* 3. Unsubscribe Link */
+/* JS will move this element to sit here in the DOM */
+body .gE .Ca,
+body .gE .ca,
+body .gE a[href*='unsubscribe'] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+
+  font-size: 11px !important;
+  line-height: normal !important;
+  text-decoration: none !important;
+  border: 1px solid #dadce0 !important;
+  border-radius: 12px !important;
+  padding: 2px 10px !important;
+  margin-left: 0 !important;
+  background-color: #f1f3f4 !important;
+  color: #444746 !important;
+
+  height: 20px !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+}
+
+/* 4. Sender Email - Forced to New Line */
 body .go {
-  display: block !important;
+  display: block !important; /* Force new line */
+  width: 100% !important;
+
   color: #5f6368 !important;
   font-size: 12px !important;
-  line-height: 1.2 !important;
-  margin-top: 1px !important;
+  line-height: 1.5 !important;
+  margin-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+/* FIX: Ensure parent containers grow to fit the stacked Name + Email */
+/* .gH is the table cell, .acZ is the row */
+body .gH,
+body .acZ,
+body .gJ {
+  height: auto !important;
+  min-height: 40px !important;
+  overflow: visible !important;
+}
+
+/* Align the avatar with the now-taller content */
+body .qt {
+  vertical-align: top !important;
+  padding-top: 6px !important;
 }
 
 /* 11. HIDE METADATA CLUTTER */
@@ -124,11 +185,13 @@ body .g2 {
 /* Hide ALL "Add reaction" buttons in the thread view, including the one after the star */
 body .Nh .aoI [aria-label='Add reaction'],
 body .Nh .aoI [data-tooltip='Add reaction'],
-body .Nh .aoI .T-I-ax7[aria-label='Add reaction'] {
+body .Nh .aoI .T-I-ax7[aria-label='Add reaction'],
+body .Nh .aoI .aaq {
   display: none !important;
 }
 /* Also target the specific container that sits after star often */
-body .ac5 .T-I-ax7 {
+body .acZ .aaq,
+body .acZ [aria-label='Add reaction'] {
   display: none !important;
 }
 
@@ -142,8 +205,18 @@ body .Nh .aoI .gK [aria-label='Reply'] {
 
 /* 12. BODY CONTENT SPACING */
 /* Add space between sender details (Header) and the Email Body */
+/* 12. BODY CONTENT SPACING */
+/* Add space between sender details (Header) and the Email Body */
 body .a3s {
-  padding-top: 24px !important;
+  padding-top: 16px !important;
+  padding-bottom: 16px !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+
+  border: 1px solid #eaebef !important; /* Light border */
+  border-radius: 8px !important;
+
+  margin-top: 8px !important;
 }
 
 /* 14. COMPACT BOTTOM REPLY SECTION */
@@ -244,7 +317,25 @@ body .ams .T-I-ax7:hover {
 }
 
 /* The "Click here to reply" placeholder box */
-/* We hide this because we have the modern Buttons/Chips below */
+/* INITIAL STATE: Hidden (User wants a clean UI) */
 body .ip {
   display: none !important;
+}
+
+/* ACTIVE STATE: Show ONLY when it contains the Editor */
+/* The Editor is identifiable by the contenteditable textbox or tables that Gmail injects */
+body .ip:has([role='textbox']),
+body .ip:has([contenteditable='true']) {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  min-height: 48px !important;
+  padding: 12px !important;
+  cursor: text !important;
+
+  /* Styling for the Active Editor Container */
+  border-radius: 16px !important;
+  border: 1px solid #dadce0 !important;
+  background: #fff !important;
+  margin-bottom: 16px !important;
 }

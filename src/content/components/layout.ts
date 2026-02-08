@@ -1,5 +1,6 @@
 import { stateManager } from '../core/state';
 import { sidebar } from './sidebar/index';
+import { fab } from './fab';
 import { dom } from '../utils/dom';
 
 export class Layout {
@@ -13,10 +14,12 @@ export class Layout {
     });
 
     // Start injection
-    // Start injection
     this.injectSidebar();
+    this.injectFAB();
+
     const observer = new MutationObserver(() => {
       this.injectSidebar();
+      this.injectFAB();
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
@@ -48,7 +51,29 @@ export class Layout {
       // Prepend to ensure it's at the top
       gmailSidebar.prepend(root);
       this.sidebarMounted = true;
+
+      // Observe for Collapse State
+      const resizeObserver = new ResizeObserver(entries => {
+        for (const entry of entries) {
+          // Gmail collapsed sidebar is usually around 72px. Expanded is ~256px.
+          // We'll use 150px as a safe threshold.
+          if (entry.contentRect.width < 150) {
+            root.classList.add('fi-collapsed');
+          } else {
+            root.classList.remove('fi-collapsed');
+          }
+        }
+      });
+      resizeObserver.observe(gmailSidebar);
     }
+  }
+
+  private injectFAB() {
+    if (document.getElementById('fi-fab-root')) return;
+
+    const fabBtn = fab.render();
+    fabBtn.id = 'fi-fab-root';
+    document.body.appendChild(fabBtn);
   }
 }
 

@@ -55,12 +55,9 @@ export class Sidebar {
   private createDOM(): HTMLElement {
     const el = dom.create('aside', { classes: ['fi-sidebar'] });
     el.innerHTML = `
-      <div class="fi-sidebar-top">
-        <button class="fi-compose-btn">
-          <span class="fi-compose-icon">${icons.compose}</span>
-          <span class="fi-compose-text">Compose</span>
-        </button>
-      </div>
+      <!-- Compose Button Moved to Floating Action Button -->
+      <!-- <div class="fi-sidebar-top">...</div> -->
+      <div style="height: 16px;"></div> <!-- Spacer -->
       
       <div class="fi-nav-group">
         <div class="fi-nav-title">Mailboxes</div>

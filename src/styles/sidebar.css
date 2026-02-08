@@ -121,3 +121,64 @@
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   padding-top: 12px;
 }
+
+/* --- COLLAPSED STATE (Triggered by .fi-collapsed on root) --- */
+/* --- COLLAPSED STATE (Triggered by .fi-collapsed on root) --- */
+.fi-injected-sidebar.fi-collapsed .fi-nav-label,
+.fi-injected-sidebar.fi-collapsed .fi-nav-title,
+.fi-injected-sidebar.fi-collapsed .fi-sidebar-footer .fi-nav-label {
+  display: none !important;
+}
+
+.fi-injected-sidebar.fi-collapsed .fi-nav-item {
+  padding: 0 !important;
+  justify-content: center !important;
+  width: 44px !important; /* Fixed circle width */
+  min-width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  margin: 0 auto 4px auto !important; /* Center locally */
+}
+
+/* Fix border radius for circle items */
+.fi-injected-sidebar.fi-collapsed .fi-nav-item:hover,
+.fi-injected-sidebar.fi-collapsed .fi-nav-item.fi-active {
+  border-radius: 50% !important;
+  background-color: #d3e3fd !important;
+}
+
+.fi-injected-sidebar.fi-collapsed .fi-nav-icon {
+  margin-right: 0 !important;
+  width: 24px !important; /* Explicit icon container size */
+  height: 24px !important;
+  min-width: 24px !important; /* Prevent squashing */
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  flex-shrink: 0 !important; /* CRITICAL: Do not shrink */
+  opacity: 1 !important;
+}
+
+/* Ensure SVG inside scales correctly */
+.fi-injected-sidebar.fi-collapsed .fi-nav-icon svg {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+}
+
+/* Container Adjustments */
+.fi-injected-sidebar.fi-collapsed .fi-sidebar {
+  width: 100% !important;
+  padding: 12px 0 !important;
+  align-items: center !important;
+}
+
+/* Hide Footer settings text, keep icon */
+.fi-injected-sidebar.fi-collapsed .fi-sidebar-footer {
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+  border-top: none !important;
+}

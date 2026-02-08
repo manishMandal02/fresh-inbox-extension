@@ -7,7 +7,7 @@ export const dom = {
    * Wait for an element to appear in the DOM.
    */
   waitForEl(selector: string, timeout = 10000): Promise<HTMLElement | null> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const el = document.querySelector(selector) as HTMLElement;
       if (el) return resolve(el);
 
@@ -21,7 +21,7 @@ export const dom = {
 
       observer.observe(document.body, {
         childList: true,
-        subtree: true,
+        subtree: true
       });
 
       if (timeout > 0) {
@@ -94,4 +94,26 @@ export const dom = {
       rect.right <= (window.innerWidth || document.documentElement.clientWidth)
     );
   }
+};
+
+export const isEmailListPage = (): boolean => {
+  // Check if we are in a view that lists emails (Inbox, Starred, Search, etc.)
+  // The main email table usually has role="main" or specific classes.
+  // A simple heuristic: Is there a table with class 'F cf zt'? (Standard Gmail list)
+  // Or simply check the URL hash.
+  const hash = window.location.hash;
+  return (
+    hash.startsWith('#inbox') ||
+    hash.startsWith('#starred') ||
+    hash.startsWith('#snoozed') ||
+    hash.startsWith('#sent') ||
+    hash.startsWith('#drafts') ||
+    hash.startsWith('#imp') || // Important
+    hash.startsWith('#all') || // All Mail
+    hash.startsWith('#spam') ||
+    hash.startsWith('#trash') ||
+    hash.startsWith('#search') ||
+    hash.startsWith('#label') ||
+    hash.startsWith('#category')
+  );
 };
